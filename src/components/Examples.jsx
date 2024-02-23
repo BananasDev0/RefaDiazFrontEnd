@@ -1,5 +1,5 @@
 import { useEffect,useState } from "react";
-import { getAllExamples } from "../../services/example.api";
+import { getAllExamples } from "../services/example.api";
 
 export function ExamplesList() {
     const [examples, setExamples] = useState([])

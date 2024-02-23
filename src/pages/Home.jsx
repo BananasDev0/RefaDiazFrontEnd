@@ -1,19 +1,20 @@
 import React from 'react';
-import { Container, Typography, Button } from '@mui/material';
-import { BODY_PAGE_HOME, BUTTON_LBLCOMENZAR, TITLE_PAGE_HOME_WELCOME } from '../../constants';
+import { Container, } from '@mui/material';
+import {  } from '../../constants';
+import { MainStructure } from '../components/MainStructure';
 
 function Home() {
+
+  
+
   return (
-    <Container>
-      <Typography variant="h1" component="h1" gutterBottom>
-        {TITLE_PAGE_HOME_WELCOME}
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        {BODY_PAGE_HOME}
-      </Typography>
-      <Button variant="contained" color="primary">
-        {BUTTON_LBLCOMENZAR}
-      </Button>
+    <Container 
+    maxWidth={false}
+    disableGutters={true}
+    
+    >
+      
+      <MainStructure/>
     </Container>
   );
 }
