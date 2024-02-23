@@ -18,7 +18,7 @@ jobs:
         with:
           host: ${{ secrets.DEV_EC2_HOST }}
           username: ${{ secrets.DEV_EC2_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
           port: 22
           source: "."
           target: "projects/RefaDiazFrontEnd"
