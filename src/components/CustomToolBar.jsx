@@ -17,7 +17,7 @@ export default function CustomToolBar({ handleDrawerOpen, open }) {
                 <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div">
-                Refaccionaria Diaz
+                Refa Diaz
             </Typography>
         </Toolbar>
     )
