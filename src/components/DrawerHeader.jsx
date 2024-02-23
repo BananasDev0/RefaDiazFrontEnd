@@ -1,4 +1,3 @@
-import React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -14,11 +13,10 @@ const Header = styled('div')(({ theme }) => ({
 }));
 
 const DrawerHeader = ({ handleDrawerClose }) => { // Recibe handleDrawerClose como prop
-  const theme = useTheme(); // Utiliza el hook useTheme
+  const theme = useTheme();
 
   return (
     <Header>
-      {/* Contenido del header del drawer */}
       <IconButton onClick={handleDrawerClose}> {/* Agrega el IconButton con onClick */}
         {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
       </IconButton>
