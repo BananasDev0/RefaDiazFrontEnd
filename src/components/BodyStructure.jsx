@@ -1,5 +1,5 @@
 import { FormStructure } from "./FormStructure";
-import { SidebarStructure } from "./SidebarStructure";
+import { NavbarStructure } from "./NavbarStructure";
 import { Grid } from '@mui/material';
 export function BodyStructure() {
 
@@ -7,13 +7,13 @@ export function BodyStructure() {
 
 
     return (
-        <Grid container spacing={2}>
-      <Grid item xs={2}>
-        <SidebarStructure />
-      </Grid>
-      <Grid item xs={10}>
-        <FormStructure />
-      </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <NavbarStructure />
+        </Grid>
+        <Grid item xs={12}>
+          <FormStructure />
+        </Grid>
     </Grid>
     );
 }

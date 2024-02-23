@@ -1,21 +1,22 @@
 import '../styles/MainStructure.css'
-import { NavbarStructure } from "./NavbarStructure"
+import { SidebarStructure } from './SidebarStructure';
 import { BodyStructure } from "./BodyStructure"
-import { Grid } from '@mui/material';
+import { Grid,Box } from '@mui/material';
 
 export function MainStructure() {
 
 
 
 
+
     return (
         <Grid container className="main-container"  spacing={2}>
-          <Grid item xs={12}>
-            <NavbarStructure />
+          <Grid>
+            <SidebarStructure />
           </Grid>
-          <Grid item xs={12}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
             <BodyStructure />
-          </Grid>
+          </Box>
         </Grid>
       );
 }
