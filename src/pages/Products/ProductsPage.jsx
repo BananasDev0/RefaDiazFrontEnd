@@ -1,7 +1,6 @@
-import { Box, Button, Fab, Tab, Tabs, TextField } from "@mui/material"
+import { Box, Button, Tab, Tabs } from "@mui/material"
 import { useState } from "react";
-import { DataGrid } from '@mui/x-data-grid';
-import AddIcon from '@mui/icons-material/Add';
+import ProductWorkSection from "./ProductWorkSection";
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 70 },
@@ -94,28 +93,10 @@ export default function ProductsPage() {
         <Tab value="two" label="Tapas" />
         <Tab value="three" label="Ventiladores/Abanicos" />
       </Tabs>
-      <TextField
-        placeholder="Buscar..."
-        variant="outlined"
-        style={{ marginBottom: 8 }}
-        fullWidth
-      />
-      <Fab
-        color="primary" 
-        aria-label="add" 
-        sx={{ position: 'absolute', bottom: 16, right: 16 }}
-      >
-        <AddIcon />
-      </Fab>
-      <DataGrid
+      <ProductWorkSection
         rows={rows}
         columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
+        onAddClick={() => console.log("Agregar nuevo registro")}
       />
     </Box>
   );
