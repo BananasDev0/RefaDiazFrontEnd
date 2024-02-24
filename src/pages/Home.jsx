@@ -3,12 +3,16 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiAppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
-import DrawerHeader from '../components/DrawerHeader';
 import CustomDrawer from '../components/CustomDrawer';
 import CustomToolBar from '../components/CustomToolBar';
+import ProductsPage from './Products/ProductsPage';
 
 
 const drawerWidth = 240;
+
+const ContentHeader = styled('div')(({ theme }) => ({
+  ...theme.mixins.toolbar,
+}));
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -49,8 +53,9 @@ export default function Home() {
       <CustomDrawer open={open} handleDrawerClose={handleDrawerClose} />
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
+        <ContentHeader />
         {/* aca va la page*/}
+        <ProductsPage/>
       </Box>
     </Box>
   );

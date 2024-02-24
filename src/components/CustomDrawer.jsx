@@ -31,7 +31,6 @@ const CustomDrawer = ({ open, handleDrawerClose }) => { // Agrega handleDrawerCl
       <Divider />
       <ElementList />
       <Divider />
-      <ElementList />
     </Drawer>
   );
 };

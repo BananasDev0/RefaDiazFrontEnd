@@ -9,7 +9,7 @@ import MailIcon from '@mui/icons-material/Mail';
 export default function ElementList() {
     return (
         <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+            {['Productos', 'Servicios', 'Autos', 'Proveedores'].map((text, index) => (
                 <ListItem key={text} disablePadding sx={{ display: 'block' }}>
                     <ListItemButton
                         sx={{
