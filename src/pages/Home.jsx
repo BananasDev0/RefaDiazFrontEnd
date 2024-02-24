@@ -8,6 +8,7 @@ import CustomToolBar from '../components/CustomToolBar';
 import ProductsPage from './Products/ProductsPage';
 
 
+
 const drawerWidth = 240;
 
 const ContentHeader = styled('div')(({ theme }) => ({
@@ -55,6 +56,7 @@ export default function Home() {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <ContentHeader />
         {/* aca va la page*/}
+        
         <ProductsPage/>
       </Box>
     </Box>
