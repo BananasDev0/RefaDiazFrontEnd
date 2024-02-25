@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Alert, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../assets/Logo_RD.png'
 
 function Copyright(props) {
   return (
@@ -57,9 +58,7 @@ export default function Login() {
     <Container component="main" sx={{ height: '100dvh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <CssBaseline />
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography component="h1" variant="h5">
-          Refaccionaria Diaz
-        </Typography>
+        <img src={Logo} alt="Logotipo Refaccionaria Diaz" style={{ width: 100, height: 'auto', marginBottom: 20 }} />
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
