@@ -19,6 +19,7 @@ export default function CustomToolBar({ handleDrawerOpen, open }) {
             <Typography variant="h6" noWrap component="div">
                 Refa Diaz
             </Typography>
+            
         </Toolbar>
     )
 }
