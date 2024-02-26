@@ -6,6 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import CustomToolBar from '../components/CustomToolBar';
 import ProductsPage from './Products/ProductsPage';
 import ResponsiveDrawer from '../components/ResponsiveDrawer/ResponsiveDrawer';
+import { MobileProvider } from '../components/MobileProvider';
 
 
 
@@ -45,20 +46,22 @@ export default function Home() {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar position="fixed" open={open}>
-        <CustomToolBar handleDrawerOpen={handleDrawerOpen} open={open} />
-      </AppBar>
-      {/* nuevo componente */}
-      <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} />
+    <MobileProvider>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBar position="fixed" open={open}>
+          <CustomToolBar handleDrawerOpen={handleDrawerOpen} open={open} />
+        </AppBar>
+        {/* nuevo componente */}
+        <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} />
 
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <ContentHeader />
-        {/* aca va la page*/}
-        
-        <ProductsPage/>
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <ContentHeader />
+          {/* aca va la page*/}
+
+          <ProductsPage />
+        </Box>
       </Box>
-    </Box>
+    </MobileProvider>
   );
 }
