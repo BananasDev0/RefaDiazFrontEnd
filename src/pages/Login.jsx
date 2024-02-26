@@ -29,7 +29,7 @@ function Copyright(props) {
   );
 }
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // RegEx simple para validar emails.
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -68,9 +68,7 @@ export default function Login() {
       }));
       return;
     }
-    // Si llegamos aquí, ambos campos están llenos y el email es válido.
-    ///console.log({ email, password });
-    //navigate('/home');
+    
 
    try{
     const validate = await signIn(email, password);
