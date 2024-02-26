@@ -15,7 +15,7 @@ const MobileDrawer = ({ open, handleDrawerClose }) => { // Agrega handleDrawerCl
       keepMounted: true, // Better open performance on mobile.
     }}
     sx={{
-      display: { xs: 'block', sm: 'none' },
+      display: { xs: 'block'},
       '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
     }}>
       <DrawerHeader handleDrawerClose={handleDrawerClose} />
