@@ -1,4 +1,4 @@
-import { Box, Button, Tab, Tabs } from "@mui/material"
+import { Box, Button, Tab, Tabs, useMediaQuery, useTheme } from "@mui/material"
 import { useState } from "react";
 import ProductWorkSection from "./ProductWorkSection";
 
@@ -75,6 +75,8 @@ const rows = [
 
 export default function ProductsPage() {
   const [value, setValue] = useState('one');
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // 'sm' para dispositivos móviles
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -85,9 +87,10 @@ export default function ProductsPage() {
       <Tabs
         value={value}
         onChange={handleChange}
-        textColor="secondary"
-        indicatorColor="secondary"
-        aria-label="secondary tabs example"
+        variant="scrollable"
+        scrollButtons="auto"
+        aria-label="scrollable auto tabs example"
+        sx={{width: isMobile ? '80vw' : '100%'}}
       >
         <Tab value="one" label="Radiadores" />
         <Tab value="two" label="Tapas" />
