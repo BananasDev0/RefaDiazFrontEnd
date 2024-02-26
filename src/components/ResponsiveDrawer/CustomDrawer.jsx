@@ -1,9 +1,9 @@
 import { styled } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
-import { openedMixin, closedMixin } from '../styles/utils/drawerFunctions';
-import DrawerHeader from './DrawerHeader';
+import { openedMixin, closedMixin } from '../../styles/utils/drawerFunctions';
+import DrawerHeader from '../DrawerHeader';
 import { Divider } from '@mui/material';
-import ElementList from './ElementList';
+import ElementList from '../ElementList';
 
 const drawerWidth = 240;
 

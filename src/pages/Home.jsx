@@ -3,9 +3,9 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiAppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
-import CustomDrawer from '../components/CustomDrawer';
 import CustomToolBar from '../components/CustomToolBar';
 import ProductsPage from './Products/ProductsPage';
+import ResponsiveDrawer from '../components/ResponsiveDrawer/ResponsiveDrawer';
 
 
 
@@ -51,7 +51,7 @@ export default function Home() {
         <CustomToolBar handleDrawerOpen={handleDrawerOpen} open={open} />
       </AppBar>
       {/* nuevo componente */}
-      <CustomDrawer open={open} handleDrawerClose={handleDrawerClose} />
+      <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} />
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <ContentHeader />
