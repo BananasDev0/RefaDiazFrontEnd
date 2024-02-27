@@ -75,11 +75,11 @@ export default function Login() {
     if (validate) {
       navigate('/home');
     } else {
-      setAlert({ show: true, message: 'Usuario no encontrado' });
+      setAlert({ show: true, message: 'Usuario o Contraseña incorrecta', severity: 'error' });
     }
    }catch(error) {
     console.log(error);
-    setAlert({ show: true, message: 'Usuario o Contraseña incorrecta',severity: 'error' });
+    setAlert({ show: true, message: 'Servicio no disponible',severity: 'error' });
    }
     
     
