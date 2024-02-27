@@ -1,6 +1,7 @@
-import { Box, Button, Tab, Tabs } from "@mui/material"
+import { Box, Button, Tab, Tabs} from "@mui/material"
 import { useState } from "react";
 import ProductWorkSection from "./ProductWorkSection";
+import { useMobile } from "../../components/MobileProvider";
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 70 },
@@ -75,6 +76,7 @@ const rows = [
 
 export default function ProductsPage() {
   const [value, setValue] = useState('one');
+  const responsive = useMobile();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -85,9 +87,10 @@ export default function ProductsPage() {
       <Tabs
         value={value}
         onChange={handleChange}
-        textColor="secondary"
-        indicatorColor="secondary"
-        aria-label="secondary tabs example"
+        variant="scrollable"
+        scrollButtons="auto"
+        aria-label="scrollable auto tabs example"
+        sx={{width: responsive.isMobile ? '85vw' : '100%'}}
       >
         <Tab value="one" label="Radiadores" />
         <Tab value="two" label="Tapas" />
