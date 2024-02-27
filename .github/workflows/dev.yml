@@ -33,5 +33,4 @@ jobs:
           script: |
             cd projects/RefaDiazFrontEnd
             npm install
-            npm run build
             pm2 restart RefaDiazApp
