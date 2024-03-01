@@ -7,6 +7,8 @@ import CustomToolBar from '../components/CustomToolBar';
 import ProductsPage from './Products/ProductsPage';
 import ResponsiveDrawer from '../components/ResponsiveDrawer/ResponsiveDrawer';
 import { MobileProvider } from '../components/MobileProvider';
+import { checkAuth  } from '../services/Firebase/authState';
+
 
 
 
@@ -34,7 +36,17 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
+
+
+
+
+
+
 export default function Home() {
+
+  checkAuth()
+  
+
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
