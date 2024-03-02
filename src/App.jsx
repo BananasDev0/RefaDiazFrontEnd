@@ -2,6 +2,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import UserPage from './pages/Users/UserPage';
 
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
         <Route exact path='/' element={user ? <Home /> : <Login />} />
         <Route exact path="/home" element={<Home/> }/>
         <Route exact path="/login" element={<Login/> }/>
+        <Route exact path='/user' element={<UserPage />} />
       </Routes>
     </BrowserRouter>
   );
