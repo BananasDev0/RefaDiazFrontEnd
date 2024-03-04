@@ -1,4 +1,4 @@
-import { FormControl, Container, Grid } from '@mui/material';
+import { FormControl, Container, Grid, Typography, Button } from '@mui/material';
 import CustomLabelForm from '../../components/UserComponents/CustomLabelForm';
 import * as React from 'react';
 import dayjs from 'dayjs';  
@@ -13,8 +13,15 @@ export default function UserPage() {
     setValue(newValue);
   };
 
+  const handleSubmit = () => {
+    // Aquí puedes implementar la lógica para manejar la creación de usuarios
+  };
+
   return (
-    <Container>
+    <Container style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
+      <Typography variant="h4" align="center" gutterBottom>
+        Creacion de Usuarios
+      </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
@@ -27,18 +34,20 @@ export default function UserPage() {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <FormControl fullWidth style={{ marginTop: '1rem' }}>
+          <FormControl fullWidth style={{ marginTop: '1rem', width: '50%' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                label="Selecciona la fecha de nacimiento"
+                label="Fecha de nacimiento"
                 value={value}
                 onChange={handleDateChange}
+                inputFormat="DD/MM/YYYY"
                 renderInput={(params) => (
                   <input
                     {...params.inputProps}
                     type="text"
                     placeholder="Seleccione una fecha"
-                    readOnly 
+                    readOnly
+                    style={{ width: '100%' }}
                   />
                 )}
               />
@@ -59,6 +68,11 @@ export default function UserPage() {
           <FormControl fullWidth>
             <CustomLabelForm labelText="Dirección" />
           </FormControl>
+        </Grid>
+        <Grid item xs={12} style={{ textAlign: 'end' }}>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            Crear Usuario
+          </Button>
         </Grid>
       </Grid>
     </Container>
