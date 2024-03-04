@@ -20,7 +20,7 @@ export default function UserPage() {
   return (
     <Container style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
       <Typography variant="h4" align="center" gutterBottom>
-        Creacion de Usuarios
+        Registro de usuario
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
@@ -34,7 +34,7 @@ export default function UserPage() {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <FormControl fullWidth style={{ marginTop: '1rem', width: '50%' }}>
+          <FormControl fullWidth style={{ marginTop: '1rem', width: '85%' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Fecha de nacimiento"
@@ -71,7 +71,7 @@ export default function UserPage() {
         </Grid>
         <Grid item xs={12} style={{ textAlign: 'end' }}>
           <Button variant="contained" color="primary" onClick={handleSubmit}>
-            Crear Usuario
+            Registrar
           </Button>
         </Grid>
       </Grid>
