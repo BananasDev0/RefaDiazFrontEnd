@@ -14,7 +14,7 @@ export default function CustomLabelForm({ labelText }) {
 
 const StyledInput = styled('input')(
   ({ theme }) => `
-    width: 320px;
+    width: 80%;
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 0.875rem;
     font-weight: 400;
