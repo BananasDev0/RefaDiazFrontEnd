@@ -1,7 +1,9 @@
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { app } from './firebase';
+import { signInWithEmailAndPassword} from 'firebase/auth';
+import { auth } from './firebase';
+
+
 export const signIn = async (email, password) => {
-  const auth = getAuth(app);
+
   try {
     const userCredential = await signInWithEmailAndPassword(
       auth,
@@ -9,9 +11,30 @@ export const signIn = async (email, password) => {
       password
     );
     const user = userCredential.user;
+
+    if (user) {
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        phoneNumber: user.phoneNumber,
+        photoURL: user.photoURL,
+
+      }
+      const token = user.accessToken;
+      const userDataString = JSON.stringify(userData);
+      const userTokenString = JSON.stringify(token);
+
+      localStorage.setItem("user", userDataString);
+      localStorage.setItem("token", userTokenString);
+    }
+
+
+
     return user;
   } catch (error) {
-    console.log('Error in auth.js/signIn :' + error);
+    console.log('Error in auth.js/signIn : ' + error);
     return false
   }
 };
+

@@ -8,8 +8,6 @@ import ProductsPage from './Products/ProductsPage';
 import ResponsiveDrawer from '../components/ResponsiveDrawer/ResponsiveDrawer';
 import { MobileProvider } from '../components/MobileProvider';
 
-
-
 const drawerWidth = 240;
 
 const ContentHeader = styled('div')(({ theme }) => ({
@@ -34,7 +32,13 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
+
+
+
+
+
 export default function Home() {
+
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
@@ -45,12 +49,16 @@ export default function Home() {
     setOpen(false);
   };
 
+  
+
   return (
     <MobileProvider>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="fixed" open={open}>
+        
           <CustomToolBar handleDrawerOpen={handleDrawerOpen} open={open} />
+          
         </AppBar>
         {/* nuevo componente */}
         <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} />

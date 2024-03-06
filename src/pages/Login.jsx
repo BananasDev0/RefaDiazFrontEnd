@@ -29,7 +29,7 @@ function Copyright(props) {
   );
 }
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -68,21 +68,22 @@ export default function Login() {
       }));
       return;
     }
-    
 
-   try{
-    const validate = await signIn(email, password);
-    if (validate) {
-      navigate('/home');
-    } else {
-      setAlert({ show: true, message: 'Usuario o Contraseña incorrecta', severity: 'error' });
+
+    try {
+      const validate = await signIn(email, password);
+      if (validate) {
+        navigate('/home');
+        
+      } else {
+        setAlert({ show: true, message: 'Usuario o Contraseña incorrecta', severity: 'error' });
+      }
+    } catch (error) {
+      console.log(error);
+      setAlert({ show: true, message: 'Servicio no disponible', severity: 'error' });
     }
-   }catch(error) {
-    console.log(error);
-    setAlert({ show: true, message: 'Servicio no disponible',severity: 'error' });
-   }
-    
-    
+
+
   };
 
   return (

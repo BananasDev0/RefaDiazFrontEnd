@@ -1,6 +1,5 @@
 import { Toolbar, IconButton, Typography } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-
 export default function CustomToolBar({ handleDrawerOpen, open }) {
   return (
     <Toolbar>
@@ -16,6 +15,7 @@ export default function CustomToolBar({ handleDrawerOpen, open }) {
       >
         <MenuIcon />
       </IconButton>
+      
       <Typography variant="h6" noWrap component="div">
         Refa Diaz
       </Typography>
