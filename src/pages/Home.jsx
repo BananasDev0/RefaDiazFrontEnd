@@ -7,12 +7,6 @@ import CustomToolBar from '../components/CustomToolBar';
 import ProductsPage from './Products/ProductsPage';
 import ResponsiveDrawer from '../components/ResponsiveDrawer/ResponsiveDrawer';
 import { MobileProvider } from '../components/MobileProvider';
-import { isCurrentUser } from '../services/Firebase/stateAuth';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-
-
-
 
 const drawerWidth = 240;
 
@@ -44,24 +38,6 @@ const AppBar = styled(MuiAppBar, {
 
 
 export default function Home() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        if (await isCurrentUser()) {
-          console.log('El usuario está autenticado');
-        } else {
-          console.log('El usuario no está autenticado');
-          navigate('/');
-        }
-      } catch (error) {
-        console.error('Error al verificar el estado de autenticación:', error);
-      }
-    };
-
-    checkUser();
-  }, [navigate])
 
   const [open, setOpen] = React.useState(false);
 
