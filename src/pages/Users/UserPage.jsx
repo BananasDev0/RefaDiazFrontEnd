@@ -1,23 +1,53 @@
 import { FormControl, Container, Grid, Typography, Button, TextField } from '@mui/material';
-import CustomLabelForm from '../../components/UserComponents/CustomLabelForm';
 import * as React from 'react';
 import dayjs from 'dayjs';  
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Alert from '@mui/material/Alert';
+import axios from 'axios'; // Importar Axios
 
 export default function UserPage() {
-  const [value, setValue] = React.useState(dayjs());
+  const [userData, setUserData] = React.useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    address: '',
+    birthDate: dayjs(),
+  });
+
   const [cleared, setCleared] = React.useState(false);
 
   const handleDateChange = (newValue) => {
-    setValue(newValue);
+    setUserData({ ...userData, birthDate: newValue });
   };
 
-  const handleSubmit = () => {
-    // Aquí puedes implementar la lógica para manejar la creación de usuarios
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setUserData({ ...userData, [name]: value });
   };
+
+  const handleSubmit = async () => {
+    try {
+      await axios.post('http://localhost:3000/api/user/', userData); 
+      console.log('Usuario registrado exitosamente.');
+  
+      setUserData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        address: '',
+        birthDate: dayjs(),
+      });
+      // Limpiar el estado 'cleared' para ocultar el mensaje de éxito
+      setCleared(false);
+    } catch (error) {
+      console.error('Error al registrar usuario:', error);
+    }
+  };
+  
 
   React.useEffect(() => {
     let timeout;
@@ -37,12 +67,22 @@ export default function UserPage() {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <CustomLabelForm labelText="Nombres" />
+            <TextField
+              name="firstName"
+              label="Nombres"
+              value={userData.firstName}
+              onChange={handleInputChange}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <CustomLabelForm labelText="Apellidos" />
+            <TextField
+              name="lastName"
+              label="Apellidos"
+              value={userData.lastName}
+              onChange={handleInputChange}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12}>
@@ -50,7 +90,7 @@ export default function UserPage() {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Fecha de nacimiento"
-                value={value}
+                value={userData.birthDate}
                 onChange={handleDateChange}
                 slotProps={{
                   field: { clearable: true, onClear: () => setCleared(true) },
@@ -77,17 +117,32 @@ export default function UserPage() {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <CustomLabelForm labelText="Email" />
+            <TextField
+              name="email"
+              label="Email"
+              value={userData.email}
+              onChange={handleInputChange}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <CustomLabelForm labelText="Teléfono" />
+            <TextField
+              name="phoneNumber"
+              label="Teléfono"
+              value={userData.phoneNumber}
+              onChange={handleInputChange}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12}>
           <FormControl fullWidth>
-            <CustomLabelForm labelText="Dirección" />
+            <TextField
+              name="address"
+              label="Dirección"
+              value={userData.address}
+              onChange={handleInputChange}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12} style={{ textAlign: 'end' }}>
