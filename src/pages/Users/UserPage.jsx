@@ -15,6 +15,7 @@ export default function UserPage() {
     phoneNumber: '',
     address: '',
     birthDate: dayjs(),
+    active: 1,
   });
 
   const [cleared, setCleared] = React.useState(false);
@@ -30,8 +31,27 @@ export default function UserPage() {
 
   const handleSubmit = async () => {
     try {
-      await axios.post('http://localhost:3000/api/user/', userData); 
-      console.log('Usuario registrado exitosamente.');
+      // Formatear la fecha en el formato "YYYY-MM-DD"
+      const formattedDate = userData.birthDate.format('YYYY-MM-DD');
+
+      const combinedData = {
+        user: {
+          name: userData.firstName,
+          last_name: userData.lastName,
+          email: userData.email,
+          phone_number: userData.phoneNumber,
+          address: userData.address,
+          active: userData.active,
+        },
+        person: {
+          name: userData.firstName,
+          last_name: userData.lastName,
+          birth_date: formattedDate,
+        },
+      };
+  
+      await axios.post('http://localhost:3000/api/user/', combinedData);
+      console.log('Usuario y persona registrados exitosamente.');
   
       setUserData({
         firstName: '',
@@ -40,15 +60,15 @@ export default function UserPage() {
         phoneNumber: '',
         address: '',
         birthDate: dayjs(),
+        active: 1,
       });
-      // Limpiar el estado 'cleared' para ocultar el mensaje de éxito
+
       setCleared(false);
     } catch (error) {
-      console.error('Error al registrar usuario:', error);
+      console.error('Error al registrar usuario y persona:', error);
     }
   };
   
-
   React.useEffect(() => {
     let timeout;
     if (cleared) {
