@@ -1,7 +1,7 @@
 import { Box, Tab, Tabs} from "@mui/material"
 import { useState } from "react";
 import { useMobile } from "../../components/MobileProvider";
-import BrandViewer from "./BrandViewer";
+import BrandContainer from "./BrandViewer/BrandContainer";
 
 
 export default function ProductsPage() {
@@ -26,7 +26,7 @@ export default function ProductsPage() {
         <Tab value="two" label="Tapas" />
         <Tab value="three" label="Ventiladores/Abanicos" />
       </Tabs>
-      <BrandViewer></BrandViewer>
+      <BrandContainer></BrandContainer>
     </Box>
   );
 }
