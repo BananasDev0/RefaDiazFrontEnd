@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
 
 export const ItemCard = ({ item, columns }) => {
-    console.log(item.imageUrl)
     return (
       <Card sx={{ margin: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {item.imageUrl && (

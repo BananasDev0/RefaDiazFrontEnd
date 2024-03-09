@@ -2,7 +2,6 @@ import Grid from '@mui/material/Grid';
 import {ItemCard} from './ItemCard'; // Assuming ItemCard is in the same directory
 
 const ItemsCardList = ({ rows, columns, itemCardProps}) => {
-    console.log(rows)
     return (
         <Grid container spacing={2}>
             {rows.map((row) => (
