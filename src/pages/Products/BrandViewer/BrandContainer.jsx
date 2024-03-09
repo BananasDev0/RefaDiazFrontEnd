@@ -1,13 +1,9 @@
-import  { useEffect, useState } from 'react';
-import ItemsCardList from '../../components/ItemCardList'; // Verifica la ruta
-import getAllBrands from '../../services/BrandService';
-import { getImageURLFromStorage } from '../../services/Firebase/storage';
+import { useEffect, useState } from 'react';
+import getAllBrands from '../../../services/BrandService';
+import { getImageURLFromStorage } from '../../../services/Firebase/storage';
+import BrandList from './BrandList'; // Asegúrate de que la ruta sea correcta
 
-const columns = [
-  { field: 'name', headerName: 'Nombre', showLabel: false, valueStyle: { textTransform: 'uppercase', fontWeight: 'bold', fontSize: '18px'} }, // `showLabel: false` para no mostrar el label
-];
-
-const BrandViewer = () => {
+const BrandContainer = () => {
   const [brands, setBrands] = useState([]);
 
   useEffect(() => {
@@ -25,21 +21,17 @@ const BrandViewer = () => {
             return brand;
           }
         }));
-  
+
         setBrands(brandsWithImages);
       } catch (error) {
         console.error("Error al obtener las marcas:", error);
       }
     };
-  
+
     fetchBrands();
   }, []);
 
-  return (
-    <div>
-      <ItemsCardList rows={brands} columns={columns} itemCardProps={{}} />
-    </div>
-  );
+  return <BrandList brands={brands} />;
 };
 
-export default BrandViewer;
+export default BrandContainer;
