@@ -1,14 +1,11 @@
 import { useState } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
 import { Box, TextField, Fab} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ItemsCardList from '../../components/ItemCardList';
-import { useMobile } from '../../components/MobileProvider';
 
 function ProductWorkSection({ rows: allRows, columns, onAddClick }) {
   const [searchText, setSearchText] = useState('');
   const [rows, setRows] = useState(allRows);
-  const responsive = useMobile();
 
   const handleSearch = (event) => {
     const { value } = event.target;
@@ -55,13 +52,7 @@ function ProductWorkSection({ rows: allRows, columns, onAddClick }) {
       >
         <AddIcon />
       </Fab>
-      {responsive.isMobile ? renderMobileView() : <DataGrid
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        pageSizeOptions={[5, 10]}
-        sx={{ mt: 2 }} // Ajusta según necesidad
-      />}
+      {renderMobileView()}
     </Box>
   );
 }
