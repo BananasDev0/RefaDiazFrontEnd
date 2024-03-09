@@ -1,5 +1,4 @@
 import Brand from "../models/Brand";
-
 import axios from 'axios';
 
 const getAllBrands = async () => {
@@ -7,7 +6,7 @@ const getAllBrands = async () => {
     const response = await axios.get(`${import.meta.env.VITE_API_REFA_BASE_PATH}/brands`);
 
     if (response.data && Array.isArray(response.data)) {
-      return response.data.map(brand => (new Brand(brand.id, brand.name)));
+      return response.data.map(brand => (new Brand(brand.id, brand.name, brand.imageUrl)));
     } else {
       console.error('Formato de respuesta inesperado:', response.data);
       return [];
