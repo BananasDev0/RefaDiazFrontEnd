@@ -4,10 +4,10 @@ const columns = [
   { field: 'name', headerName: 'Nombre', showLabel: false, valueStyle: { textTransform: 'uppercase', fontWeight: 'bold', fontSize: '18px'} },
 ];
 
-const BrandList = ({ brands }) => {
+const BrandList = ({ brands, onBrandSelect }) => {
   return (
     <div>
-      <ItemsCardList rows={brands} columns={columns} itemCardProps={{}} />
+      <ItemsCardList rows={brands} columns={columns} itemCardProps={{onClick: onBrandSelect}} />
     </div>
   );
 };

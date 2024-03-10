@@ -3,7 +3,7 @@ import getAllBrands from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import BrandList from './BrandList'; // Asegúrate de que la ruta sea correcta
 
-const BrandContainer = () => {
+const BrandContainer = ({ onBrandSelect }) => {
   const [brands, setBrands] = useState([]);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const BrandContainer = () => {
     fetchBrands();
   }, []);
 
-  return <BrandList brands={brands} />;
+  return <BrandList brands={brands} onBrandSelect={onBrandSelect}/>;
 };
 
 export default BrandContainer;
