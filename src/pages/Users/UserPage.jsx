@@ -5,7 +5,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Alert from '@mui/material/Alert';
-import axios from 'axios'; // Importar Axios
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import app from '../../services/Firebase/firebase';
+import axios from 'axios';
 
 export default function UserPage() {
   const [userData, setUserData] = React.useState({
@@ -31,28 +33,42 @@ export default function UserPage() {
 
   const handleSubmit = async () => {
     try {
-      // Formatear la fecha en el formato "YYYY-MM-DD"
-      const formattedDate = userData.birthDate.format('YYYY-MM-DD');
+      
+      const { email, password } = userData;
 
-      const combinedData = {
-        user: {
-          name: userData.firstName,
-          last_name: userData.lastName,
-          email: userData.email,
-          phone_number: userData.phoneNumber,
-          address: userData.address,
-          active: userData.active,
-        },
+      const auth = getAuth(app);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      console.log('Usuario creado:', userCredential.user);
+      
+      const userId = userCredential.user.uid; //id firebase
+      const person = userCredential.user.person; //person
+      
+      const newUser = {
+        id: userId,
         person: {
-          name: userData.firstName,
-          last_name: userData.lastName,
-          birth_date: formattedDate,
+          id: person.id,
+          name: person.name,
+          last_name: person.last_name,
+          birth_date: person.birth_date,
+          email: person.email,
+          phone_number: person.phone_number,
+          address: person.address,
+          active: person.active,
+          updated_at: person.updated_at,
+          created_at: person.created_at
         },
+        active: userCredential.user.active,
+        updated_at: userCredential.user.updated_at,
+        created_at: userCredential.user.created_at,
+        person_id: person.id
       };
-  
-      await axios.post('http://localhost:3000/api/user/', combinedData);
-      console.log('Usuario y persona registrados exitosamente.');
-  
+
+
+      const response = await axios.post('http://localhost:3000/api/user/', newUser);
+
+      console.log('Usuario enviado al servidor con éxito');
+
       setUserData({
         firstName: '',
         lastName: '',
@@ -62,13 +78,14 @@ export default function UserPage() {
         birthDate: dayjs(),
         active: 1,
       });
-
+      
       setCleared(false);
     } catch (error) {
-      console.error('Error al registrar usuario y persona:', error);
+      console.error('Error al registrar usuario en Firebase:', error);
     }
-  };
-  
+}
+
+
   React.useEffect(() => {
     let timeout;
     if (cleared) {
@@ -138,16 +155,6 @@ export default function UserPage() {
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
-              name="email"
-              label="Email"
-              value={userData.email}
-              onChange={handleInputChange}
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <FormControl fullWidth>
-            <TextField
               name="phoneNumber"
               label="Teléfono"
               value={userData.phoneNumber}
@@ -161,6 +168,27 @@ export default function UserPage() {
               name="address"
               label="Dirección"
               value={userData.address}
+              onChange={handleInputChange}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth>
+            <TextField
+              name="email"
+              label="Email"
+              value={userData.email}
+              onChange={handleInputChange}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth>
+            <TextField
+              name="password"
+              label="Contraseña"
+              type="password"
+              value={userData.password}
               onChange={handleInputChange}
             />
           </FormControl>
