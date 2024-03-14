@@ -40,32 +40,21 @@ export default function UserPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       console.log('Usuario creado:', userCredential.user);
-      
-      const userId = userCredential.user.uid; //id firebase
-      const person = userCredential.user.person; //person
-      
-      const newUser = {
-        id: userId,
+      // const userId = userCredential.user.uid;
+
+      const createUser = {
         person: {
-          id: person.id,
-          name: person.name,
-          last_name: person.last_name,
-          birth_date: person.birth_date,
-          email: person.email,
-          phone_number: person.phone_number,
-          address: person.address,
-          active: person.active,
-          updated_at: person.updated_at,
-          created_at: person.created_at
-        },
-        active: userCredential.user.active,
-        updated_at: userCredential.user.updated_at,
-        created_at: userCredential.user.created_at,
-        person_id: person.id
+          name: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          phoneNumber: userData.phoneNumber,
+          address: userData.address,
+          birthDate: userData.birthDate,
+          active: userData.active
+        }
       };
 
-
-      const response = await axios.post('http://localhost:3000/api/user/', newUser);
+      await axios.post('http://localhost:3000/api/user/', createUser);
 
       console.log('Usuario enviado al servidor con éxito');
 
@@ -77,6 +66,7 @@ export default function UserPage() {
         address: '',
         birthDate: dayjs(),
         active: 1,
+        password:''
       });
       
       setCleared(false);
@@ -84,7 +74,6 @@ export default function UserPage() {
       console.error('Error al registrar usuario en Firebase:', error);
     }
 }
-
 
   React.useEffect(() => {
     let timeout;
@@ -187,7 +176,7 @@ export default function UserPage() {
             <TextField
               name="password"
               label="Contraseña"
-              type="password"
+              type='password'
               value={userData.password}
               onChange={handleInputChange}
             />
