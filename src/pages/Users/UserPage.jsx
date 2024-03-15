@@ -17,6 +17,7 @@ export default function UserPage() {
     phoneNumber: '',
     address: '',
     birthDate: dayjs(),
+    password: '',
     active: 1,
   });
 
@@ -40,9 +41,10 @@ export default function UserPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       console.log('Usuario creado:', userCredential.user);
-      // const userId = userCredential.user.uid;
+      const userId = userCredential.user.uid;
 
       const createUser = {
+        id: userId,
         person: {
           name: userData.firstName,
           lastName: userData.lastName,
@@ -55,7 +57,7 @@ export default function UserPage() {
       };
 
       await axios.post('http://localhost:3000/api/user/', createUser);
-
+      console.log(createUser.data);
       console.log('Usuario enviado al servidor con éxito');
 
       setUserData({
