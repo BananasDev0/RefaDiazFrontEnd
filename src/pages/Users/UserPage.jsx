@@ -5,8 +5,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Alert from '@mui/material/Alert';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import app from '../../services/Firebase/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../services/Firebase/firebase';
 import axios from 'axios';
 
 export default function UserPage() {
@@ -37,7 +37,6 @@ export default function UserPage() {
       
       const { email, password } = userData;
 
-      const auth = getAuth(app);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       console.log('Usuario creado:', userCredential.user);
