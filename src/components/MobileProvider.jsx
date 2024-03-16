@@ -9,7 +9,6 @@ export const useMobile = () => useContext(MobileContext);
 export const MobileProvider = ({ children }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
   return (
     <MobileContext.Provider value={{
         isMobile
