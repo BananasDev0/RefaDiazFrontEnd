@@ -10,7 +10,6 @@ export const signIn = async (email, password) => {
       password
     );
     const user = userCredential.user;
-    console.log(user)
     return user;
   } catch (error) {
     console.log('Error in auth.js/signIn :' + error);
