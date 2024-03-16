@@ -57,8 +57,6 @@ export default function UserPage() {
       };
 
       await axios.post('http://localhost:3000/api/user/', createUser);
-      console.log(createUser.data);
-      console.log('Usuario enviado al servidor con éxito');
 
       setUserData({
         firstName: '',
