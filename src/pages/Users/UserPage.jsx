@@ -8,6 +8,7 @@ import Alert from '@mui/material/Alert';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/Firebase/firebase';
 import axios from 'axios';
+import validateEmail from '../../util/EmailVerifier';
 
 export default function UserPage() {
   const [userData, setUserData] = React.useState({
@@ -18,10 +19,12 @@ export default function UserPage() {
     address: '',
     birthDate: dayjs(),
     password: '',
+    confirmPassword: '',
     active: 1,
   });
 
   const [cleared, setCleared] = React.useState(false);
+  const [passwordsMatch, setPasswordsMatch] = React.useState(true);
 
   const handleDateChange = (newValue) => {
     setUserData({ ...userData, birthDate: newValue });
@@ -32,9 +35,22 @@ export default function UserPage() {
     setUserData({ ...userData, [name]: value });
   };
 
+  const handleConfirmPasswordBlur = () => {
+    // Verificar si las contraseñas coinciden
+    if (userData.confirmPassword !== userData.password) {
+      setPasswordsMatch(false);
+    } else {
+      setPasswordsMatch(true);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
-      
+      if (!validateEmail(userData.email)) {
+        console.error('El correo electrónico no es válido.');
+        return;
+      }
+
       const { email, password } = userData;
 
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -65,14 +81,15 @@ export default function UserPage() {
         address: '',
         birthDate: dayjs(),
         active: 1,
-        password:''
+        password:'',
+        confirmPassword: ''
       });
       
       setCleared(false);
     } catch (error) {
       console.error('Error al registrar usuario en Firebase:', error);
     }
-}
+  }
 
   React.useEffect(() => {
     let timeout;
@@ -89,7 +106,7 @@ export default function UserPage() {
       <Typography variant="h4" align="center" gutterBottom>
         Registro de usuario
       </Typography>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} >
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
@@ -110,16 +127,13 @@ export default function UserPage() {
             />
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth style={{ marginTop: '1rem', width: '85%' }}>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth style={{ width: '100%' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Fecha de nacimiento"
                 value={userData.birthDate}
                 onChange={handleDateChange}
-                slotProps={{
-                  field: { clearable: true, onClear: () => setCleared(true) },
-                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -150,7 +164,7 @@ export default function UserPage() {
             />
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
               name="address"
@@ -179,6 +193,26 @@ export default function UserPage() {
               value={userData.password}
               onChange={handleInputChange}
             />
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth>
+            <TextField
+              name="confirmPassword"
+              label="Confirmar Contraseña"
+              type='password'
+              value={userData.confirmPassword}
+              onChange={handleInputChange}
+              onBlur={handleConfirmPasswordBlur}
+            />
+            {!passwordsMatch && (
+              <Alert
+                sx={{ marginTop: '0.5rem' }}
+                severity="error"
+              >
+                Las contraseñas no coinciden.
+              </Alert>
+            )}
           </FormControl>
         </Grid>
         <Grid item xs={12} style={{ textAlign: 'end' }}>
