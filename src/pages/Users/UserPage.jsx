@@ -30,6 +30,7 @@ export default function UserPage() {
     return Object.values(userData).every(value => value !== '') && arePasswordsMatching;
   };
 
+  const [alertOpen, setAlertOpen] = React.useState(false); 
   const [cleared, setCleared] = React.useState(false);
   const [passwordsMatch, setPasswordsMatch] = React.useState(true);
   const [showPasswords, setShowPasswords] = React.useState(false);
@@ -59,13 +60,12 @@ export default function UserPage() {
         return;
       }
 
-      const { email, password } = userData;
-
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
       
       console.log('Usuario creado:', userCredential.user);
-      const userId = userCredential.user.uid;
 
+      const userId = userCredential.user.uid;
+      
       const createUser = {
         id: userId,
         person: {
@@ -92,7 +92,12 @@ export default function UserPage() {
         password:'',
         confirmPassword: ''
       });
-      
+
+      setAlertOpen(true);
+      setTimeout(() => {
+        setAlertOpen(false);
+      }, 5000);
+
       setCleared(false);
     } catch (error) {
       console.error('Error al registrar usuario en Firebase:', error);
@@ -244,6 +249,14 @@ export default function UserPage() {
             <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
               Registrar
             </Button>
+            {alertOpen && (
+              <Alert
+                sx={{ position: 'absolute', bottom: 0, right: 0 }}
+                severity="success"
+              >
+                ¡Usuario creado correctamente!
+              </Alert>
+            )}
           </Grid>
         </Grid>
       </Grid>
