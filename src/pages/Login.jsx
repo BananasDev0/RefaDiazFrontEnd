@@ -4,6 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Alert, Stack } from '@mui/material';
@@ -40,7 +41,9 @@ export default function Login() {
     message: '',
     severity: 'error',
   });
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -71,16 +74,19 @@ export default function Login() {
 
 
     try {
+      setIsLoading(true);
       const validate = await signIn(email, password);
+
       if (validate) {
         navigate('/home');
-        
       } else {
         setAlert({ show: true, message: 'Usuario o Contraseña incorrecta', severity: 'error' });
       }
     } catch (error) {
       console.log(error);
       setAlert({ show: true, message: 'Servicio no disponible', severity: 'error' });
+    } finally {
+      setIsLoading(false); 
     }
 
 
@@ -142,6 +148,25 @@ export default function Login() {
           >
             Sign In
           </Button>
+
+          {isLoading && (
+            <Box
+              sx={{
+                position: 'fixed',
+                top: '0',
+                left: '0',
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                zIndex: 9999,
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          )}
 
           {alert.show && (
             <Stack sx={{ width: '100%', mb: 2 }}>
