@@ -245,7 +245,7 @@ export default function UserPage() {
               </Alert>
             )}
           </FormControl>
-          <Grid item xs={12} style={{ textAlign: 'end' }}>
+          <Grid item xs={12} style={{ textAlign: 'end', marginTop: '16px' }}>
             <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
               Registrar
             </Button>
