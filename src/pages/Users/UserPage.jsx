@@ -1,16 +1,18 @@
 import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment } from '@mui/material';
 import * as React from 'react';
-import dayjs from 'dayjs';  
+import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Alert from '@mui/material/Alert';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/Firebase/firebase';
-import axios from 'axios';
 import validateEmail from '../../util/EmailVerifier';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { createUser } from '../../services/UserService'
+import Person from '../../models/Person';
+import User from '../../models/User';
 
 export default function UserPage() {
   const [userData, setUserData] = React.useState({
@@ -30,7 +32,8 @@ export default function UserPage() {
     return Object.values(userData).every(value => value !== '') && arePasswordsMatching;
   };
 
-  const [alertOpen, setAlertOpen] = React.useState(false); 
+  const [alertOpen, setAlertOpen] = React.useState(false);
+  const [errorAlertOpen, setErrorAlertOpen] = React.useState(false);
   const [cleared, setCleared] = React.useState(false);
   const [passwordsMatch, setPasswordsMatch] = React.useState(true);
   const [showPasswords, setShowPasswords] = React.useState(false);
@@ -61,14 +64,14 @@ export default function UserPage() {
       }
 
       const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
-      
+
       console.log('Usuario creado:', userCredential.user);
 
       const userId = userCredential.user.uid;
-      
-      const createUser = {
+
+      const user = new User({
         id: userId,
-        person: {
+        person: new Person({
           name: userData.firstName,
           lastName: userData.lastName,
           email: userData.email,
@@ -76,10 +79,10 @@ export default function UserPage() {
           address: userData.address,
           birthDate: userData.birthDate,
           active: userData.active
-        }
-      };
+        })
+      })
 
-      await axios.post('http://localhost:3000/api/user/', createUser);
+      await createUser(user);
 
       setUserData({
         firstName: '',
@@ -89,7 +92,7 @@ export default function UserPage() {
         address: '',
         birthDate: dayjs(),
         active: 1,
-        password:'',
+        password: '',
         confirmPassword: ''
       });
 
@@ -100,6 +103,10 @@ export default function UserPage() {
 
       setCleared(false);
     } catch (error) {
+      setErrorAlertOpen(true);
+      setTimeout(() => {
+        setErrorAlertOpen(false);
+      }, 5000);
       console.error('Error al registrar usuario en Firebase:', error);
     }
   }
@@ -109,13 +116,13 @@ export default function UserPage() {
     if (cleared) {
       timeout = setTimeout(() => {
         setCleared(false);
-      }, 1000); 
+      }, 1000);
     }
     return () => clearTimeout(timeout);
   }, [cleared]);
 
   return (
-    <Container style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', height: '100vh'}}>
+    <Container style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', height: '100vh' }}>
       <Typography variant="h4" align="center" gutterBottom>
         Registro de usuario
       </Typography>
@@ -222,7 +229,7 @@ export default function UserPage() {
             <TextField
               name="confirmPassword"
               label="Confirmar Contraseña"
-              type={showPasswords ? 'text' : 'password'} 
+              type={showPasswords ? 'text' : 'password'}
               value={userData.confirmPassword}
               onChange={handleInputChange}
               onBlur={handleConfirmPasswordBlur}
@@ -257,8 +264,17 @@ export default function UserPage() {
                 ¡Usuario creado correctamente!
               </Alert>
             )}
+            {errorAlertOpen && (
+              <Alert
+                sx={{ position: 'absolute', bottom: 0, right: 0 }}
+                severity="error"
+              >
+                Ocurrio un error, intenta nuevamente
+              </Alert>
+            )}
           </Grid>
         </Grid>
       </Grid>
     </Container>
-  )}
+  )
+}

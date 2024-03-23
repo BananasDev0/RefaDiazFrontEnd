@@ -1,7 +1,8 @@
-import { Box, Tab, Tabs} from "@mui/material"
+import { Box, Fab, Tab, Tabs} from "@mui/material"
 import { useState } from "react";
 import { useMobile } from "../../components/MobileProvider";
 import ProductSelector from "./ProductSelector";
+import AddIcon from '@mui/icons-material/Add';
 
 
 export default function ProductsPage() {
@@ -26,7 +27,19 @@ export default function ProductsPage() {
         <Tab value="two" label="Tapas" />
         <Tab value="three" label="Ventiladores/Abanicos" />
       </Tabs>
-      <ProductSelector></ProductSelector>
+      <Box sx={{
+    height: 'calc(100vh - 250px)', // Ajusta 100px según la altura de tus otros componentes como el Toolbar y Tabs
+    overflowY: 'auto' // Esto añade desplazamiento vertical si el contenido excede la altura del Box
+  }}>
+    <ProductSelector />
+  </Box>
+      <Fab
+        color="primary"
+        aria-label="add"
+        sx={{ position: 'absolute', bottom: 16, right: 16 }}
+      >
+        <AddIcon />
+      </Fab>
     </Box>
   );
 }
