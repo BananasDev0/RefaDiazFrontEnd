@@ -3,10 +3,22 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+
+import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
+import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import PersonIcon from '@mui/icons-material/Person';
 
 export default function ElementList() {
+
+    const icons = [
+        <InventoryIcon />,
+        <MiscellaneousServicesIcon />,
+        <DirectionsCarFilledIcon />,
+        <PersonIcon />,
+    ];
+
+
     return (
         <List>
             {['Productos', 'Servicios', 'Autos', 'Proveedores'].map((text, index) => (
@@ -25,7 +37,7 @@ export default function ElementList() {
                                 justifyContent: 'center',
                             }}
                         >
-                            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                            {icons[index]}
                         </ListItemIcon>
                         <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
                     </ListItemButton>

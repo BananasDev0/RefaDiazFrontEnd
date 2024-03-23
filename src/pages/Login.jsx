@@ -9,7 +9,7 @@ import Container from '@mui/material/Container';
 import { Alert, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { signIn } from '../services/Firebase/auth';
-import Logo from '../assets/Logo_RD.png';
+import Logo from '../assets/LOGO CON CONTORNO BLANCO RD.png';
 
 function Copyright(props) {
   return (
@@ -103,7 +103,7 @@ export default function Login() {
         <img
           src={Logo}
           alt='Logotipo Refaccionaria Diaz'
-          style={{ width: 100, height: 'auto', marginBottom: 20 }}
+          style={{ width: 300, height: 'auto', marginBottom: 20 }}
         />
         <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
