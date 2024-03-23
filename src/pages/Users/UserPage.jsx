@@ -1,13 +1,18 @@
-import { FormControl, Container, Grid, Typography, Button, TextField } from '@mui/material';
+import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment } from '@mui/material';
 import * as React from 'react';
-import dayjs from 'dayjs';  
+import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Alert from '@mui/material/Alert';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/Firebase/firebase';
-import axios from 'axios';
+import validateEmail from '../../util/EmailVerifier';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { createUser } from '../../services/UserService'
+import Person from '../../models/Person';
+import User from '../../models/User';
 
 export default function UserPage() {
   const [userData, setUserData] = React.useState({
@@ -18,10 +23,20 @@ export default function UserPage() {
     address: '',
     birthDate: dayjs(),
     password: '',
+    confirmPassword: '',
     active: 1,
   });
 
+  const areAllFieldsComplete = () => {
+    const arePasswordsMatching = userData.password === userData.confirmPassword;
+    return Object.values(userData).every(value => value !== '') && arePasswordsMatching;
+  };
+
+  const [alertOpen, setAlertOpen] = React.useState(false);
+  const [errorAlertOpen, setErrorAlertOpen] = React.useState(false);
   const [cleared, setCleared] = React.useState(false);
+  const [passwordsMatch, setPasswordsMatch] = React.useState(true);
+  const [showPasswords, setShowPasswords] = React.useState(false);
 
   const handleDateChange = (newValue) => {
     setUserData({ ...userData, birthDate: newValue });
@@ -32,19 +47,31 @@ export default function UserPage() {
     setUserData({ ...userData, [name]: value });
   };
 
+  const handleConfirmPasswordBlur = () => {
+    const arePasswordsMatching = userData.confirmPassword === userData.password;
+    setPasswordsMatch(arePasswordsMatching);
+  };
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPasswords(!showPasswords);
+  };
+
   const handleSubmit = async () => {
     try {
-      
-      const { email, password } = userData;
+      if (!validateEmail(userData.email)) {
+        console.error('El correo electrónico no es válido.');
+        return;
+      }
 
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
+      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+
       console.log('Usuario creado:', userCredential.user);
+
       const userId = userCredential.user.uid;
 
-      const createUser = {
+      const user = new User({
         id: userId,
-        person: {
+        person: new Person({
           name: userData.firstName,
           lastName: userData.lastName,
           email: userData.email,
@@ -52,10 +79,10 @@ export default function UserPage() {
           address: userData.address,
           birthDate: userData.birthDate,
           active: userData.active
-        }
-      };
+        })
+      })
 
-      await axios.post('http://localhost:3000/api/user/', createUser);
+      await createUser(user);
 
       setUserData({
         firstName: '',
@@ -65,31 +92,41 @@ export default function UserPage() {
         address: '',
         birthDate: dayjs(),
         active: 1,
-        password:''
+        password: '',
+        confirmPassword: ''
       });
-      
+
+      setAlertOpen(true);
+      setTimeout(() => {
+        setAlertOpen(false);
+      }, 5000);
+
       setCleared(false);
     } catch (error) {
+      setErrorAlertOpen(true);
+      setTimeout(() => {
+        setErrorAlertOpen(false);
+      }, 5000);
       console.error('Error al registrar usuario en Firebase:', error);
     }
-}
+  }
 
   React.useEffect(() => {
     let timeout;
     if (cleared) {
       timeout = setTimeout(() => {
         setCleared(false);
-      }, 1000); 
+      }, 1000);
     }
     return () => clearTimeout(timeout);
   }, [cleared]);
 
   return (
-    <Container style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', height: '100vh'}}>
+    <Container style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', height: '100vh' }}>
       <Typography variant="h4" align="center" gutterBottom>
         Registro de usuario
       </Typography>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} >
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
@@ -110,16 +147,13 @@ export default function UserPage() {
             />
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth style={{ marginTop: '1rem', width: '85%' }}>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth style={{ width: '100%' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Fecha de nacimiento"
                 value={userData.birthDate}
                 onChange={handleDateChange}
-                slotProps={{
-                  field: { clearable: true, onClear: () => setCleared(true) },
-                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -150,7 +184,7 @@ export default function UserPage() {
             />
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
               name="address"
@@ -175,18 +209,72 @@ export default function UserPage() {
             <TextField
               name="password"
               label="Contraseña"
-              type='password'
+              type={showPasswords ? 'text' : 'password'} // Mostrar texto si showPasswords es verdadero
               value={userData.password}
               onChange={handleInputChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleTogglePasswordVisibility}>
+                      {showPasswords ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
           </FormControl>
         </Grid>
-        <Grid item xs={12} style={{ textAlign: 'end' }}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            Registrar
-          </Button>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth>
+            <TextField
+              name="confirmPassword"
+              label="Confirmar Contraseña"
+              type={showPasswords ? 'text' : 'password'}
+              value={userData.confirmPassword}
+              onChange={handleInputChange}
+              onBlur={handleConfirmPasswordBlur}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleTogglePasswordVisibility}>
+                      {showPasswords ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+            {!passwordsMatch && (
+              <Alert
+                sx={{ marginTop: '0.5rem' }}
+                severity="error"
+              >
+                Las contraseñas no coinciden.
+              </Alert>
+            )}
+          </FormControl>
+          <Grid item xs={12} style={{ textAlign: 'end', marginTop: '16px' }}>
+            <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
+              Registrar
+            </Button>
+            {alertOpen && (
+              <Alert
+                sx={{ position: 'absolute', bottom: 0, right: 0 }}
+                severity="success"
+              >
+                ¡Usuario creado correctamente!
+              </Alert>
+            )}
+            {errorAlertOpen && (
+              <Alert
+                sx={{ position: 'absolute', bottom: 0, right: 0 }}
+                severity="error"
+              >
+                Ocurrio un error, intenta nuevamente
+              </Alert>
+            )}
+          </Grid>
         </Grid>
       </Grid>
     </Container>
-  );
+  )
 }
