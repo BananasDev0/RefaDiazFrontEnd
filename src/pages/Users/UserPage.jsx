@@ -1,4 +1,4 @@
-import { FormControl, Container, Grid, Typography, Button, TextField } from '@mui/material';
+import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment } from '@mui/material';
 import * as React from 'react';
 import dayjs from 'dayjs';  
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -9,6 +9,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/Firebase/firebase';
 import axios from 'axios';
 import validateEmail from '../../util/EmailVerifier';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 export default function UserPage() {
   const [userData, setUserData] = React.useState({
@@ -23,8 +25,15 @@ export default function UserPage() {
     active: 1,
   });
 
+  const areAllFieldsComplete = () => {
+    const arePasswordsMatching = userData.password === userData.confirmPassword;
+    return Object.values(userData).every(value => value !== '') && arePasswordsMatching;
+  };
+
+  const [alertOpen, setAlertOpen] = React.useState(false); 
   const [cleared, setCleared] = React.useState(false);
   const [passwordsMatch, setPasswordsMatch] = React.useState(true);
+  const [showPasswords, setShowPasswords] = React.useState(false);
 
   const handleDateChange = (newValue) => {
     setUserData({ ...userData, birthDate: newValue });
@@ -36,12 +45,12 @@ export default function UserPage() {
   };
 
   const handleConfirmPasswordBlur = () => {
-    // Verificar si las contraseñas coinciden
-    if (userData.confirmPassword !== userData.password) {
-      setPasswordsMatch(false);
-    } else {
-      setPasswordsMatch(true);
-    }
+    const arePasswordsMatching = userData.confirmPassword === userData.password;
+    setPasswordsMatch(arePasswordsMatching);
+  };
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPasswords(!showPasswords);
   };
 
   const handleSubmit = async () => {
@@ -51,13 +60,12 @@ export default function UserPage() {
         return;
       }
 
-      const { email, password } = userData;
-
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
       
       console.log('Usuario creado:', userCredential.user);
-      const userId = userCredential.user.uid;
 
+      const userId = userCredential.user.uid;
+      
       const createUser = {
         id: userId,
         person: {
@@ -84,7 +92,12 @@ export default function UserPage() {
         password:'',
         confirmPassword: ''
       });
-      
+
+      setAlertOpen(true);
+      setTimeout(() => {
+        setAlertOpen(false);
+      }, 5000);
+
       setCleared(false);
     } catch (error) {
       console.error('Error al registrar usuario en Firebase:', error);
@@ -189,9 +202,18 @@ export default function UserPage() {
             <TextField
               name="password"
               label="Contraseña"
-              type='password'
+              type={showPasswords ? 'text' : 'password'} // Mostrar texto si showPasswords es verdadero
               value={userData.password}
               onChange={handleInputChange}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleTogglePasswordVisibility}>
+                      {showPasswords ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
           </FormControl>
         </Grid>
@@ -200,10 +222,19 @@ export default function UserPage() {
             <TextField
               name="confirmPassword"
               label="Confirmar Contraseña"
-              type='password'
+              type={showPasswords ? 'text' : 'password'} 
               value={userData.confirmPassword}
               onChange={handleInputChange}
               onBlur={handleConfirmPasswordBlur}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={handleTogglePasswordVisibility}>
+                      {showPasswords ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             {!passwordsMatch && (
               <Alert
@@ -214,13 +245,20 @@ export default function UserPage() {
               </Alert>
             )}
           </FormControl>
-        </Grid>
-        <Grid item xs={12} style={{ textAlign: 'end' }}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            Registrar
-          </Button>
+          <Grid item xs={12} style={{ textAlign: 'end', marginTop: '16px' }}>
+            <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
+              Registrar
+            </Button>
+            {alertOpen && (
+              <Alert
+                sx={{ position: 'absolute', bottom: 0, right: 0 }}
+                severity="success"
+              >
+                ¡Usuario creado correctamente!
+              </Alert>
+            )}
+          </Grid>
         </Grid>
       </Grid>
     </Container>
-  );
-}
+  )}
