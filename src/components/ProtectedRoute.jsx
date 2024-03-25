@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Navigate } from 'react-router-dom';
 import { auth } from '../services/Firebase/firebase';
+import { CircularProgress, Box } from '@mui/material';
 
 export const ProtectedRoute = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -18,7 +19,20 @@ export const ProtectedRoute = ({ children }) => {
     });
   }, []);
 
-  if (isLoading) return <div></div>; // O cualquier componente de carga
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (!isAuthenticated) return <Navigate to="/login" />;
 

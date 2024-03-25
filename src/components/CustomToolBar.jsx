@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Toolbar, IconButton, Typography, Menu, MenuItem } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import Logo from '../assets/IMAGEN SIN FONDO CIRCULO.png';
 
 export default function CustomToolBar({ handleDrawerOpen, open }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -28,9 +29,13 @@ export default function CustomToolBar({ handleDrawerOpen, open }) {
       >
         <MenuIcon />
       </IconButton>
-
+      <img
+        src={Logo}
+        alt='Logotipo Refaccionaria Diaz'
+        style={{ width: 50, height: 'auto', marginBottom: 10,marginRight:10,marginTop:10 }}
+      />
       <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-        Refa Diaz
+        Radiadorez Diaz
       </Typography>
 
       <IconButton
