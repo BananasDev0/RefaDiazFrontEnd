@@ -49,8 +49,8 @@ const BrandContainer = ({ onBrandSelect }) => {
 
   return (
     <div>
-      <BrandList title="Marcas de Automóviles" brands={automotiveBrands} onBrandSelect={onBrandSelect} />
-      <BrandList title="Marcas de Carga Pesada" brands={heavyDutyBrands} onBrandSelect={onBrandSelect} />
+      <BrandList title="Automotriz" brands={automotiveBrands} onBrandSelect={onBrandSelect} />
+      <BrandList title="Carga Pesada" brands={heavyDutyBrands} onBrandSelect={onBrandSelect} />
     </div>
   );
 };
