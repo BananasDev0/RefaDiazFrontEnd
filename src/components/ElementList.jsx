@@ -8,6 +8,7 @@ import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices
 import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import PersonIcon from '@mui/icons-material/Person';
+import MenuProducts from './MenuSections/MenuProducts';
 
 export default function ElementList() {
 
@@ -18,10 +19,11 @@ export default function ElementList() {
         <PersonIcon />,
     ];
 
+    const menuProductComponent = <MenuProducts />;
 
     return (
         <List>
-            {['Productos', 'Servicios', 'Autos', 'Proveedores'].map((text, index) => (
+            {[menuProductComponent, 'Servicios', 'Autos', 'Proveedores'].map((text, index) => (
                 <ListItem key={text} disablePadding sx={{ display: 'block' }}>
                     <ListItemButton
                         sx={{
