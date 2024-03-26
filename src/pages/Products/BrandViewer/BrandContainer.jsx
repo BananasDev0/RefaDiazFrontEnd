@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAllBrandById } from '../../../services/BrandService';
+import { filterBrandsByType, getAllBrands } from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import BrandList from './BrandList';
 
@@ -10,8 +10,11 @@ const BrandContainer = ({ onBrandSelect }) => {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const automotiveBrandsData = await getAllBrandById(1);
-        const heavyDutyBrandsData = await getAllBrandById(2);
+        const allBrands = await getAllBrands();
+        console.log("este es allbrands: ", allBrands)
+        const automotiveBrandsData = await filterBrandsByType(allBrands, 1);
+        console.log("este es filter: ", automotiveBrands)
+        const heavyDutyBrandsData = await filterBrandsByType(allBrands, 2);
 
         const automotiveBrandsWithImages = await Promise.all(automotiveBrandsData.map(async (brand) => {
           if (brand.imageUrl) {
