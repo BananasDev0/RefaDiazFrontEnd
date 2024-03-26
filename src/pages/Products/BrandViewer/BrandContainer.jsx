@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { filterBrandsByType, getAllBrands } from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import BrandList from './BrandList';
-import { Input } from '@mui/material';
+import CustomInput from '../../../components/CustomInput';
 
 const BrandContainer = ({ onBrandSelect }) => {
   const [automotiveBrands, setAutomotiveBrands] = useState([]);
@@ -72,7 +72,7 @@ const BrandContainer = ({ onBrandSelect }) => {
 
   return (
     <div>
-      <Input
+      <CustomInput
         placeholder="Buscar marcas..."
         value={searchTerm}
         onChange={handleSearchChange}
