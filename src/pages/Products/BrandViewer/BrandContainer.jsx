@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { filterBrandsByType, getAllBrands } from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import BrandList from './BrandList';
-import CustomInput from '../../../components/CustomInput';
+import { Select, MenuItem } from '@mui/material';
+import CustomInput from '../../../components/CustomInput'
 
 const BrandContainer = ({ onBrandSelect }) => {
   const [automotiveBrands, setAutomotiveBrands] = useState([]);
   const [heavyDutyBrands, setHeavyDutyBrands] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchOption, setSearchOption] = useState('marcas');
   const [filteredBrands, setFilteredBrands] = useState({ automotive: [], heavyDuty: [] });
 
   useEffect(() => {
@@ -70,13 +72,31 @@ const BrandContainer = ({ onBrandSelect }) => {
     setSearchTerm(e.target.value);
   };
 
+  const handleSearchOptionChange = (e) => {
+    setSearchOption(e.target.value);
+  };
+
   return (
     <div>
-      <CustomInput
-        placeholder="Buscar marcas..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-      />
+      <div style={{ display: 'flex', alignItems: 'center',marginTop:'10px', marginBottom: '10px' }}>
+        <Select
+          value={searchOption}
+          onChange={handleSearchOptionChange}
+          displayEmpty
+          inputProps={{ 'aria-label': 'Buscar por' }}
+          sx={{ height: '35px', marginRight: '5px' }}
+        >
+          <MenuItem value="marcas">Marcas</MenuItem>
+          <MenuItem value="radiadores">Radiadores</MenuItem>
+        </Select>
+        <div style={{ flex: 1 }}>
+          <CustomInput
+            placeholder={`Buscar ${searchOption}...`}
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </div>
+      </div>
       <BrandList title="Automotriz" brands={filteredBrands.automotive} onBrandSelect={onBrandSelect} />
       <BrandList title="Carga Pesada" brands={filteredBrands.heavyDuty} onBrandSelect={onBrandSelect} />
     </div>
