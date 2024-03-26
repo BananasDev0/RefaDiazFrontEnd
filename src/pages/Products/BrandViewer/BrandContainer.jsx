@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import { filterBrandsByType, getAllBrands } from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import BrandList from './BrandList';
+import { Input } from '@mui/material';
 
 const BrandContainer = ({ onBrandSelect }) => {
   const [automotiveBrands, setAutomotiveBrands] = useState([]);
   const [heavyDutyBrands, setHeavyDutyBrands] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredBrands, setFilteredBrands] = useState({ automotive: [], heavyDuty: [] });
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -49,10 +52,33 @@ const BrandContainer = ({ onBrandSelect }) => {
     fetchBrands();
   }, []);
 
+  useEffect(() => {
+    const filterBrands = () => {
+      const filteredAutomotiveBrands = automotiveBrands.filter(brand =>
+        brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      const filteredHeavyDutyBrands = heavyDutyBrands.filter(brand =>
+        brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredBrands({ automotive: filteredAutomotiveBrands, heavyDuty: filteredHeavyDutyBrands });
+    };
+
+    filterBrands();
+  }, [searchTerm, automotiveBrands, heavyDutyBrands]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <div>
-      <BrandList title="Automotriz" brands={automotiveBrands} onBrandSelect={onBrandSelect} />
-      <BrandList title="Carga Pesada" brands={heavyDutyBrands} onBrandSelect={onBrandSelect} />
+      <Input
+        placeholder="Buscar marcas..."
+        value={searchTerm}
+        onChange={handleSearchChange}
+      />
+      <BrandList title="Automotriz" brands={filteredBrands.automotive} onBrandSelect={onBrandSelect} />
+      <BrandList title="Carga Pesada" brands={filteredBrands.heavyDuty} onBrandSelect={onBrandSelect} />
     </div>
   );
 };
