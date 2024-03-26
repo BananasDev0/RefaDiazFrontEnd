@@ -17,4 +17,10 @@ const getAllBrands = async () => {
   }
 };
 
-export default getAllBrands;
+const filterBrandsByType = async (brands, id) => {
+
+  const filteredBrands = brands.filter(brand => brand.brandTypeId === id);
+  return filteredBrands;
+};
+
+export { getAllBrands, filterBrandsByType };

@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react';
-import getAllBrands from '../../../services/BrandService';
+import { filterBrandsByType, getAllBrands } from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
-import BrandList from './BrandList'; // Asegúrate de que la ruta sea correcta
+import BrandList from './BrandList';
 
 const BrandContainer = ({ onBrandSelect }) => {
-  const [brands, setBrands] = useState([]);
+  const [automotiveBrands, setAutomotiveBrands] = useState([]);
+  const [heavyDutyBrands, setHeavyDutyBrands] = useState([]);
 
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const brandsData = await getAllBrands();
-        const brandsWithImages = await Promise.all(brandsData.map(async (brand) => {
+        const allBrands = await getAllBrands();
+
+        const automotiveBrandsData = await filterBrandsByType(allBrands, 1);
+        const heavyDutyBrandsData = await filterBrandsByType(allBrands, 2);
+
+        const automotiveBrandsWithImages = await Promise.all(automotiveBrandsData.map(async (brand) => {
           if (brand.imageUrl) {
             const imageUrl = await getImageURLFromStorage(brand.imageUrl).catch(error => {
               console.error("Error al obtener url imagen de storage para marca:", brand.name, error);
@@ -22,7 +27,20 @@ const BrandContainer = ({ onBrandSelect }) => {
           }
         }));
 
-        setBrands(brandsWithImages);
+        const heavyDutyBrandsWithImages = await Promise.all(heavyDutyBrandsData.map(async (brand) => {
+          if (brand.imageUrl) {
+            const imageUrl = await getImageURLFromStorage(brand.imageUrl).catch(error => {
+              console.error("Error al obtener url imagen de storage para marca:", brand.name, error);
+              return ''; 
+            });
+            return { ...brand, imageUrl };
+          } else {
+            return brand;
+          }
+        }));
+
+        setAutomotiveBrands(automotiveBrandsWithImages);
+        setHeavyDutyBrands(heavyDutyBrandsWithImages);
       } catch (error) {
         console.error("Error al obtener las marcas:", error);
       }
@@ -31,7 +49,12 @@ const BrandContainer = ({ onBrandSelect }) => {
     fetchBrands();
   }, []);
 
-  return <BrandList brands={brands} onBrandSelect={onBrandSelect}/>;
+  return (
+    <div>
+      <BrandList title="Automotriz" brands={automotiveBrands} onBrandSelect={onBrandSelect} />
+      <BrandList title="Carga Pesada" brands={heavyDutyBrands} onBrandSelect={onBrandSelect} />
+    </div>
+  );
 };
 
 export default BrandContainer;
