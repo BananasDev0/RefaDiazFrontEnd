@@ -19,7 +19,7 @@ const getAllBrands = async () => {
 
 const filterBrandsByType = async (brands, id) => {
 
-  const filteredBrands = brands.filter(brand => brand.brand_type_id === id);
+  const filteredBrands = brands.filter(brand => brand.brandTypeId === id);
   return filteredBrands;
 };
 

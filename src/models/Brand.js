@@ -1,8 +1,8 @@
 export default class Brand {
-    constructor({id, name, imageUrl, brandType}) {
+    constructor({ id, name, imageUrl, brand_type_id }) {
         this.id = id;
         this.name = name;
         this.imageUrl = imageUrl;
-        this.brandType = brandType;
+        this.brandTypeId = brand_type_id; 
     }
 }
