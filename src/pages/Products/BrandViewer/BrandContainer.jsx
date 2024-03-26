@@ -11,9 +11,8 @@ const BrandContainer = ({ onBrandSelect }) => {
     const fetchBrands = async () => {
       try {
         const allBrands = await getAllBrands();
-        console.log("este es allbrands: ", allBrands)
+
         const automotiveBrandsData = await filterBrandsByType(allBrands, 1);
-        console.log("este es filter: ", automotiveBrands)
         const heavyDutyBrandsData = await filterBrandsByType(allBrands, 2);
 
         const automotiveBrandsWithImages = await Promise.all(automotiveBrandsData.map(async (brand) => {
