@@ -2,7 +2,7 @@ import { useState } from 'react';
 import BrandContainer from './BrandViewer/BrandContainer';
 import VehicleList from './VehicleList';
 import ProductSelectorNav from './ProductSelectorNav';
-import RadiatorList from './RadiatorViewer/RadiatorList';
+import RadiatorContainer from './RadiatorViewer/RadiatorContainer';
 
 
 const ProductSelector = () => {
@@ -50,7 +50,7 @@ const ProductSelector = () => {
             />
             {showBrands && <BrandContainer onBrandSelect={handleBrandSelect} />}
             {showVehicles && selectedBrand && <VehicleList brand={selectedBrand} onVehicleModelSelect={handleVehicleModelSelect}></VehicleList>}
-            {showRadiators && selectedVehicle && <RadiatorList></RadiatorList>} {/* Aquí iría el componente de lista de radiadores */}
+            {showRadiators && selectedVehicle && <RadiatorContainer></RadiatorContainer> }
         </div>
     );
 };
