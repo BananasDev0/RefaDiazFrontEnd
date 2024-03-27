@@ -6,9 +6,6 @@ const columns = [
   { field: 'name', headerName: 'Nombre', showLabel: false, valueStyle: { fontSize: '16px' } }
 ];
 
-
-
-// Componente RadiatorList
 const RadiatorList = ({ radiators, onRadiatorSelect}) => {
   console.log("radiator list: ", radiators)
   // Preparar rows para ItemsCardList

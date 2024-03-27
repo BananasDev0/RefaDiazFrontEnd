@@ -55,6 +55,7 @@ const RadiatorContainer = ({ onRadiatorSelect }) => {
           inputProps={{ 'aria-label': 'Buscar por' }}
           sx={{ height: '35px', marginRight: '5px' }}
         >
+            <MenuItem value="marcas">Marcas</MenuItem>
           <MenuItem value="radiadores">Radiadores</MenuItem>
         </Select>
         <div style={{ flex: 1 }}>
