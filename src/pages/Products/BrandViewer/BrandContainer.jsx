@@ -3,8 +3,7 @@ import { filterBrandsByType, getAllBrands } from '../../../services/BrandService
 import { getAllRadiators } from '../../../services/RadiatorService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import BrandList from './BrandList';
-import { Select, MenuItem } from '@mui/material';
-import CustomInput from '../../../components/CustomInput';
+import CustomSearchBar from '../../../components/CustomSearchBar';
 
 const BrandContainer = ({ onBrandSelect }) => {
   const [automotiveBrands, setAutomotiveBrands] = useState([]);
@@ -21,7 +20,8 @@ const BrandContainer = ({ onBrandSelect }) => {
         if (searchOption === 'marcas') {
           brandsData = await getAllBrands();
         } else if (searchOption === 'radiadores') {
-          brandsData = await getAllRadiators(searchTerm); // Pasar searchTerm como el nombre
+          brandsData = await getAllRadiators(searchTerm);
+          console.log(brandsData)
         }
 
         const automotiveBrandsData = await filterBrandsByType(brandsData, 1);
@@ -76,7 +76,8 @@ const BrandContainer = ({ onBrandSelect }) => {
   }, [searchTerm, automotiveBrands, heavyDutyBrands]);
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+    const searchTerm = e.target.value.toLowerCase(); // Convertir a minúsculas
+    setSearchTerm(searchTerm);
   };
 
   const handleSearchOptionChange = (e) => {
@@ -85,25 +86,12 @@ const BrandContainer = ({ onBrandSelect }) => {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', marginBottom: '10px' }}>
-        <Select
-          value={searchOption}
-          onChange={handleSearchOptionChange}
-          displayEmpty
-          inputProps={{ 'aria-label': 'Buscar por' }}
-          sx={{ height: '35px', marginRight: '5px' }}
-        >
-          <MenuItem value="marcas">Marcas</MenuItem>
-          <MenuItem value="radiadores">Radiadores</MenuItem>
-        </Select>
-        <div style={{ flex: 1 }}>
-          <CustomInput
-            placeholder={`Buscar ${searchOption}...`}
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-        </div>
-      </div>
+      <CustomSearchBar
+        searchOption={searchOption}
+        searchTerm={searchTerm}
+        handleSearchOptionChange={handleSearchOptionChange}
+        handleSearchChange={handleSearchChange}
+      />
       <BrandList title="Automotriz" brands={filteredBrands.automotive} onBrandSelect={onBrandSelect} />
       <BrandList title="Carga Pesada" brands={filteredBrands.heavyDuty} onBrandSelect={onBrandSelect} />
     </div>
