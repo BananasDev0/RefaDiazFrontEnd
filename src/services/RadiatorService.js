@@ -10,8 +10,8 @@ const getAllRadiators = async (name = '') => {
 
       if (response.data && Array.isArray(response.data)) {
           const radiators = response.data.map(radiatorData => {
-              const productData = radiatorData.product; // Suponiendo que 'product' está presente en 'radiatorData'
-              const product = new Product(productData); // Suponiendo que 'Product' es una clase que representa un producto
+              const productData = radiatorData.product; 
+              const product = new Product(productData); 
               return new Radiator({...radiatorData, product});
           });
           return radiators;
