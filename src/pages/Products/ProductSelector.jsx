@@ -2,7 +2,7 @@ import { useState } from 'react';
 import BrandContainer from './BrandViewer/BrandContainer';
 import VehicleList from './VehicleList';
 import ProductSelectorNav from './ProductSelectorNav';
-import RadiatorList from './RadiatorList';
+import RadiatorList from './RadiatorViewer/RadiatorList';
 
 
 const ProductSelector = () => {

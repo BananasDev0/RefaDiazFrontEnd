@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { filterBrandsByType, getAllBrands } from '../../../services/BrandService';
+import { getAllRadiators } from '../../../services/RadiatorService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import BrandList from './BrandList';
 import { Select, MenuItem } from '@mui/material';
-import CustomInput from '../../../components/CustomInput'
+import CustomInput from '../../../components/CustomInput';
 
 const BrandContainer = ({ onBrandSelect }) => {
   const [automotiveBrands, setAutomotiveBrands] = useState([]);
@@ -15,10 +16,16 @@ const BrandContainer = ({ onBrandSelect }) => {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const allBrands = await getAllBrands();
+        let brandsData = [];
 
-        const automotiveBrandsData = await filterBrandsByType(allBrands, 1);
-        const heavyDutyBrandsData = await filterBrandsByType(allBrands, 2);
+        if (searchOption === 'marcas') {
+          brandsData = await getAllBrands();
+        } else if (searchOption === 'radiadores') {
+          brandsData = await getAllRadiators(searchTerm); // Pasar searchTerm como el nombre
+        }
+
+        const automotiveBrandsData = await filterBrandsByType(brandsData, 1);
+        const heavyDutyBrandsData = await filterBrandsByType(brandsData, 2);
 
         const automotiveBrandsWithImages = await Promise.all(automotiveBrandsData.map(async (brand) => {
           if (brand.imageUrl) {
@@ -52,7 +59,7 @@ const BrandContainer = ({ onBrandSelect }) => {
     };
 
     fetchBrands();
-  }, []);
+  }, [searchOption, searchTerm]);
 
   useEffect(() => {
     const filterBrands = () => {
@@ -78,7 +85,7 @@ const BrandContainer = ({ onBrandSelect }) => {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center',marginTop:'10px', marginBottom: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', marginBottom: '10px' }}>
         <Select
           value={searchOption}
           onChange={handleSearchOptionChange}

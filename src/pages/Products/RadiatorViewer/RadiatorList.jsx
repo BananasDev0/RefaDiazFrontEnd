@@ -1,6 +1,6 @@
-import ItemsCardList from "../../components/ItemCardList";
-import {Radiator} from "../../models/Radiator";
-import {Product} from "../../models/Product";
+import ItemsCardList from "../../../components/ItemCardList";
+import Radiator from "../../../models/Radiator";
+import {Product} from "../../../models/Product";
 
 // Definición de columnas para RadiatorList
 const columns = [
