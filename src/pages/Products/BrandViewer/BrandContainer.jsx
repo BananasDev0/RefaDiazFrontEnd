@@ -4,13 +4,15 @@ import { getAllRadiators } from '../../../services/RadiatorService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import BrandList from './BrandList';
 import CustomSearchBar from '../../../components/CustomSearchBar';
+import RadiatorList from '../RadiatorViewer/RadiatorList';
 
-const BrandContainer = ({ onBrandSelect }) => {
+const BrandContainer = ({ onBrandSelect, onRadiatorSelect }) => {
   const [automotiveBrands, setAutomotiveBrands] = useState([]);
   const [heavyDutyBrands, setHeavyDutyBrands] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchOption, setSearchOption] = useState('marcas');
   const [filteredBrands, setFilteredBrands] = useState({ automotive: [], heavyDuty: [] });
+  const [radiators, setRadiators] = useState([]); 
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -20,8 +22,9 @@ const BrandContainer = ({ onBrandSelect }) => {
         if (searchOption === 'marcas') {
           brandsData = await getAllBrands();
         } else if (searchOption === 'radiadores') {
-          brandsData = await getAllRadiators(searchTerm);
-          console.log(brandsData)
+          const radiatorData = await getAllRadiators(searchTerm);
+          setRadiators(radiatorData); 
+          return; 
         }
 
         const automotiveBrandsData = await filterBrandsByType(brandsData, 1);
@@ -76,7 +79,7 @@ const BrandContainer = ({ onBrandSelect }) => {
   }, [searchTerm, automotiveBrands, heavyDutyBrands]);
 
   const handleSearchChange = (e) => {
-    const searchTerm = e.target.value.toLowerCase(); // Convertir a minúsculas
+    const searchTerm = e.target.value.toLowerCase();
     setSearchTerm(searchTerm);
   };
 
@@ -92,8 +95,14 @@ const BrandContainer = ({ onBrandSelect }) => {
         handleSearchOptionChange={handleSearchOptionChange}
         handleSearchChange={handleSearchChange}
       />
-      <BrandList title="Automotriz" brands={filteredBrands.automotive} onBrandSelect={onBrandSelect} />
-      <BrandList title="Carga Pesada" brands={filteredBrands.heavyDuty} onBrandSelect={onBrandSelect} />
+      {searchOption === 'radiadores' ? (
+        <RadiatorList radiators={radiators} onRadiatorSelect={onRadiatorSelect} />
+      ) : (
+        <>
+          <BrandList title="Automotriz" brands={filteredBrands.automotive} onBrandSelect={onBrandSelect} />
+          <BrandList title="Carga Pesada" brands={filteredBrands.heavyDuty} onBrandSelect={onBrandSelect} />
+        </>
+      )}
     </div>
   );
 };
