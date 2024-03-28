@@ -6,7 +6,7 @@ import BrandList from './BrandList';
 const BrandContainer = ({ onBrandSelect, searchTerm }) => {
   const [automotiveBrands, setAutomotiveBrands] = useState([]);
   const [heavyDutyBrands, setHeavyDutyBrands] = useState([]);
-  const [filteredBrands, setFilteredBrands] = useState({automotiveBrands: [], heavyDutyBrands: []});
+  const [filteredBrands, setFilteredBrands] = useState({ automotiveBrands: [], heavyDutyBrands: [] });
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -66,13 +66,14 @@ const BrandContainer = ({ onBrandSelect, searchTerm }) => {
       setFilteredBrands({
         automotiveBrands: filteredAutomotiveBrands, heavyDutyBrands: filteredHeavyDutyBrands
       })
-      
+
     };
 
+    setFilteredBrands({
+      automotiveBrands, heavyDutyBrands
+    })
+
     if (searchTerm) {
-      setFilteredBrands({
-        automotiveBrands, heavyDutyBrands
-      })
       filterBrands();
     }
   }, [searchTerm]);
