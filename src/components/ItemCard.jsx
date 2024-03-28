@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import { Box, CardActionArea } from '@mui/material';
 
 export const ItemCard = ({ item, columns, onClick }) => {
-  console.log(item)
     return (
       <Card sx={{ margin: 2 }}>
         <CardActionArea onClick={onClick} sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
