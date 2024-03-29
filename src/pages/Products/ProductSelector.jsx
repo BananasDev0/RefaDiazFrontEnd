@@ -20,17 +20,21 @@ const ProductSelector = () => {
     const [searchOption, setSearchOption] = useState('marcas');
 
     const handleBrandSelect = (brand) => {
+        setSearchTerm('');
         setSelectedBrand(brand);
         setCurrentScreen(Screen.VEHICLES);
     };
 
     const handleVehicleModelSelect = (vehicle) => {
+        setSearchTerm('');
         setSelectedVehicle(vehicle);
+        setSearchOption('radiadores');
         setCurrentScreen(Screen.RADIATORS);
     };
 
     const handleBackToBrands = () => {
         setCurrentScreen(Screen.BRANDS);
+        setSearchOption('marcas');
         setSelectedBrand(null);
         setSelectedVehicle(null);
     };
@@ -43,16 +47,17 @@ const ProductSelector = () => {
     const handleSearchChange = (e) => {
         const newSearchTerm = e.target.value.toLowerCase();
         setSearchTerm(newSearchTerm);
+    };
 
-        if (searchOption === 'marcas') {
+    const handleSearchOptionChange = (e) => {
+        setSelectedBrand(null);
+        setSelectedVehicle(null);
+        setSearchOption(e.target.value);
+        if (e.target.value === 'marcas') {
             setCurrentScreen(Screen.BRANDS);
         } else {
             setCurrentScreen(Screen.RADIATORS);
         }
-    };
-
-    const handleSearchOptionChange = (e) => {
-        setSearchOption(e.target.value);
     };
 
     return (
