@@ -1,24 +1,18 @@
 import { useEffect, useState } from 'react';
-import { filterBrandsByType, getAllBrands } from '../../../services/BrandService';
+import { getAllBrands } from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import BrandList from './BrandList';
 
 const BrandContainer = ({ onBrandSelect, searchTerm }) => {
-  const [automotiveBrands, setAutomotiveBrands] = useState([]);
-  const [heavyDutyBrands, setHeavyDutyBrands] = useState([]);
-  const [filteredBrands, setFilteredBrands] = useState({ automotiveBrands: [], heavyDutyBrands: [] });
+  const [brands, setBrands] = useState([]);
 
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        let brandsData = [];
+        const brandsData = await getAllBrands();
 
-        brandsData = await getAllBrands();
-
-        const automotiveBrandsData = await filterBrandsByType(brandsData, 1);
-        const heavyDutyBrandsData = await filterBrandsByType(brandsData, 2);
-
-        const automotiveBrandsWithImages = await Promise.all(automotiveBrandsData.map(async (brand) => {
+        // Obtener todas las imágenes en una sola operación y almacenarlas.
+        const brandsWithImages = await Promise.all(brandsData.map(async (brand) => {
           if (brand.imageUrl) {
             const imageUrl = await getImageURLFromStorage(brand.imageUrl).catch(error => {
               console.error("Error al obtener url imagen de storage para marca:", brand.name, error);
@@ -30,23 +24,7 @@ const BrandContainer = ({ onBrandSelect, searchTerm }) => {
           }
         }));
 
-        const heavyDutyBrandsWithImages = await Promise.all(heavyDutyBrandsData.map(async (brand) => {
-          if (brand.imageUrl) {
-            const imageUrl = await getImageURLFromStorage(brand.imageUrl).catch(error => {
-              console.error("Error al obtener url imagen de storage para marca:", brand.name, error);
-              return '';
-            });
-            return { ...brand, imageUrl };
-          } else {
-            return brand;
-          }
-        }));
-
-        setAutomotiveBrands(automotiveBrandsWithImages);
-        setHeavyDutyBrands(heavyDutyBrandsWithImages);
-        setFilteredBrands({
-          automotiveBrands: automotiveBrandsWithImages, heavyDutyBrands: heavyDutyBrandsWithImages
-        })
+        setBrands(brandsWithImages);
       } catch (error) {
         console.error("Error al obtener las marcas:", error);
       }
@@ -55,35 +33,16 @@ const BrandContainer = ({ onBrandSelect, searchTerm }) => {
     fetchBrands();
   }, []);
 
-  useEffect(() => {
-    const filterBrands = () => {
-      const filteredAutomotiveBrands = automotiveBrands.filter(brand =>
-        brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      const filteredHeavyDutyBrands = heavyDutyBrands.filter(brand =>
-        brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredBrands({
-        automotiveBrands: filteredAutomotiveBrands, heavyDutyBrands: filteredHeavyDutyBrands
-      })
-
-    };
-
-    setFilteredBrands({
-      automotiveBrands, heavyDutyBrands
-    })
-
-    if (searchTerm) {
-      filterBrands();
-    }
-  }, [searchTerm]);
+  const getFilteredBrands = (brandTypeId) => {
+    return brands
+      .filter(brand => brand.brandTypeId === brandTypeId)
+      .filter(brand => brand.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  };
 
   return (
     <div>
-      <>
-        <BrandList title="Automotriz" brands={filteredBrands.automotiveBrands} onBrandSelect={onBrandSelect} />
-        <BrandList title="Carga Pesada" brands={filteredBrands.heavyDutyBrands} onBrandSelect={onBrandSelect} />
-      </>
+      <BrandList title="Automotriz" brands={getFilteredBrands(1)} onBrandSelect={onBrandSelect} />
+      <BrandList title="Carga Pesada" brands={getFilteredBrands(2)} onBrandSelect={onBrandSelect} />
     </div>
   );
 };

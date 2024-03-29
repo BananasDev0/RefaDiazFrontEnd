@@ -5,64 +5,49 @@ import ProductSelectorNav from './ProductSelectorNav';
 import RadiatorContainer from './RadiatorViewer/RadiatorContainer';
 import CustomSearchBar from '../../components/CustomSearchBar';
 
+// Enumeración para las diferentes pantallas
+const Screen = {
+    BRANDS: 'BRANDS',
+    VEHICLES: 'VEHICLES',
+    RADIATORS: 'RADIATORS'
+};
 
 const ProductSelector = () => {
     const [selectedBrand, setSelectedBrand] = useState(null);
     const [selectedVehicle, setSelectedVehicle] = useState(null);
-    const [showBrands, setShowBrands] = useState(true);
-    const [showVehicles, setShowVehicles] = useState(false);
-    const [showRadiators, setShowRadiators] = useState(false);
-
+    const [currentScreen, setCurrentScreen] = useState(Screen.BRANDS);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchOption, setSearchOption] = useState('marcas');
 
-    const showVehiclesScreen = () => {
-        setShowVehicles(true);
-        setShowBrands(false);
-        setShowRadiators(false);
-    }
-
-    const showBrandsScreen = () => {
-        setShowVehicles(false);
-        setShowBrands(true);
-        setShowRadiators(false);
-    }
-
-    const showRadiatorsScreen = () => {
-        setShowVehicles(false);
-        setShowBrands(false);
-        setShowRadiators(true);
-    }
-
     const handleBrandSelect = (brand) => {
         setSelectedBrand(brand);
-        showVehiclesScreen();
+        setCurrentScreen(Screen.VEHICLES);
     };
 
     const handleVehicleModelSelect = (vehicle) => {
         setSelectedVehicle(vehicle);
-        showRadiatorsScreen();
+        setCurrentScreen(Screen.RADIATORS);
     };
 
     const handleBackToBrands = () => {
-        showBrandsScreen();
+        setCurrentScreen(Screen.BRANDS);
         setSelectedBrand(null);
         setSelectedVehicle(null);
     };
 
     const handleBackToVehicles = () => {
-        showVehiclesScreen();
+        setCurrentScreen(Screen.VEHICLES);
         setSelectedVehicle(null);
     };
 
     const handleSearchChange = (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        setSearchTerm(searchTerm);
+        const newSearchTerm = e.target.value.toLowerCase();
+        setSearchTerm(newSearchTerm);
 
-        if (searchOption == 'marcas') {
-            showBrandsScreen();
+        if (searchOption === 'marcas') {
+            setCurrentScreen(Screen.BRANDS);
         } else {
-            showRadiatorsScreen();
+            setCurrentScreen(Screen.RADIATORS);
         }
     };
 
@@ -84,9 +69,9 @@ const ProductSelector = () => {
                 handleSearchOptionChange={handleSearchOptionChange}
                 handleSearchChange={handleSearchChange}
             />
-            {showBrands && <BrandContainer onBrandSelect={handleBrandSelect} searchTerm={searchTerm}/>}
-            {showVehicles && <VehicleList brand={selectedBrand} onVehicleModelSelect={handleVehicleModelSelect}></VehicleList>}
-            {showRadiators && <RadiatorContainer></RadiatorContainer>}
+            {currentScreen === Screen.BRANDS && <BrandContainer onBrandSelect={handleBrandSelect} searchTerm={searchTerm}/>}
+            {currentScreen === Screen.VEHICLES && <VehicleList brand={selectedBrand} onVehicleModelSelect={handleVehicleModelSelect} />}
+            {currentScreen === Screen.RADIATORS && <RadiatorContainer />}
         </div>
     );
 };
