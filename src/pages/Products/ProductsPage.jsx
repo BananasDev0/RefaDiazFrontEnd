@@ -9,6 +9,7 @@ import ProductDialog from "./ProductDialog/ProductDialog";
 export default function ProductsPage() {
   const [value, setValue] = useState('one');
   const [openDialog, setOpenDialog] = useState(false);
+  
   const responsive = useMobile();
 
   const handleChange = (event, newValue) => {

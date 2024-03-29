@@ -1,25 +1,22 @@
 import { useEffect, useState } from 'react';
-import { filterBrandsByType, getAllBrands } from '../../../services/BrandService';
+import { getAllBrands } from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import BrandList from './BrandList';
 
-const BrandContainer = ({ onBrandSelect }) => {
-  const [automotiveBrands, setAutomotiveBrands] = useState([]);
-  const [heavyDutyBrands, setHeavyDutyBrands] = useState([]);
+const BrandContainer = ({ onBrandSelect, searchTerm }) => {
+  const [brands, setBrands] = useState([]);
 
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const allBrands = await getAllBrands();
+        const brandsData = await getAllBrands();
 
-        const automotiveBrandsData = await filterBrandsByType(allBrands, 1);
-        const heavyDutyBrandsData = await filterBrandsByType(allBrands, 2);
-
-        const automotiveBrandsWithImages = await Promise.all(automotiveBrandsData.map(async (brand) => {
+        // Obtener todas las imágenes en una sola operación y almacenarlas.
+        const brandsWithImages = await Promise.all(brandsData.map(async (brand) => {
           if (brand.imageUrl) {
             const imageUrl = await getImageURLFromStorage(brand.imageUrl).catch(error => {
               console.error("Error al obtener url imagen de storage para marca:", brand.name, error);
-              return ''; 
+              return '';
             });
             return { ...brand, imageUrl };
           } else {
@@ -27,20 +24,7 @@ const BrandContainer = ({ onBrandSelect }) => {
           }
         }));
 
-        const heavyDutyBrandsWithImages = await Promise.all(heavyDutyBrandsData.map(async (brand) => {
-          if (brand.imageUrl) {
-            const imageUrl = await getImageURLFromStorage(brand.imageUrl).catch(error => {
-              console.error("Error al obtener url imagen de storage para marca:", brand.name, error);
-              return ''; 
-            });
-            return { ...brand, imageUrl };
-          } else {
-            return brand;
-          }
-        }));
-
-        setAutomotiveBrands(automotiveBrandsWithImages);
-        setHeavyDutyBrands(heavyDutyBrandsWithImages);
+        setBrands(brandsWithImages);
       } catch (error) {
         console.error("Error al obtener las marcas:", error);
       }
@@ -49,10 +33,16 @@ const BrandContainer = ({ onBrandSelect }) => {
     fetchBrands();
   }, []);
 
+  const getFilteredBrands = (brandTypeId) => {
+    return brands
+      .filter(brand => brand.brandTypeId === brandTypeId)
+      .filter(brand => brand.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  };
+
   return (
     <div>
-      <BrandList title="Automotriz" brands={automotiveBrands} onBrandSelect={onBrandSelect} />
-      <BrandList title="Carga Pesada" brands={heavyDutyBrands} onBrandSelect={onBrandSelect} />
+      <BrandList title="Automotriz" brands={getFilteredBrands(1)} onBrandSelect={onBrandSelect} />
+      <BrandList title="Carga Pesada" brands={getFilteredBrands(2)} onBrandSelect={onBrandSelect} />
     </div>
   );
 };

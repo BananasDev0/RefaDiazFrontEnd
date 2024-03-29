@@ -2,42 +2,63 @@ import { useState } from 'react';
 import BrandContainer from './BrandViewer/BrandContainer';
 import VehicleList from './VehicleList';
 import ProductSelectorNav from './ProductSelectorNav';
-import RadiatorList from './RadiatorList';
+import RadiatorContainer from './RadiatorViewer/RadiatorContainer';
+import CustomSearchBar from '../../components/CustomSearchBar';
 
+// Enumeración para las diferentes pantallas
+const Screen = {
+    BRANDS: 'BRANDS',
+    VEHICLES: 'VEHICLES',
+    RADIATORS: 'RADIATORS'
+};
 
 const ProductSelector = () => {
     const [selectedBrand, setSelectedBrand] = useState(null);
     const [selectedVehicle, setSelectedVehicle] = useState(null);
-    const [showBrands, setShowBrands] = useState(true);
-    const [showVehicles, setShowVehicles] = useState(false);
-    const [showRadiators, setShowRadiators] = useState(false);
+    const [currentScreen, setCurrentScreen] = useState(Screen.BRANDS);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchOption, setSearchOption] = useState('marcas');
 
     const handleBrandSelect = (brand) => {
+        setSearchTerm('');
         setSelectedBrand(brand);
-        setShowBrands(false);
-        setShowVehicles(true);
-        setShowRadiators(false); // Asegurarse de que la selección de radiadores se resetee
+        setCurrentScreen(Screen.VEHICLES);
     };
 
     const handleVehicleModelSelect = (vehicle) => {
+        setSearchTerm('');
         setSelectedVehicle(vehicle);
-        setShowVehicles(false);
-        setShowRadiators(true);
+        setSearchOption('radiadores');
+        setCurrentScreen(Screen.RADIATORS);
     };
 
     const handleBackToBrands = () => {
-        setShowBrands(true);
-        setShowVehicles(false);
-        setShowRadiators(false);
+        setCurrentScreen(Screen.BRANDS);
+        setSearchOption('marcas');
         setSelectedBrand(null);
         setSelectedVehicle(null);
     };
 
     const handleBackToVehicles = () => {
-        setShowBrands(false);
-        setShowVehicles(true);
-        setShowRadiators(false);
+        setCurrentScreen(Screen.VEHICLES);
         setSelectedVehicle(null);
+    };
+
+    const handleSearchChange = (e) => {
+        const newSearchTerm = e.target.value.toLowerCase();
+        setSearchTerm(newSearchTerm);
+    };
+
+    const handleSearchOptionChange = (e) => {
+        setSearchTerm('');
+        setSelectedBrand(null);
+        setSelectedVehicle(null);
+        setSearchOption(e.target.value);
+        if (e.target.value === 'marcas') {
+            setCurrentScreen(Screen.BRANDS);
+        } else {
+            setCurrentScreen(Screen.RADIATORS);
+        }
     };
 
     return (
@@ -48,9 +69,15 @@ const ProductSelector = () => {
                 onResetBrand={handleBackToBrands}
                 onResetVehicle={handleBackToVehicles}
             />
-            {showBrands && <BrandContainer onBrandSelect={handleBrandSelect} />}
-            {showVehicles && selectedBrand && <VehicleList brand={selectedBrand} onVehicleModelSelect={handleVehicleModelSelect}></VehicleList>}
-            {showRadiators && selectedVehicle && <RadiatorList></RadiatorList>} {/* Aquí iría el componente de lista de radiadores */}
+            <CustomSearchBar
+                searchOption={searchOption}
+                searchTerm={searchTerm}
+                handleSearchOptionChange={handleSearchOptionChange}
+                handleSearchChange={handleSearchChange}
+            />
+            {currentScreen === Screen.BRANDS && <BrandContainer onBrandSelect={handleBrandSelect} searchTerm={searchTerm}/>}
+            {currentScreen === Screen.VEHICLES && <VehicleList brand={selectedBrand} onVehicleModelSelect={handleVehicleModelSelect} />}
+            {currentScreen === Screen.RADIATORS && <RadiatorContainer onRadiatorSelect={handleVehicleModelSelect} searchTerm={searchTerm} />}
         </div>
     );
 };
