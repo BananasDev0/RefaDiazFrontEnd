@@ -33,10 +33,9 @@ const RadiatorContainer = ({ onRadiatorSelect, searchTerm }) => {
     fetchRadiators();
   }, [searchTerm]);
 
-
   return (
     <div>
-      <RadiatorList title="Lista de Radiadores" radiators={radiators.filter(radiator => radiator.dpi.includes(searchTerm))} onRadiatorSelect={onRadiatorSelect} />
+      <RadiatorList title="Lista de Radiadores" radiators={radiators} onRadiatorSelect={onRadiatorSelect} />
     </div>
   );
 };

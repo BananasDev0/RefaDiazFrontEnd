@@ -71,7 +71,7 @@ const ProductSelector = () => {
             />
             {currentScreen === Screen.BRANDS && <BrandContainer onBrandSelect={handleBrandSelect} searchTerm={searchTerm}/>}
             {currentScreen === Screen.VEHICLES && <VehicleList brand={selectedBrand} onVehicleModelSelect={handleVehicleModelSelect} />}
-            {currentScreen === Screen.RADIATORS && <RadiatorContainer />}
+            {currentScreen === Screen.RADIATORS && <RadiatorContainer onRadiatorSelect={handleVehicleModelSelect} searchTerm={searchTerm} />}
         </div>
     );
 };
