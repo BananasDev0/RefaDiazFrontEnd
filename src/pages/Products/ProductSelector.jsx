@@ -50,6 +50,7 @@ const ProductSelector = () => {
     };
 
     const handleSearchOptionChange = (e) => {
+        setSearchTerm('');
         setSelectedBrand(null);
         setSelectedVehicle(null);
         setSearchOption(e.target.value);
