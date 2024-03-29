@@ -25,12 +25,5 @@ const getAllRadiators = async (name = '') => {
   }
 };
 
-  
 
-const filterBrandsByType = async (brands, id) => {
-
-  const filteredBrands = brands.filter(brand => brand.brandTypeId === id);
-  return filteredBrands;
-};
-
-export { getAllRadiators, filterBrandsByType };
+export { getAllRadiators };

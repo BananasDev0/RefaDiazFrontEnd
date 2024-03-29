@@ -7,7 +7,6 @@ const columns = [
 ];
 
 const RadiatorList = ({ radiators, onRadiatorSelect}) => {
-  console.log("radiator list: ", radiators)
   // Preparar rows para ItemsCardList
   const rows = radiators.map(radiator => ({
     id: radiator.id,
