@@ -2,11 +2,14 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { Box, CardActionArea } from '@mui/material';
+import { Box, CardActionArea, Tooltip } from '@mui/material';
 
 export const ItemCard = ({ item, columns, onClick }) => {
+  
+  
     return (
       <Card sx={{ margin: 2 }}>
+        <Tooltip title={item.name}>
         <CardActionArea onClick={onClick} sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {item.imageUrl && (
             <CardMedia
@@ -32,12 +35,16 @@ export const ItemCard = ({ item, columns, onClick }) => {
                   </Typography>
                 )}
                 <Typography sx={{ fontSize: '12px', ...(column.valueStyle || {}) }}>
-                  {item[column.field]}
+                  
+                  {/*item[column.field]*/}
+                  {column.field ==='dpi' ? item[column.field]: '' }
+                  {column.field === 'name' ? (item[column.field].length > 20 ? item[column.field].slice(0, 20) + '...' : item[column.field] ) : ''}
                 </Typography>
               </Box>
             ))}
           </CardContent>
         </CardActionArea>
+        </Tooltip>
       </Card>
     );
 };
