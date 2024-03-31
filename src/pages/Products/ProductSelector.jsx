@@ -45,7 +45,7 @@ const ProductSelector = () => {
     };
 
     const handleSearchChange = (e) => {
-        const newSearchTerm = e.target.value.toLowerCase();
+        const newSearchTerm = e.target.value;
         setSearchTerm(newSearchTerm);
     };
 
