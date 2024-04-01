@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getAllBrands } from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
+import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import BrandList from './BrandList';
 import '../../../styles/brandContainer.css';
 
@@ -34,13 +35,20 @@ const BrandContainer = ({ onBrandSelect, searchTerm, setLoading }) => {
     };
 
     fetchBrands();
-  }, []);
+  }, [setLoading]);
 
   return (
-    <div>
-      <BrandList title="Automotriz" brands={brands.filter(brand => brand.brandTypeId === 1 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
-      <BrandList title="Carga Pesada" brands={brands.filter(brand => brand.brandTypeId === 2 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
-    </div>
+    <CSSTransition
+      in={brands.length > 0} // Establece la condición para mostrar la animación
+      timeout={300} 
+      classNames="fade" 
+      unmountOnExit 
+    >
+      <div>
+        <BrandList title="Automotriz" brands={brands.filter(brand => brand.brandTypeId === 1 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
+        <BrandList title="Carga Pesada" brands={brands.filter(brand => brand.brandTypeId === 2 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
+      </div>
+    </CSSTransition>
   );
 };
 

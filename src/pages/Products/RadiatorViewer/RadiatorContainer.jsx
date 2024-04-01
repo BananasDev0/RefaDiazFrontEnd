@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getAllRadiators } from '../../../services/RadiatorService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
+import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import RadiatorList from './RadiatorList';
 import '../../../styles/brandContainer.css';
 
@@ -34,12 +35,19 @@ const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading }) => {
     };
 
     fetchRadiators();
-  }, [searchTerm]);
+  }, [searchTerm, setLoading]);
 
   return (
-    <div>
-      <RadiatorList title="Lista de Radiadores" radiators={radiators} onRadiatorSelect={onRadiatorSelect} />
-    </div>
+    <CSSTransition
+      in={radiators.length > 0} // Establece la condición para mostrar la animación
+      timeout={300} 
+      classNames="fade" 
+      unmountOnExit 
+    >
+      <div>
+        <RadiatorList title="Lista de Radiadores" radiators={radiators} onRadiatorSelect={onRadiatorSelect} />
+      </div>
+    </CSSTransition>
   );
 };
 
