@@ -1,19 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getAllBrands } from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
-import { CircularProgress } from '@mui/material';
 import BrandList from './BrandList';
+import '../../../styles/brandContainer.css';
 
-const BrandContainer = ({ onBrandSelect, searchTerm }) => {
+const BrandContainer = ({ onBrandSelect, searchTerm, setLoading }) => {
   const [brands, setBrands] = useState([]);
-  const [loading, setLoading] = useState(true); // Nuevo estado para controlar la carga
 
   useEffect(() => {
+    setLoading(true);
     const fetchBrands = async () => {
       try {
         const brandsData = await getAllBrands();
 
-        // Obtener todas las imágenes en una sola operación y almacenarlas.
         const brandsWithImages = await Promise.all(brandsData.map(async (brand) => {
           if (brand.imageUrl) {
             const imageUrl = await getImageURLFromStorage(brand.imageUrl).catch(error => {
@@ -27,10 +26,10 @@ const BrandContainer = ({ onBrandSelect, searchTerm }) => {
         }));
 
         setBrands(brandsWithImages);
-        setLoading(false); // Cambiar el estado de carga cuando los datos están cargados
+        setLoading(false);
       } catch (error) {
         console.error("Error al obtener las marcas:", error);
-        setLoading(false); // Manejar el estado de carga en caso de error
+        setLoading(false);
       }
     };
 
@@ -39,16 +38,8 @@ const BrandContainer = ({ onBrandSelect, searchTerm }) => {
 
   return (
     <div>
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
-          <CircularProgress size={40} />
-        </div>
-      ) : (
-        <>
-          <BrandList title="Automotriz" brands={brands.filter(brand => brand.brandTypeId === 1 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
-          <BrandList title="Carga Pesada" brands={brands.filter(brand => brand.brandTypeId === 2 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
-        </>
-      )}
+      <BrandList title="Automotriz" brands={brands.filter(brand => brand.brandTypeId === 1 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
+      <BrandList title="Carga Pesada" brands={brands.filter(brand => brand.brandTypeId === 2 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
     </div>
   );
 };
