@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getAllBrands } from '../../../services/BrandService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
+import { CircularProgress } from '@mui/material';
 import BrandList from './BrandList';
 
 const BrandContainer = ({ onBrandSelect, searchTerm }) => {
   const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true); // Nuevo estado para controlar la carga
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -25,24 +27,28 @@ const BrandContainer = ({ onBrandSelect, searchTerm }) => {
         }));
 
         setBrands(brandsWithImages);
+        setLoading(false); // Cambiar el estado de carga cuando los datos están cargados
       } catch (error) {
         console.error("Error al obtener las marcas:", error);
+        setLoading(false); // Manejar el estado de carga en caso de error
       }
     };
 
     fetchBrands();
   }, []);
 
-  const getFilteredBrands = (brandTypeId) => {
-    return brands
-      .filter(brand => brand.brandTypeId === brandTypeId)
-      .filter(brand => brand.name.toLowerCase().includes(searchTerm.toLowerCase()));
-  };
-
   return (
     <div>
-      <BrandList title="Automotriz" brands={getFilteredBrands(1)} onBrandSelect={onBrandSelect} />
-      <BrandList title="Carga Pesada" brands={getFilteredBrands(2)} onBrandSelect={onBrandSelect} />
+      {loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+          <CircularProgress size={40} />
+        </div>
+      ) : (
+        <>
+          <BrandList title="Automotriz" brands={brands.filter(brand => brand.brandTypeId === 1 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
+          <BrandList title="Carga Pesada" brands={brands.filter(brand => brand.brandTypeId === 2 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
+        </>
+      )}
     </div>
   );
 };

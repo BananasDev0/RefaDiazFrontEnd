@@ -5,6 +5,7 @@ import RadiatorList from './RadiatorList';
 
 const RadiatorContainer = ({ onRadiatorSelect, searchTerm }) => {
   const [radiators, setRadiators] = useState([]);
+  const [loading, setLoading] = useState(true); // Nuevo estado para controlar la carga
 
   useEffect(() => {
     const fetchRadiators = async () => {
@@ -25,8 +26,10 @@ const RadiatorContainer = ({ onRadiatorSelect, searchTerm }) => {
         }));
 
         setRadiators(radiatorsWithImages);
+        setLoading(false); // Cambiar el estado de carga cuando los datos están cargados
       } catch (error) {
         console.error("Error al obtener los radiadores:", error);
+        setLoading(false);
       }
     };
 
@@ -35,7 +38,7 @@ const RadiatorContainer = ({ onRadiatorSelect, searchTerm }) => {
 
   return (
     <div>
-      <RadiatorList title="Lista de Radiadores" radiators={radiators} onRadiatorSelect={onRadiatorSelect} />
+      <RadiatorList title="Lista de Radiadores" radiators={radiators} onRadiatorSelect={onRadiatorSelect} loading={loading} />
     </div>
   );
 };
