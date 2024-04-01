@@ -141,6 +141,7 @@ export default function Login() {
             helperText={error.password}
           />
           <Button
+            color='success'
             type='submit'
             fullWidth
             variant='contained'

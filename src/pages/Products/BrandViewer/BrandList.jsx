@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import ItemsCardList from '../../../components/ItemCardList';
 
 const columns = [
@@ -7,10 +6,6 @@ const columns = [
 
 const BrandList = ({ title, brands, onBrandSelect }) => {
   
-  useEffect(() => {
-
-  }, [brands]);
-
   return (
     <div className="brand-list-container">
       {title && <h2>{title}</h2>}
