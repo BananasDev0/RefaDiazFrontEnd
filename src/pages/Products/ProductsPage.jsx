@@ -36,7 +36,7 @@ export default function ProductsPage() {
       >
         <Tab value="one" label="Radiadores" />
         <Tab value="two" label="Tapas" />
-        <Tab value="three" label="Ventiladores/Abanicos" />
+        <Tab value="three" label="Abanicos" />
       </Tabs>
       <Box sx={{
         height: 'calc(100vh - 250px)', // Ajusta 100px según la altura de tus otros componentes como el Toolbar y Tabs
