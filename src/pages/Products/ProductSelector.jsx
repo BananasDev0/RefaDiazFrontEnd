@@ -4,7 +4,6 @@ import VehicleList from './VehicleList';
 import ProductSelectorNav from './ProductSelectorNav';
 import RadiatorContainer from './RadiatorViewer/RadiatorContainer';
 import CustomSearchBar from '../../components/CustomSearchBar';
-import { CSSTransition } from 'react-transition-group';
 import { CircularProgress } from '@mui/material';
 
 const Screen = {
@@ -19,7 +18,7 @@ const ProductSelector = () => {
   const [currentScreen, setCurrentScreen] = useState(Screen.BRANDS);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchOption, setSearchOption] = useState('marcas');
-  const [loading, setLoading] = useState(false); // Nuevo estado para el cargador
+  const [loading, setLoading] = useState(false);
 
   const handleBrandSelect = (brand) => {
     setSearchTerm('');
@@ -77,30 +76,16 @@ const ProductSelector = () => {
         handleSearchOptionChange={handleSearchOptionChange}
         handleSearchChange={handleSearchChange}
       />
-      <CSSTransition
-        in={currentScreen === Screen.BRANDS}
-        timeout={300}
-        classNames="fade"
-        unmountOnExit
-      >
-        <BrandContainer
-          onBrandSelect={handleBrandSelect}
-          searchTerm={searchTerm}
-          setLoading={setLoading} 
-        />
-      </CSSTransition>
-      <CSSTransition
-        in={currentScreen === Screen.RADIATORS}
-        timeout={300}
-        classNames="fade"
-        unmountOnExit
-      >
-        <RadiatorContainer
-          onRadiatorSelect={handleVehicleModelSelect}
-          searchTerm={searchTerm}
-          setLoading={setLoading} 
-        />
-      </CSSTransition>
+      <BrandContainer
+        onBrandSelect={handleBrandSelect}
+        searchTerm={searchTerm}
+        setLoading={setLoading} 
+      />
+      <RadiatorContainer
+        onRadiatorSelect={handleVehicleModelSelect}
+        searchTerm={searchTerm}
+        setLoading={setLoading} 
+      />
       {currentScreen === Screen.VEHICLES && (
         <VehicleList
           brand={selectedBrand}
