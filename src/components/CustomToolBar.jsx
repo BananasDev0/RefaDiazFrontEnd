@@ -3,6 +3,8 @@ import { Toolbar, IconButton, Typography, Menu, MenuItem } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Logo from '../assets/IMAGEN SIN FONDO CIRCULO.png';
+import { auth } from '../services/Firebase/firebase';
+
 
 export default function CustomToolBar({ handleDrawerOpen, open }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -13,7 +15,12 @@ export default function CustomToolBar({ handleDrawerOpen, open }) {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-  };
+    try {
+      auth.signOut();
+    } catch(error) {
+      console.log(error.message);
+    }
+  };  
 
   return (
     <Toolbar>
@@ -66,7 +73,7 @@ export default function CustomToolBar({ handleDrawerOpen, open }) {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleMenuClose}>Ver perfil</MenuItem>
+        <MenuItem>Ver perfil</MenuItem>
         <MenuItem onClick={handleMenuClose}>Cerrar sesión</MenuItem>
       </Menu>
     </Toolbar>
