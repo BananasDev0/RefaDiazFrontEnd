@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import { getAllRadiators } from '../../../services/RadiatorService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
+import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import RadiatorList from './RadiatorList';
+import '../../../styles/brandContainer.css';
 
-const RadiatorContainer = ({ onRadiatorSelect, searchTerm }) => {
+const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading }) => {
   const [radiators, setRadiators] = useState([]);
 
   useEffect(() => {
+    setLoading(true);
     const fetchRadiators = async () => {
       try {
         const radiatorsData = await getAllRadiators(searchTerm);
 
-        // Obtener todas las imágenes en una sola operación y almacenarlas.
         const radiatorsWithImages = await Promise.all(radiatorsData.map(async (radiator) => {
           if (radiator.imageUrl) {
             const imageUrl = await getImageURLFromStorage(radiator.imageUrl).catch(error => {
@@ -25,18 +27,27 @@ const RadiatorContainer = ({ onRadiatorSelect, searchTerm }) => {
         }));
 
         setRadiators(radiatorsWithImages);
+        setLoading(false);
       } catch (error) {
         console.error("Error al obtener los radiadores:", error);
+        setLoading(false);
       }
     };
 
     fetchRadiators();
-  }, [searchTerm]);
+  }, [searchTerm, setLoading]);
 
   return (
-    <div>
-      <RadiatorList title="Lista de Radiadores" radiators={radiators} onRadiatorSelect={onRadiatorSelect} />
-    </div>
+    <CSSTransition
+      in={radiators.length > 0} // Establece la condición para mostrar la animación
+      timeout={300} 
+      classNames="fade" 
+      unmountOnExit 
+    >
+      <div>
+        <RadiatorList title="Lista de Radiadores" radiators={radiators} onRadiatorSelect={onRadiatorSelect} />
+      </div>
+    </CSSTransition>
   );
 };
 
