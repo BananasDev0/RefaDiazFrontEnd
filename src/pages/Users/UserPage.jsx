@@ -13,7 +13,6 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { createUser } from '../../services/UserService'
 import Person from '../../models/Person';
 import User from '../../models/User';
-import Role from '../../models/Role';
 
 export default function UserPage() {
   const [userData, setUserData] = React.useState({
@@ -26,8 +25,9 @@ export default function UserPage() {
     password: '',
     confirmPassword: '',
     active: 1,
-    role: ''
+    role_id: null
   });
+  
 
   const areAllFieldsComplete = () => {
     const arePasswordsMatching = userData.password === userData.confirmPassword;
@@ -57,6 +57,7 @@ export default function UserPage() {
   const handleTogglePasswordVisibility = () => {
     setShowPasswords(!showPasswords);
   };
+  
 
   const handleSubmit = async () => {
     try {
@@ -82,10 +83,7 @@ export default function UserPage() {
           birthDate: userData.birthDate,
           active: userData.active
         }),
-        role: new Role({
-          id: userData.role === 'Administrador' ? 1 : 2,
-          description: userData.role
-        })
+        role_id: userData.role_id
       });
 
       await createUser(user);
@@ -263,17 +261,16 @@ export default function UserPage() {
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <Select
-              value={userData.role}
-              onChange={handleInputChange}
-              name="role"
-              displayEmpty
-              fullWidth
-            >
+                value={userData.role_id} // Cambia 'role' a 'role_id'
+                onChange={handleInputChange}
+                name="role_id" // Cambia 'role' a 'role_id'
+                fullWidth
+              >
               <MenuItem value="" disabled>
                 Seleccione un rol
               </MenuItem>
-              <MenuItem value="Administrador">Administrador</MenuItem>
-              <MenuItem value="Empleado">Empleado</MenuItem>
+              <MenuItem value="1">Administrador</MenuItem>
+              <MenuItem value="2">Empleado</MenuItem>
             </Select>
           </FormControl>
         </Grid>

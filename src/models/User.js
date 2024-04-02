@@ -1,7 +1,7 @@
 export default class User {
-    constructor({ id, person, role }) {
+    constructor({ id, person, role_id }) {
         this.id = id;
         this.person = person;
-        this.role = role;
+        this.role_id = role_id;
     }
 }
