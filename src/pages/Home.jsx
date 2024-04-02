@@ -33,10 +33,6 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 
-
-
-
-
 export default function Home() {
 
   const [open, setOpen] = React.useState(false);
