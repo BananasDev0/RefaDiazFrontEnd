@@ -1,4 +1,4 @@
-import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment } from '@mui/material';
+import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment, Select, MenuItem, InputLabel } from '@mui/material';
 import * as React from 'react';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -25,7 +25,9 @@ export default function UserPage() {
     password: '',
     confirmPassword: '',
     active: 1,
+    role_id: ''
   });
+  
 
   const areAllFieldsComplete = () => {
     const arePasswordsMatching = userData.password === userData.confirmPassword;
@@ -55,6 +57,7 @@ export default function UserPage() {
   const handleTogglePasswordVisibility = () => {
     setShowPasswords(!showPasswords);
   };
+  
 
   const handleSubmit = async () => {
     try {
@@ -79,8 +82,9 @@ export default function UserPage() {
           address: userData.address,
           birthDate: userData.birthDate,
           active: userData.active
-        })
-      })
+        }),
+        role_id: userData.role_id
+      });
 
       await createUser(user);
 
@@ -93,7 +97,8 @@ export default function UserPage() {
         birthDate: dayjs(),
         active: 1,
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        role_id: ''
       });
 
       setAlertOpen(true);
@@ -109,7 +114,7 @@ export default function UserPage() {
       }, 5000);
       console.error('Error al registrar usuario en Firebase:', error);
     }
-  }
+  };
 
   React.useEffect(() => {
     let timeout;
@@ -252,6 +257,23 @@ export default function UserPage() {
               </Alert>
             )}
           </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <FormControl fullWidth>
+            <InputLabel id="label">Selecciona Rol</InputLabel>
+            <Select
+              value={userData.role_id}
+              onChange={handleInputChange}
+              label="Seleccione una opcion"
+              name="role_id"
+              fullWidth
+            > 
+              <MenuItem value="1">Administrador</MenuItem>
+              <MenuItem value="2">Empleado</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12}>
           <Grid item xs={12} style={{ textAlign: 'end', marginTop: '16px' }}>
             <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
               Registrar
@@ -269,7 +291,7 @@ export default function UserPage() {
                 sx={{ position: 'absolute', bottom: 0, right: 0 }}
                 severity="error"
               >
-                Ocurrio un error, intenta nuevamente
+                Ocurrió un error, inténtalo nuevamente
               </Alert>
             )}
           </Grid>
