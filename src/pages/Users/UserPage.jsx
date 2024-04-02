@@ -1,4 +1,4 @@
-import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment, Select, MenuItem } from '@mui/material';
+import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment, Select, MenuItem, InputLabel } from '@mui/material';
 import * as React from 'react';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -25,7 +25,7 @@ export default function UserPage() {
     password: '',
     confirmPassword: '',
     active: 1,
-    role_id: null
+    role_id: ''
   });
   
 
@@ -98,7 +98,7 @@ export default function UserPage() {
         active: 1,
         password: '',
         confirmPassword: '',
-        role: ''
+        role_id: ''
       });
 
       setAlertOpen(true);
@@ -260,15 +260,14 @@ export default function UserPage() {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
+            <InputLabel id="label">Selecciona una opcion</InputLabel>
             <Select
-                value={userData.role_id} // Cambia 'role' a 'role_id'
-                onChange={handleInputChange}
-                name="role_id" // Cambia 'role' a 'role_id'
-                fullWidth
-              >
-              <MenuItem value="" disabled>
-                Seleccione un rol
-              </MenuItem>
+              value={userData.role_id}
+              onChange={handleInputChange}
+              label="Seleccione una opcion"
+              name="role_id"
+              fullWidth
+            > 
               <MenuItem value="1">Administrador</MenuItem>
               <MenuItem value="2">Empleado</MenuItem>
             </Select>
