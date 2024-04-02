@@ -15,12 +15,17 @@ export default function CustomToolBar({ handleDrawerOpen, open }) {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    
+  };  
+
+  const handleLogOut = () => {
+    handleMenuClose();
     try {
       auth.signOut();
     } catch(error) {
       console.log(error.message);
     }
-  };  
+  }
 
   return (
     <Toolbar>
@@ -74,7 +79,7 @@ export default function CustomToolBar({ handleDrawerOpen, open }) {
         onClose={handleMenuClose}
       >
         <MenuItem>Ver perfil</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Cerrar sesión</MenuItem>
+        <MenuItem onClick={handleLogOut}>Cerrar sesión</MenuItem>
       </Menu>
     </Toolbar>
   );
