@@ -260,7 +260,7 @@ export default function UserPage() {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <InputLabel id="label">Selecciona una opcion</InputLabel>
+            <InputLabel id="label">Selecciona Rol</InputLabel>
             <Select
               value={userData.role_id}
               onChange={handleInputChange}
