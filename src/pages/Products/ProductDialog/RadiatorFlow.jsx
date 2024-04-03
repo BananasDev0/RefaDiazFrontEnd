@@ -1,4 +1,5 @@
 import RadiatorForm from '../Forms/RadiatorForm';
+import PriceManager from './PriceManager';
 import ProductDetail from './ProductDetail';
 
 const RadiatorFlow = (props) => {
@@ -11,7 +12,7 @@ const RadiatorFlow = (props) => {
             break;
         // case 1, case 2, etc., can be added here for additional steps
         default:
-            ComponentToRender = <div>Step not found</div>;
+            ComponentToRender = <PriceManager/>;
     }
 
     return (
