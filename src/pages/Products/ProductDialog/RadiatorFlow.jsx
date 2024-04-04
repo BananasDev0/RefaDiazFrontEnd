@@ -1,6 +1,6 @@
 import RadiatorForm from '../Forms/RadiatorForm';
-import PriceManager from './PriceManager';
-import ProductDetail from './ProductDetail';
+import ProductBasicInfo from './ProductBasicInfo';
+import ProductDetails from './ProductDetails';
 
 const RadiatorFlow = (props) => {
     let ComponentToRender = null;
@@ -8,11 +8,11 @@ const RadiatorFlow = (props) => {
     // Using switch to determine which component to render based on props.index
     switch (props.index) {
         case 0:
-            ComponentToRender = <ProductDetail ProductForm={RadiatorForm} {...props}/>;
+            ComponentToRender = <ProductBasicInfo ProductForm={RadiatorForm} {...props}/>;
             break;
         // case 1, case 2, etc., can be added here for additional steps
         default:
-            ComponentToRender = <PriceManager/>;
+            ComponentToRender = <ProductDetails/>;
     }
 
     return (

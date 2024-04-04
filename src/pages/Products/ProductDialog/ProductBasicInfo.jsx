@@ -1,7 +1,7 @@
 import { Box, Grid, FormControl, InputLabel, Select, MenuItem, Typography } from "@mui/material";
 import ImageUpload from "./ImageUpload";
 
-const ProductDetail = ({ productTypeValue, onProductTypeChange, ProductForm }) => {
+const ProductBasicInfo = ({ productTypeValue, onProductTypeChange, ProductForm }) => {
 
     const handleProductTypeChange = (event) => {
         onProductTypeChange(event.target.value);
@@ -48,4 +48,4 @@ const ProductDetail = ({ productTypeValue, onProductTypeChange, ProductForm }) =
     );
 };
 
-export default ProductDetail;
+export default ProductBasicInfo;
