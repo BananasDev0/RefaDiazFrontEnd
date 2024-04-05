@@ -1,17 +1,25 @@
-
-import { Dialog, Button, AppBar, Toolbar, IconButton, Typography} from "@mui/material";
-import Slide from '@mui/material/Slide';
-import React from "react";
+import React, { useState } from 'react';
+import { Dialog, Button, AppBar, Toolbar, IconButton, Typography, Slide } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import ProductDialogContent from "./DialogContent";
+import RadiatorFlow from './RadiatorFlow';
 
-const Transition = React.forwardRef(function Transition(props,
-    ref
-) {
+const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const totalSteps = 3; // Asumiendo 3 pasos para el ejemplo
+
 const ProductDialog = ({ open, onClose }) => {
+    const [productType, setProductType] = useState('');
+    const [activeStep, setActiveStep] = useState(0);
+
+    const handleNext = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => Math.max(prevActiveStep - 1, 0));
+    };
 
     return (
         <Dialog
@@ -34,13 +42,26 @@ const ProductDialog = ({ open, onClose }) => {
                     <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                         Agregar Producto
                     </Typography>
-                    <Button autoFocus color="inherit" onClick={onClose}>
-                        Guardar
-                    </Button>
+                    {activeStep > 0 && (
+                        <Button color="inherit" onClick={handleBack}>
+                            Atrás
+                        </Button>
+                    )}
+                    {activeStep < totalSteps - 1 ? (
+                        <Button autoFocus color="inherit" onClick={handleNext}>
+                            Siguiente
+                        </Button>
+                    ) : (
+                        <Button autoFocus color="inherit" onClick={() => {
+                            onClose(); // Posiblemente quieras manejar la lógica de guardar antes de cerrar
+                            console.log(productType);
+                        }}>
+                            Guardar
+                        </Button>
+                    )}
                 </Toolbar>
             </AppBar>
-            <ProductDialogContent/>
-
+            <RadiatorFlow onProductTypeChange={setProductType} productTypeValue={productType} index={activeStep}/>
         </Dialog>
     );
 };
