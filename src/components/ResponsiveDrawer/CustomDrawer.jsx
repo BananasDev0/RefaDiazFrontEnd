@@ -2,8 +2,10 @@ import { styled } from '@mui/material/styles';
 import MuiDrawer from '@mui/material/Drawer';
 import { openedMixin, closedMixin } from '../../styles/utils/drawerFunctions';
 import DrawerHeader from '../DrawerHeader';
-import { Divider } from '@mui/material';
+import { Divider, Typography } from '@mui/material';
 import ElementList from '../ElementList';
+import ElementListAdmin from '../ElementListAdmin';
+
 
 const drawerWidth = 240;
 
@@ -24,12 +26,15 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-const CustomDrawer = ({ open, handleDrawerClose }) => { // Agrega handleDrawerClose como una prop
+const CustomDrawer = ({ open, handleDrawerClose,setComponent }) => { // Agrega handleDrawerClose como una prop
   return (
     <Drawer variant="permanent" open={open}>
       <DrawerHeader handleDrawerClose={handleDrawerClose} />
       <Divider />
-      <ElementList />
+      <ElementList setComponent = {setComponent}/>
+      <Divider />
+      
+      <ElementListAdmin setComponent = {setComponent}/>
       <Divider />
     </Drawer>
   );

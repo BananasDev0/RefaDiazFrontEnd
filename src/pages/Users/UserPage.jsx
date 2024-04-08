@@ -127,7 +127,7 @@ export default function UserPage() {
   }, [cleared]);
 
   return (
-    <Container style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', height: '100vh' }}>
+    <Container style={{ display: 'flex', flexDirection: 'column', height: '100vh',marginTop:'10vh' }}>
       <Typography variant="h4" align="center" gutterBottom>
         Registro de usuario
       </Typography>

@@ -2,10 +2,11 @@ import DrawerHeader from '../DrawerHeader';
 import { Divider } from '@mui/material';
 import ElementList from '../ElementList';
 import Drawer from '@mui/material/Drawer';
+import ElementListAdmin from '../ElementListAdmin';
 
 const drawerWidth = 240;
 
-const MobileDrawer = ({ open, handleDrawerClose }) => { // Agrega handleDrawerClose como una prop
+const MobileDrawer = ({ open, handleDrawerClose,setComponent }) => { // Agrega handleDrawerClose como una prop
   return (
     <Drawer 
     variant="temporary"
@@ -20,9 +21,9 @@ const MobileDrawer = ({ open, handleDrawerClose }) => { // Agrega handleDrawerCl
     }}>
       <DrawerHeader handleDrawerClose={handleDrawerClose} />
       <Divider />
-      <ElementList />
+      <ElementList setComponent= {setComponent}/>
       <Divider />
-      <ElementList />
+      <ElementListAdmin setComponent={setComponent}/>
     </Drawer>
   );
 };
