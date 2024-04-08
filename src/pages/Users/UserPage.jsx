@@ -25,7 +25,7 @@ export default function UserPage() {
     password: '',
     confirmPassword: '',
     active: 1,
-    role_id: ''
+    roleId: ''
   });
   
 
@@ -83,7 +83,7 @@ export default function UserPage() {
           birthDate: userData.birthDate,
           active: userData.active
         }),
-        role_id: userData.role_id
+        roleId: userData.roleId
       });
 
       await createUser(user);
@@ -262,10 +262,10 @@ export default function UserPage() {
           <FormControl fullWidth>
             <InputLabel id="label">Selecciona Rol</InputLabel>
             <Select
-              value={userData.role_id}
+              value={userData.roleId}
               onChange={handleInputChange}
               label="Seleccione una opcion"
-              name="role_id"
+              name="roleId"
               fullWidth
             > 
               <MenuItem value="1">Administrador</MenuItem>

@@ -1,5 +1,6 @@
 import { signInWithEmailAndPassword} from 'firebase/auth';
 import { auth } from './firebase';
+import { getUser } from '../UserService';
 
 
 export const signIn = async (email, password) => {
@@ -10,19 +11,12 @@ export const signIn = async (email, password) => {
       email,
       password
     );
-    const user = userCredential.user;
+
+    const user = await getUser(userCredential.user.uid);
 
     if (user) {
-      const userData = {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        phoneNumber: user.phoneNumber,
-        photoURL: user.photoURL,
-
-      }
-      const token = user.accessToken;
-      const userDataString = JSON.stringify(userData);
+      const token = userCredential.user.accessToken;
+      const userDataString = JSON.stringify(user);
       const userTokenString = JSON.stringify(token);
 
       localStorage.setItem("user", userDataString);

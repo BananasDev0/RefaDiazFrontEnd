@@ -16,3 +16,19 @@ export const createUser = async (userData) => {
     return null;
   }
 };
+
+export const getUser = async (id) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_REFA_BASE_PATH}/user/${id}`);
+
+    if (response.data) {
+      return new User(response.data);
+    } else {
+      console.error('No se recibieron datos para el usuario', response);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error al recibir usuario', error);
+    return null;
+  }
+};

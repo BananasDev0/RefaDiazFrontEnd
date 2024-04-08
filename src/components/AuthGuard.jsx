@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { auth } from '../services/Firebase/firebase';
 import { CircularProgress, Box } from '@mui/material';
 
-export const ProtectedRoute = ({ children }) => {
+export const AuthGuard = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
