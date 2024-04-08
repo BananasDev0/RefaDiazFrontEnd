@@ -55,7 +55,6 @@ const CustomDrawer = ({ open, handleDrawerClose,setComponent }) => { // Agrega h
       <ElementList setComponent = {setComponent} open={open} menuItems={mainMenus}/>
       <Divider />
       <ElementList setComponent = {setComponent} open={open} menuItems={adminMenus}/>
-      <Divider />
     </Drawer>
   );
 };
