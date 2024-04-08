@@ -4,27 +4,19 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
-import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
-import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import PersonIcon from '@mui/icons-material/Person';
 
-import ProductsPage from '../pages/Products/ProductsPage.jsx';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 
-export default function ElementList({setComponent}) {
+import UserPage from '../pages/Users/UserPage.jsx'
+
+export default function ElementListAdmin({setComponent}) {
 
     const icons = [
-        <InventoryIcon />,
-        <MiscellaneousServicesIcon />,
-        <DirectionsCarFilledIcon />,
-        <PersonIcon />,
+        <ManageAccountsIcon />,
+        
     ];
-
     const components = [
-        <ProductsPage />,
-        <ProductsPage />,
-        <ProductsPage />,
-        <ProductsPage />
+        <UserPage/>
     ];
 
     const handleItemClick = (tab) => {
@@ -33,7 +25,7 @@ export default function ElementList({setComponent}) {
 
     return (
         <List>
-            {['Productos', 'Servicios', 'Autos', 'Proveedores'].map((text, index) => (
+            {['Usuarios'].map((text, index) => (
                 <ListItem key={text} disablePadding sx={{ display: 'block' }} onClick={() => handleItemClick(index)}>
                     <ListItemButton
                         sx={{

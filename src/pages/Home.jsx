@@ -8,6 +8,7 @@ import ProductsPage from './Products/ProductsPage';
 import ResponsiveDrawer from '../components/ResponsiveDrawer/ResponsiveDrawer';
 import { MobileProvider } from '../components/MobileProvider';
 
+
 const drawerWidth = 240;
 
 const ContentHeader = styled('div')(({ theme }) => ({
@@ -36,6 +37,8 @@ const AppBar = styled(MuiAppBar, {
 export default function Home() {
 
   const [open, setOpen] = React.useState(false);
+  
+  const [selectedComponent, setSelectedComponent] = React.useState(<ProductsPage />); 
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -45,7 +48,9 @@ export default function Home() {
     setOpen(false);
   };
 
-  
+  const handleComponentChange = (component) => {
+    setSelectedComponent(component); // Actualiza el componente seleccionado
+  };
 
   return (
     <MobileProvider>
@@ -57,13 +62,14 @@ export default function Home() {
           
         </AppBar>
         {/* nuevo componente */}
-        <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} />
+        <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} setComponent={handleComponentChange}  />
 
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <ContentHeader />
           {/* aca va la page*/}
 
-          <ProductsPage />
+          {selectedComponent}
+          
         </Box>
       </Box>
     </MobileProvider>
