@@ -2,7 +2,7 @@ import DrawerHeader from '../DrawerHeader';
 import { Divider } from '@mui/material';
 import ElementList from '../ElementList';
 import Drawer from '@mui/material/Drawer';
-import ElementListAdmin from '../ElementListAdmin';
+import { adminMenus, mainMenus } from './menus';
 
 const drawerWidth = 240;
 
@@ -21,9 +21,9 @@ const MobileDrawer = ({ open, handleDrawerClose,setComponent }) => { // Agrega h
     }}>
       <DrawerHeader handleDrawerClose={handleDrawerClose} />
       <Divider />
-      <ElementList setComponent= {setComponent}/>
+      <ElementList setComponent = {setComponent} open={open} menuItems={mainMenus}/>
       <Divider />
-      <ElementListAdmin setComponent={setComponent}/>
+      <ElementList setComponent = {setComponent} open={open} menuItems={adminMenus}/>
     </Drawer>
   );
 };
