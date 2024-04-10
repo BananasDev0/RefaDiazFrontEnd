@@ -7,12 +7,13 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { ROLES } from '../../util/userConstants';
 import UserPage from '../../pages/Users/UserPage';
 import ProductsPage from '../../pages/Products/ProductsPage';
+import ProviderPage from '../../pages/Providers/ProviderPage';
 
 const mainMenus = [
     { text: 'Productos', icon: <InventoryIcon />, roles: [ROLES.ADMIN, ROLES.EMPLOYEE], component: <ProductsPage /> },
     { text: 'Servicios', icon: <MiscellaneousServicesIcon />, roles: [ROLES.ADMIN, ROLES.EMPLOYEE] },
     { text: 'Autos', icon: <DirectionsCarFilledIcon />, roles: [ROLES.ADMIN, ROLES.EMPLOYEE] },
-    { text: 'Proveedores', icon: <PersonIcon />, roles: [ROLES.ADMIN, ROLES.EMPLOYEE] },
+    { text: 'Proveedores', icon: <PersonIcon />, roles: [ROLES.ADMIN, ROLES.EMPLOYEE], component: <ProviderPage /> },
 ];
 
 const adminMenus = [
