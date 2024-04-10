@@ -1,4 +1,4 @@
-import { Box, Tab, Tabs, Menu, MenuItem, SpeedDial, SpeedDialAction, SpeedDialIcon, Zoom } from "@mui/material";
+import { Box, Tab, Tabs, Menu, MenuItem, SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 import { useState } from "react";
 import { useMobile } from "../../components/MobileProvider";
 import ProductSelector from "./ProductSelector";
@@ -13,7 +13,7 @@ export default function ProductsPage() {
   const [openProviderDialog, setOpenProviderDialog] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openSpeedDial, setOpenSpeedDial] = useState(false);
-  const [zoomIn, setZoomIn] = useState(true); // Estado para controlar el zoom
+
 
   const responsive = useMobile();
 
@@ -37,10 +37,6 @@ export default function ProductsPage() {
     setOpenProviderDialog(false);
   };
 
-  const handleOpenMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
   const handleSpeedDialOpen = () => {
     setOpenSpeedDial(true);
   };
@@ -56,7 +52,6 @@ export default function ProductsPage() {
   ];
 
   return (
-    <Zoom in={zoomIn} timeout={500}>
       <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
         <Tabs
           value={value}
@@ -112,6 +107,5 @@ export default function ProductsPage() {
         <ProductDialog open={openProductDialog} onClose={handleCloseProductDialog} />
         <ProviderDialog open={openProviderDialog} onClose={handleCloseProviderDialog} />
       </Box>
-    </Zoom>
   );
 }
