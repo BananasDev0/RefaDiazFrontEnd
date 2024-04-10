@@ -1,27 +1,41 @@
-import { Box, Fab, Tab, Tabs } from "@mui/material"
+import { Box, Fab, Tab, Tabs, Menu, MenuItem, Zoom } from "@mui/material";
 import { useState } from "react";
 import { useMobile } from "../../components/MobileProvider";
 import ProductSelector from "./ProductSelector";
 import AddIcon from '@mui/icons-material/Add';
 import ProductDialog from "./ProductDialog/ProductDialog";
-
+import ProviderDialog from "../Providers/ProviderDialog";
 
 export default function ProductsPage() {
   const [value, setValue] = useState('one');
-  const [openDialog, setOpenDialog] = useState(false);
-  
+  const [openProductDialog, setOpenProductDialog] = useState(false);
+  const [openProviderDialog, setOpenProviderDialog] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
   const responsive = useMobile();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
+  const handleOpenProviderDialog = () => {
+    setOpenProviderDialog(true);
+  }
+
+  const handleOpenProductDialog = () => {
+    setOpenProductDialog(true);
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleCloseProductDialog = () => {
+    setOpenProductDialog(false);
+  };
+
+  const handleCloseProviderDialog = () => {
+    setOpenProviderDialog(false);
+  }
+
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
   return (
@@ -39,20 +53,36 @@ export default function ProductsPage() {
         <Tab value="three" label="Abanicos" />
       </Tabs>
       <Box sx={{
-        height: 'calc(100vh - 250px)', // Ajusta 100px según la altura de tus otros componentes como el Toolbar y Tabs
-        overflowY: 'auto' // Esto añade desplazamiento vertical si el contenido excede la altura del Box
+        height: 'calc(100vh - 250px)',
+        overflowY: 'auto'
       }}>
         <ProductSelector />
       </Box>
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{ position: 'absolute', bottom: 16, right: 16 }}
-        onClick={handleOpenDialog}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
       >
-        <AddIcon />
-      </Fab>
-      <ProductDialog open={openDialog} onClose={handleCloseDialog} />
+        <MenuItem onClick={handleOpenProductDialog}>
+          Agregar Radiador
+        </MenuItem>
+        <MenuItem onClick={handleOpenProviderDialog}>
+          Agregar Proveedor
+        </MenuItem>
+        {/* Agrega más elementos MenuItem según sea necesario */}
+      </Menu>
+      <Zoom in={true} timeout={500}>
+        <Fab
+          color="primary"
+          aria-label="add"
+          sx={{ position: 'absolute', bottom: 16, right: 16 }}
+          onClick={handleOpenMenu}
+        >
+          <AddIcon />
+        </Fab>
+      </Zoom>
+      <ProductDialog open={openProductDialog} onClose={handleCloseProductDialog} />
+      <ProviderDialog open={openProviderDialog} onClose={handleCloseProviderDialog} />
     </Box>
   );
 }
