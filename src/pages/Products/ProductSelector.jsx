@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import BrandContainer from './BrandViewer/BrandContainer';
 import VehicleList from './VehicleList';
 import ProductSelectorNav from './ProductSelectorNav';
 import RadiatorContainer from './RadiatorViewer/RadiatorContainer';
 import CustomSearchBar from '../../components/CustomSearchBar';
-import { CircularProgress } from '@mui/material';
 
 const Screen = {
     BRANDS: 'BRANDS',
@@ -63,7 +64,7 @@ const ProductSelector = () => {
     };
 
     return (
-        <div>
+        <>
             <ProductSelectorNav
                 selectedBrand={selectedBrand}
                 selectedVehicle={selectedVehicle}
@@ -76,16 +77,19 @@ const ProductSelector = () => {
                 handleSearchOptionChange={handleSearchOptionChange}
                 handleSearchChange={handleSearchChange}
             />
-            {currentScreen === Screen.BRANDS && <BrandContainer onBrandSelect={handleBrandSelect} searchTerm={searchTerm} setLoading={setLoading}/>}
-            {currentScreen === Screen.VEHICLES && <VehicleList brand={selectedBrand} onVehicleModelSelect={handleVehicleModelSelect} setLoading={setLoading}/>}
-            {currentScreen === Screen.RADIATORS && <RadiatorContainer onRadiatorSelect={handleVehicleModelSelect} searchTerm={searchTerm} setLoading={setLoading}/>}
 
-            {loading && (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
-                    <CircularProgress size={40} />
-                </div>
-            )}
-        </div>
+            <Box sx={{ height: 'calc(100vh - 320px)', overflowY: 'auto' }}>
+                {currentScreen === Screen.BRANDS && <BrandContainer onBrandSelect={handleBrandSelect} searchTerm={searchTerm} setLoading={setLoading}/>}
+                {currentScreen === Screen.VEHICLES && <VehicleList brand={selectedBrand} onVehicleModelSelect={handleVehicleModelSelect} setLoading={setLoading}/>}
+                {currentScreen === Screen.RADIATORS && <RadiatorContainer onRadiatorSelect={handleVehicleModelSelect} searchTerm={searchTerm} setLoading={setLoading}/>}
+
+                {loading && (
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+                        <CircularProgress size={40} />
+                    </div>
+                )}
+            </Box>
+        </>
     );
 };
 
