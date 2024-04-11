@@ -12,7 +12,6 @@ export default function ProductsPage() {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
-    const [selectedCell, setSelectedCell] = useState(null);
 
     const responsive = useMobile();
 
@@ -40,24 +39,18 @@ export default function ProductsPage() {
         setOpenCommentsModal(false);
     }
 
-    const handleRowClick = (row) => {
+
+    const handleCellClick = (row) => {
         setSelectedRow(row);
         if (responsive.isMobile) {
             handleOpenCommentsModal();
         }
     }
 
-    const handleCellClick = (row) => {
-        setSelectedCell(row);
-        if (responsive.isMobile) {
-            handleRowClick(row);
-        }
-    }
-
     const handleCellDoubleClick = (row) => {
-        setSelectedCell(row);
+        setSelectedRow(row);
         if (!responsive.isMobile) {
-            handleRowClick(row);
+            handleOpenCommentsModal();
         }
     }
 
@@ -133,14 +126,14 @@ export default function ProductsPage() {
                     </Card>
                 </Box>
             </Modal>
-                <Fab
-                    color="primary"
-                    aria-label="add"
-                    sx={{ position: 'absolute', bottom: 16, right: 16 }}
-                    onClick={handleOpenDialog}
-                >
-                    <AddIcon />
-                </Fab>
+            <Fab
+                color="primary"
+                aria-label="add"
+                sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                onClick={handleOpenDialog}
+            >
+                <AddIcon />
+            </Fab>
             <ProviderDialog open={openDialog} onClose={handleCloseDialog} />
         </Box>
     );
