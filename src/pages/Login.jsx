@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -11,6 +12,7 @@ import { Alert, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { signIn } from '../services/Firebase/auth';
 import Logo from '../assets/LOGO CON CONTORNO BLANCO RD.png';
+import { useMobile } from '../components/MobileProvider';
 
 function Copyright(props) {
   return (
@@ -33,6 +35,9 @@ function Copyright(props) {
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Login() {
+
+  const responsive = useMobile(); // 'sm' para dispositivos móviles
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState({ email: '', password: '' });
@@ -109,7 +114,7 @@ export default function Login() {
         <img
           src={Logo}
           alt='Logotipo Refaccionaria Diaz'
-          style={{ width: 300, height: 'auto', marginBottom: 20 }}
+          style={{ width: responsive.isMobile || responsive.isLandscape ? 350 : 500, height: 'auto', marginBottom: 20 }}
         />
         <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
