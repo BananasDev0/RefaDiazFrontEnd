@@ -1,4 +1,4 @@
-import { Box, Tab, Tabs, Fab } from "@mui/material";
+import { Box, Fab, Tab, Tabs } from "@mui/material"
 import { useState } from "react";
 import { useMobile } from "../../components/MobileProvider";
 import ProductSelector from "./ProductSelector";
@@ -24,7 +24,8 @@ export default function ProductsPage() {
   };
 
   return (
-    <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
+    <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 }}}>
+      
       <Tabs
         value={value}
         onChange={handleChange}
@@ -37,17 +38,20 @@ export default function ProductsPage() {
         <Tab value="two" label="Tapas" />
         <Tab value="three" label="Abanicos" />
       </Tabs>
-      <Box>
+      <Box sx={{
+        height: 'calc(100vh - 250px)', // Ajusta 100px según la altura de tus otros componentes como el Toolbar y Tabs
+        overflowY: 'auto' // Esto añade desplazamiento vertical si el contenido excede la altura del Box
+      }}>
         <ProductSelector />
-        <Fab
-          color="primary"
-          aria-label="add"
-          sx={{ position: 'absolute', bottom: 16, right: 16 }}
-          onClick={handleOpenDialog}
-        >
-          <AddIcon />
-        </Fab>
       </Box>
+      <Fab
+        color="primary"
+        aria-label="add"
+        sx={{ position: 'absolute', bottom: 16, right: 16 }}
+        onClick={handleOpenDialog}
+      >
+        <AddIcon />
+      </Fab>
       <ProductDialog open={openDialog} onClose={handleCloseDialog} />
     </Box>
   );
