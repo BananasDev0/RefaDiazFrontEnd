@@ -1,7 +1,8 @@
-import { Box, Fab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography } from "@mui/material";
+import { Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography } from "@mui/material";
 import { useState } from 'react';
 import AddIcon from "@mui/icons-material/Add";
 import ProviderDialog from "./ProviderDialog";
+import { useMobile } from "../../components/MobileProvider";
 
 function createData(name, phone, address, comments) {
     return { name, phone, address, comments };
@@ -11,13 +12,16 @@ export default function ProductsPage() {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
+    const [selectedCell, setSelectedCell] = useState(null);
+
+    const responsive = useMobile();
 
     const rows = [
         createData('Pedro Gonzalez', 8123319310, 'los angeles, cdmx', 'proveedor de carritos'),
         createData('Angel Martinez', 1231234128, 'Monterrey, nuevo leon', 'proveedor de mangueras'),
         createData('Lupe Esparza', 1231879832, 'guadalupe, cdmx', 'proveedor de tapas'),
         createData('Jacob Jahir Calvillo Martinez', 91231231, 'San jacinto 702 Fresnos del Lago 66633, Apodaca, Nuevo Leon, Mexico', 'ninguno'),
-        createData('Roel Mendoza', 1231231, )
+        createData('Roel Mendoza', 1231231,)
     ];
 
     const handleOpenDialog = () => {
@@ -38,12 +42,22 @@ export default function ProductsPage() {
 
     const handleRowClick = (row) => {
         setSelectedRow(row);
+        if (responsive.isMobile) {
+            handleOpenCommentsModal();
+        }
     }
 
-    const handleViewComments = () => {
-        // Mostrar comentarios del row seleccionado
-        if (selectedRow) {
-            setOpenCommentsModal(true);
+    const handleCellClick = (row) => {
+        setSelectedCell(row);
+        if (responsive.isMobile) {
+            handleRowClick(row);
+        }
+    }
+
+    const handleCellDoubleClick = (row) => {
+        setSelectedCell(row);
+        if (!responsive.isMobile) {
+            handleRowClick(row);
         }
     }
 
@@ -51,26 +65,34 @@ export default function ProductsPage() {
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
             <Box sx={{ height: 'calc(100% - 56px)', overflow: 'auto' }}>
                 <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }}>
+                    <Table >
                         <TableHead>
-                            <TableRow sx={{ backgroundColor: '#f0f0f0' }}> 
+                            <TableRow sx={{ backgroundColor: '#f0f0f0' }}>
                                 <TableCell sx={{ fontWeight: 'bold' }}>Nombre</TableCell>
                                 <TableCell sx={{ fontWeight: 'bold' }}>Teléfono</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Dirección</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Acciones</TableCell> {/* Nueva columna */}
+                                {!responsive.isMobile && (
+                                    <>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Dirección</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Acciones</TableCell>
+                                    </>
+                                )}
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {rows.map((row) => (
-                                <TableRow key={row.name} onClick={() => handleRowClick(row)}>
-                                    <TableCell component="th" scope="row">
+                                <TableRow key={row.name} onDoubleClick={() => handleCellDoubleClick(row)}>
+                                    <TableCell component="th" scope="row" onClick={() => handleCellClick(row)}>
                                         {row.name}
                                     </TableCell>
                                     <TableCell>{row.phone}</TableCell>
-                                    <TableCell>{row.address}</TableCell>
-                                    <TableCell>
-                                        <Button variant="outlined" onClick={handleViewComments}>Ver Comentarios</Button> 
-                                    </TableCell>
+                                    {!responsive.isMobile && (
+                                        <>
+                                            <TableCell>{row.address}</TableCell>
+                                            <TableCell>
+                                                <Button variant="outlined" onClick={handleOpenCommentsModal}>Ver Comentarios</Button>
+                                            </TableCell>
+                                        </>
+                                    )}
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -111,14 +133,14 @@ export default function ProductsPage() {
                     </Card>
                 </Box>
             </Modal>
-            <Fab
-                color="primary"
-                aria-label="add"
-                sx={{ position: 'absolute', bottom: 16, right: 16 }}
-                onClick={handleOpenDialog}
-            >
-                <AddIcon />
-            </Fab>
+                <Fab
+                    color="primary"
+                    aria-label="add"
+                    sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                    onClick={handleOpenDialog}
+                >
+                    <AddIcon />
+                </Fab>
             <ProviderDialog open={openDialog} onClose={handleCloseDialog} />
         </Box>
     );
