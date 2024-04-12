@@ -1,10 +1,9 @@
-import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment, Select, MenuItem, InputLabel } from '@mui/material';
+import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment, Select, MenuItem, InputLabel, Alert } from '@mui/material';
 import * as React from 'react';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Alert from '@mui/material/Alert';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/Firebase/firebase';
 import validateEmail from '../../util/EmailVerifier';
@@ -27,16 +26,9 @@ export default function UserPage() {
     active: 1,
     roleId: ''
   });
-  
-
-  const areAllFieldsComplete = () => {
-    const arePasswordsMatching = userData.password === userData.confirmPassword;
-    return Object.values(userData).every(value => value !== '') && arePasswordsMatching;
-  };
 
   const [alertOpen, setAlertOpen] = React.useState(false);
   const [errorAlertOpen, setErrorAlertOpen] = React.useState(false);
-  const [cleared, setCleared] = React.useState(false);
   const [passwordsMatch, setPasswordsMatch] = React.useState(true);
   const [showPasswords, setShowPasswords] = React.useState(false);
 
@@ -57,11 +49,21 @@ export default function UserPage() {
   const handleTogglePasswordVisibility = () => {
     setShowPasswords(!showPasswords);
   };
-  
+
+  const handlePhoneNumberChange = (event) => {
+    let inputValue = event.target.value.replace(/\D/g, ''); // Elimina todos los caracteres que no sean números
+    inputValue = inputValue.slice(0, 10); // Limita la longitud a 10 dígitos
+    setUserData({ ...userData, phoneNumber: inputValue });
+};
+
 
   const handleSubmit = async () => {
     try {
       if (!validateEmail(userData.email)) {
+        setErrorAlertOpen(true); // Mostrar la alerta de error
+        setTimeout(() => {
+          setErrorAlertOpen(false);
+        }, 5000);
         console.error('El correo electrónico no es válido.');
         return;
       }
@@ -105,8 +107,6 @@ export default function UserPage() {
       setTimeout(() => {
         setAlertOpen(false);
       }, 5000);
-
-      setCleared(false);
     } catch (error) {
       setErrorAlertOpen(true);
       setTimeout(() => {
@@ -116,18 +116,13 @@ export default function UserPage() {
     }
   };
 
-  React.useEffect(() => {
-    let timeout;
-    if (cleared) {
-      timeout = setTimeout(() => {
-        setCleared(false);
-      }, 1000);
-    }
-    return () => clearTimeout(timeout);
-  }, [cleared]);
+  const areAllFieldsComplete = () => {
+    const arePasswordsMatching = userData.password === userData.confirmPassword;
+    return Object.values(userData).every(value => value !== '') && arePasswordsMatching;
+  };
 
   return (
-    <Container style={{ display: 'flex', flexDirection: 'column', height: '100vh',marginTop:'10vh' }}>
+    <Container style={{ display: 'flex', flexDirection: 'column', height: '100vh', marginTop: '10vh' }}>
       <Typography variant="h4" align="center" gutterBottom>
         Registro de usuario
       </Typography>
@@ -135,6 +130,7 @@ export default function UserPage() {
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
+              required
               name="firstName"
               label="Nombres"
               value={userData.firstName}
@@ -169,23 +165,16 @@ export default function UserPage() {
                 )}
               />
             </LocalizationProvider>
-            {cleared && (
-              <Alert
-                sx={{ position: 'absolute', bottom: 0, right: 0 }}
-                severity="success"
-              >
-                ¡Campo borrado!
-              </Alert>
-            )}
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
+              required
               name="phoneNumber"
               label="Teléfono"
               value={userData.phoneNumber}
-              onChange={handleInputChange}
+              onChange={handlePhoneNumberChange}
             />
           </FormControl>
         </Grid>
@@ -202,16 +191,26 @@ export default function UserPage() {
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
+              required
               name="email"
               label="Email"
               value={userData.email}
               onChange={handleInputChange}
             />
           </FormControl>
+          {errorAlertOpen && (
+            <Alert
+              sx={{ marginTop: '0.5rem' }}
+              severity="error"
+            >
+              El correo electrónico ingresado no es válido.
+            </Alert>
+          )}
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
+              required
               name="password"
               label="Contraseña"
               type={showPasswords ? 'text' : 'password'} // Mostrar texto si showPasswords es verdadero
@@ -232,6 +231,7 @@ export default function UserPage() {
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
+              required
               name="confirmPassword"
               label="Confirmar Contraseña"
               type={showPasswords ? 'text' : 'password'}
@@ -260,11 +260,11 @@ export default function UserPage() {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <InputLabel id="label">Selecciona Rol</InputLabel>
-            <Select
+            <InputLabel id="label" required>Selecciona Rol</InputLabel>
+            <Select  
               value={userData.roleId}
               onChange={handleInputChange}
-              label="Seleccione una opcion"
+              label="Seleccione una opción"
               name="roleId"
               fullWidth
             > 
@@ -274,29 +274,29 @@ export default function UserPage() {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <Grid item xs={12} style={{ textAlign: 'end', marginTop: '16px' }}>
-            <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
-              Registrar
-            </Button>
-            {alertOpen && (
-              <Alert
-                sx={{ position: 'absolute', bottom: 0, right: 0 }}
-                severity="success"
-              >
-                ¡Usuario creado correctamente!
-              </Alert>
-            )}
-            {errorAlertOpen && (
-              <Alert
-                sx={{ position: 'absolute', bottom: 0, right: 0 }}
-                severity="error"
-              >
-                Ocurrió un error, inténtalo nuevamente
-              </Alert>
-            )}
-          </Grid>
-        </Grid>
       </Grid>
-    </Container>
-  )
+      <Grid item xs={12} style={{ textAlign: 'end', marginTop: '16px' }}>
+        <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
+          Registrar
+        </Button>
+        {errorAlertOpen && !Object.values(errorAlertOpen).some(alert => alert) && (
+          <Alert
+            sx={{ position: 'absolute', bottom: 0, right: 0 }}
+            severity="error"
+          >
+            Ha ocurrido un error, por favor inténtelo de nuevo.
+          </Alert>
+        )}
+        {alertOpen && (
+          <Alert
+            sx={{ position: 'absolute', bottom: 0, right: 0 }}
+            severity="success"
+          >
+            ¡Usuario creado correctamente!
+          </Alert>
+        )}
+      </Grid>
+    </Grid>
+  </Container>
+);
 }
