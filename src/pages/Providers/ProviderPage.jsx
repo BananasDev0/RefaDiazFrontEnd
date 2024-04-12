@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography, IconButton } from "@mui/material";
+import { Tooltip, Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from '@mui/icons-material/Delete';
-import CommentIcon from '@mui/icons-material/Comment';
+import EditIcon from '@mui/icons-material/Edit';
+import PreviewIcon from '@mui/icons-material/Preview';
 import CustomInput from "../../components/CustomInput";
 import ProviderDialog from "./ProviderDialog";
 import { useMobile } from "../../components/MobileProvider";
@@ -13,21 +14,21 @@ function createData(name, phone, address, comments) {
 
 const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', marginBottom: '10px' }}>
-        <div style={{ flex: 1 }}>
-          <CustomInput
-            placeholder={'Buscar Proveedor'}
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
+        <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', marginBottom: '10px' }}>
+            <div style={{ flex: 1 }}>
+                <CustomInput
+                    placeholder={'Buscar Proveedor'}
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                />
+            </div>
         </div>
-      </div>
     );
 };
 
 export default function ProductsPage() {
     const [openDialog, setOpenDialog] = useState(false);
-    const [selectedRow, setSelectedRow] = useState(null);
+    const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -49,7 +50,8 @@ export default function ProductsPage() {
         setOpenDialog(false);
     }
 
-    const handleOpenCommentsModal = () => {
+    const handleOpenCommentsModal = (index) => {
+        setSelectedRowIndex(index);
         setOpenCommentsModal(true);
     }
 
@@ -57,24 +59,11 @@ export default function ProductsPage() {
         setOpenCommentsModal(false);
     }
 
-    const handleCellClick = (row) => {
-        setSelectedRow(row);
-        if (responsive.isMobile) {
-            handleOpenCommentsModal();
-        }
-    }
-
-    const handleCellDoubleClick = (row) => {
-        setSelectedRow(row);
-        if (!responsive.isMobile) {
-            handleOpenCommentsModal();
-        }
-    }
 
     const filteredRows = rows.filter(row =>
         row.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    
+
     return (
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
             <CustomSearchBar searchTerm={searchTerm} handleSearchChange={(e) => setSearchTerm(e.target.value)} />
@@ -84,9 +73,12 @@ export default function ProductsPage() {
                         <TableHead>
                             <TableRow sx={{ backgroundColor: '#f0f0f0' }}>
                                 <TableCell sx={{ fontWeight: 'bold' }}>Nombre</TableCell>
-                                <TableCell sx={{ fontWeight: 'bold' }}>Teléfono</TableCell>
+                                {responsive.isMobile && (
+                                    <TableCell sx={{ fontWeight: 'bold' }}>Acciones</TableCell>
+                                )}
                                 {!responsive.isMobile && (
                                     <>
+                                        <TableCell sx={{ fontWeight: 'bold' }}>Teléfono</TableCell>
                                         <TableCell sx={{ fontWeight: 'bold' }}>Dirección</TableCell>
                                         <TableCell sx={{ fontWeight: 'bold' }}>Acciones</TableCell>
                                     </>
@@ -94,20 +86,54 @@ export default function ProductsPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredRows.map((row) => (
-                                <TableRow key={row.name} onDoubleClick={() => handleCellDoubleClick(row)}>
-                                    <TableCell component="th" scope="row" onClick={() => handleCellClick(row)}>
+                            {filteredRows.map((row, index) => (
+                                <TableRow key={row.name} >
+                                    <TableCell component="th" scope="row">
                                         {row.name}
                                     </TableCell>
-                                    <TableCell>{row.phone}</TableCell>
-                                    {!responsive.isMobile && (
-                                        <>
-                                            <TableCell>{row.address}</TableCell>
-                                            <TableCell sx={{ display: "flex", gap: "10px" }}>
-                                                <Button variant="outlined" onClick={handleOpenCommentsModal} startIcon={<CommentIcon />}>Comentarios</Button>
+                                    {responsive.isMobile && (
+                                        <TableCell sx={{ display: "flex", gap: "10px" }}>
+                                            <Tooltip title="Comentarios">
+                                                <IconButton onClick={() => handleOpenCommentsModal(index)} color='info'>
+                                                    <PreviewIcon />
+                                                </IconButton>
+                                            </Tooltip>
+
+                                            <Tooltip title="Editar">
+                                                <IconButton color='info'>
+                                                    <EditIcon />
+                                                </IconButton>
+                                            </Tooltip>
+
+                                            <Tooltip title="Eliminar">
                                                 <IconButton aria-label="delete" color="error">
                                                     <DeleteIcon />
                                                 </IconButton>
+                                            </Tooltip>
+                                        </TableCell>
+                                    )}
+                                    {!responsive.isMobile && (
+                                        <>
+                                            <TableCell>{row.phone}</TableCell>
+                                            <TableCell>{row.address}</TableCell>
+                                            <TableCell sx={{ display: "flex", gap: "10px" }}>
+                                                <Tooltip title="Comentarios">
+                                                    <IconButton variant="outlined" onClick={() => handleOpenCommentsModal(index)}>
+                                                        <PreviewIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+
+                                                <Tooltip title="Editar">
+                                                    <IconButton color='info'>
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+
+                                                <Tooltip title="Eliminar">
+                                                    <IconButton aria-label="delete" color="error">
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </TableCell>
                                         </>
                                     )}
@@ -135,16 +161,16 @@ export default function ProductsPage() {
                                 Detalles del Proveedor
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Nombre:</strong> {selectedRow && selectedRow.name}
+                                <strong>Nombre:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].name}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Teléfono:</strong> {selectedRow && selectedRow.phone}
+                                <strong>Teléfono:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].phone}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Dirección:</strong> {selectedRow && selectedRow.address}
+                                <strong>Dirección:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].address}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Comentarios:</strong> {selectedRow && selectedRow.comments}
+                                <strong>Comentarios:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].comments}
                             </Typography>
                             <Button variant="contained" onClick={handleCloseCommentsModal} style={{ marginTop: 2 }}>Cerrar</Button>
                         </CardContent>
