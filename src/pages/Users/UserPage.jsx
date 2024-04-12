@@ -1,10 +1,9 @@
-import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment, Select, MenuItem, InputLabel } from '@mui/material';
+import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment, Select, MenuItem, InputLabel, Alert } from '@mui/material';
 import * as React from 'react';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Alert from '@mui/material/Alert';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/Firebase/firebase';
 import validateEmail from '../../util/EmailVerifier';
@@ -50,6 +49,13 @@ export default function UserPage() {
   const handleTogglePasswordVisibility = () => {
     setShowPasswords(!showPasswords);
   };
+
+  const handlePhoneNumberChange = (event) => {
+    let inputValue = event.target.value.replace(/\D/g, ''); // Elimina todos los caracteres que no sean números
+    inputValue = inputValue.slice(0, 10); // Limita la longitud a 10 dígitos
+    setUserData({ ...userData, phoneNumber: inputValue });
+};
+
 
   const handleSubmit = async () => {
     try {
@@ -168,11 +174,7 @@ export default function UserPage() {
               name="phoneNumber"
               label="Teléfono"
               value={userData.phoneNumber}
-              onChange={(e) => {
-                // Verifica si el valor ingresado contiene solo números
-                const inputPhoneNumber = e.target.value.replace(/\D/g, '');
-                setUserData({ ...userData, phoneNumber: inputPhoneNumber });
-            }}
+              onChange={handlePhoneNumberChange}
             />
           </FormControl>
         </Grid>
@@ -272,21 +274,29 @@ export default function UserPage() {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <Grid item xs={12} style={{ textAlign: 'end', marginTop: '16px' }}>
-            <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
-              Registrar
-            </Button>
-            {alertOpen && (
-              <Alert
-                sx={{ position: 'absolute', bottom: 0, right: 0 }}
-                severity="success"
-              >
-                ¡Usuario creado correctamente!
-              </Alert>
-            )}
-          </Grid>
-        </Grid>
       </Grid>
-    </Container>
-  )
+      <Grid item xs={12} style={{ textAlign: 'end', marginTop: '16px' }}>
+        <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
+          Registrar
+        </Button>
+        {errorAlertOpen && !Object.values(errorAlertOpen).some(alert => alert) && (
+          <Alert
+            sx={{ position: 'absolute', bottom: 0, right: 0 }}
+            severity="error"
+          >
+            Ha ocurrido un error, por favor inténtelo de nuevo.
+          </Alert>
+        )}
+        {alertOpen && (
+          <Alert
+            sx={{ position: 'absolute', bottom: 0, right: 0 }}
+            severity="success"
+          >
+            ¡Usuario creado correctamente!
+          </Alert>
+        )}
+      </Grid>
+    </Grid>
+  </Container>
+);
 }
