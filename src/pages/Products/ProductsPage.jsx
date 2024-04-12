@@ -38,12 +38,7 @@ export default function ProductsPage() {
         <Tab value="two" label="Tapas" />
         <Tab value="three" label="Abanicos" />
       </Tabs>
-      <Box sx={{
-        height: 'calc(100vh - 250px)', // Ajusta 100px según la altura de tus otros componentes como el Toolbar y Tabs
-        overflowY: 'auto' // Esto añade desplazamiento vertical si el contenido excede la altura del Box
-      }}>
-        <ProductSelector />
-      </Box>
+      <ProductSelector />
       <Fab
         color="primary"
         aria-label="add"
