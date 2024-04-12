@@ -27,16 +27,9 @@ export default function UserPage() {
     active: 1,
     roleId: ''
   });
-  
-
-  const areAllFieldsComplete = () => {
-    const arePasswordsMatching = userData.password === userData.confirmPassword;
-    return Object.values(userData).every(value => value !== '') && arePasswordsMatching;
-  };
 
   const [alertOpen, setAlertOpen] = React.useState(false);
   const [errorAlertOpen, setErrorAlertOpen] = React.useState(false);
-  const [cleared, setCleared] = React.useState(false);
   const [passwordsMatch, setPasswordsMatch] = React.useState(true);
   const [showPasswords, setShowPasswords] = React.useState(false);
 
@@ -57,11 +50,14 @@ export default function UserPage() {
   const handleTogglePasswordVisibility = () => {
     setShowPasswords(!showPasswords);
   };
-  
 
   const handleSubmit = async () => {
     try {
       if (!validateEmail(userData.email)) {
+        setErrorAlertOpen(true); // Mostrar la alerta de error
+        setTimeout(() => {
+          setErrorAlertOpen(false);
+        }, 5000);
         console.error('El correo electrónico no es válido.');
         return;
       }
@@ -105,8 +101,6 @@ export default function UserPage() {
       setTimeout(() => {
         setAlertOpen(false);
       }, 5000);
-
-      setCleared(false);
     } catch (error) {
       setErrorAlertOpen(true);
       setTimeout(() => {
@@ -116,18 +110,13 @@ export default function UserPage() {
     }
   };
 
-  React.useEffect(() => {
-    let timeout;
-    if (cleared) {
-      timeout = setTimeout(() => {
-        setCleared(false);
-      }, 1000);
-    }
-    return () => clearTimeout(timeout);
-  }, [cleared]);
+  const areAllFieldsComplete = () => {
+    const arePasswordsMatching = userData.password === userData.confirmPassword;
+    return Object.values(userData).every(value => value !== '') && arePasswordsMatching;
+  };
 
   return (
-    <Container style={{ display: 'flex', flexDirection: 'column', height: '100vh',marginTop:'10vh' }}>
+    <Container style={{ display: 'flex', flexDirection: 'column', height: '100vh', marginTop: '10vh' }}>
       <Typography variant="h4" align="center" gutterBottom>
         Registro de usuario
       </Typography>
@@ -135,6 +124,7 @@ export default function UserPage() {
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
+              required
               name="firstName"
               label="Nombres"
               value={userData.firstName}
@@ -169,23 +159,20 @@ export default function UserPage() {
                 )}
               />
             </LocalizationProvider>
-            {cleared && (
-              <Alert
-                sx={{ position: 'absolute', bottom: 0, right: 0 }}
-                severity="success"
-              >
-                ¡Campo borrado!
-              </Alert>
-            )}
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
+              required
               name="phoneNumber"
               label="Teléfono"
               value={userData.phoneNumber}
-              onChange={handleInputChange}
+              onChange={(e) => {
+                // Verifica si el valor ingresado contiene solo números
+                const inputPhoneNumber = e.target.value.replace(/\D/g, '');
+                setUserData({ ...userData, phoneNumber: inputPhoneNumber });
+            }}
             />
           </FormControl>
         </Grid>
@@ -202,16 +189,26 @@ export default function UserPage() {
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
+              required
               name="email"
               label="Email"
               value={userData.email}
               onChange={handleInputChange}
             />
           </FormControl>
+          {errorAlertOpen && (
+            <Alert
+              sx={{ marginTop: '0.5rem' }}
+              severity="error"
+            >
+              El correo electrónico ingresado no es válido.
+            </Alert>
+          )}
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
+              required
               name="password"
               label="Contraseña"
               type={showPasswords ? 'text' : 'password'} // Mostrar texto si showPasswords es verdadero
@@ -232,6 +229,7 @@ export default function UserPage() {
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
+              required
               name="confirmPassword"
               label="Confirmar Contraseña"
               type={showPasswords ? 'text' : 'password'}
@@ -260,11 +258,11 @@ export default function UserPage() {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <InputLabel id="label">Selecciona Rol</InputLabel>
-            <Select
+            <InputLabel id="label" required>Selecciona Rol</InputLabel>
+            <Select  
               value={userData.roleId}
               onChange={handleInputChange}
-              label="Seleccione una opcion"
+              label="Seleccione una opción"
               name="roleId"
               fullWidth
             > 
@@ -284,14 +282,6 @@ export default function UserPage() {
                 severity="success"
               >
                 ¡Usuario creado correctamente!
-              </Alert>
-            )}
-            {errorAlertOpen && (
-              <Alert
-                sx={{ position: 'absolute', bottom: 0, right: 0 }}
-                severity="error"
-              >
-                Ocurrió un error, inténtalo nuevamente
               </Alert>
             )}
           </Grid>
