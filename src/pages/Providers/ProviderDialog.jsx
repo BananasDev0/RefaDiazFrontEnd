@@ -1,14 +1,20 @@
-import React from 'react';
+import { useState,forwardRef } from 'react';
 import { Dialog, Button, AppBar, Toolbar, IconButton, Typography, Slide } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import ProviderForm from './ProviderForm';
 
-const Transition = React.forwardRef(function Transition(props, ref) {
+const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
 
 const ProviderDialog = ({ open, onClose }) => {
+    const [formCompleted, setFormCompleted] = useState(false);
+
+    const handleSave = () => {
+        // Lógica para guardar
+        onClose(); // Cierra el diálogo
+    };
 
     return (
         <Dialog
@@ -32,15 +38,13 @@ const ProviderDialog = ({ open, onClose }) => {
                         Agregar Proveedor
                     </Typography>
 
-                    <Button autoFocus color="inherit" onClick={() => {
-                        onClose(); // Posiblemente quieras manejar la lógica de guardar antes de cerrar
-                    }}>
+                    <Button autoFocus color="inherit" onClick={handleSave} disabled={!formCompleted}>
                         Guardar
                     </Button>
                 </Toolbar>
             </AppBar>
             
-            <ProviderForm />
+            <ProviderForm setFormCompleted={setFormCompleted} />
 
         </Dialog>
     );

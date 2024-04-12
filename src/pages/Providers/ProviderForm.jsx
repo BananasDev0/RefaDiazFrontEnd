@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FormControl, TextField, Box, Typography, Alert } from '@mui/material';
 
-const ProviderForm = () => {
+const ProviderForm = ({ setFormCompleted }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [nombre, setNombre] = useState('');
     const [direccion, setDireccion] = useState('');
@@ -17,15 +17,18 @@ const ProviderForm = () => {
         }
     };
 
+    useEffect(() => {
+        // Verificar si los campos requeridos están completos
+        setFormCompleted(nombre.trim() !== '' && phoneNumber.trim() !== '');
+    }, [nombre, phoneNumber, setFormCompleted]);
+
     const handleBlur = (field) => {
         switch (field) {
             case 'nombre':
                 setError((prevError) => ({ ...prevError, nombre: nombre.trim() === '' }));
-                setTimeout(() => setError((prevError) => ({ ...prevError, nombre: false })), 1000);
                 break;
             case 'telefono':
                 setError((prevError) => ({ ...prevError, telefono: phoneNumber.trim() === '' }));
-                setTimeout(() => setError((prevError) => ({ ...prevError, telefono: false })), 1000);
                 break;
             default:
                 break;
@@ -40,6 +43,7 @@ const ProviderForm = () => {
                 </Typography>
             </Box>
             <TextField
+                required
                 label="Nombre"
                 variant="outlined"
                 fullWidth
@@ -50,6 +54,7 @@ const ProviderForm = () => {
             />
             {error.nombre && <Alert severity="error">Por favor ingrese el nombre</Alert>}
             <TextField
+                required
                 label="Número Telefónico"
                 variant="outlined"
                 fullWidth
