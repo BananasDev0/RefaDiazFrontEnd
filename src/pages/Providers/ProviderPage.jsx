@@ -1,6 +1,9 @@
-import { Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography } from "@mui/material";
 import { useState } from 'react';
+import { Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from '@mui/icons-material/Delete';
+import CommentIcon from '@mui/icons-material/Comment';
+import CustomInput from "../../components/CustomInput";
 import ProviderDialog from "./ProviderDialog";
 import { useMobile } from "../../components/MobileProvider";
 
@@ -8,10 +11,25 @@ function createData(name, phone, address, comments) {
     return { name, phone, address, comments };
 }
 
+const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', marginBottom: '10px' }}>
+        <div style={{ flex: 1 }}>
+          <CustomInput
+            placeholder={'Buscar Proveedor'}
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </div>
+      </div>
+    );
+};
+
 export default function ProductsPage() {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const responsive = useMobile();
 
@@ -20,7 +38,7 @@ export default function ProductsPage() {
         createData('Angel Martinez', 1231234128, 'Monterrey, nuevo leon', 'proveedor de mangueras'),
         createData('Lupe Esparza', 1231879832, 'guadalupe, cdmx', 'proveedor de tapas'),
         createData('Jacob Jahir Calvillo Martinez', 91231231, 'San jacinto 702 Fresnos del Lago 66633, Apodaca, Nuevo Leon, Mexico', 'ninguno'),
-        createData('Roel Mendoza', 1231231,)
+        createData('Roel Mendoza', 1231231)
     ];
 
     const handleOpenDialog = () => {
@@ -39,7 +57,6 @@ export default function ProductsPage() {
         setOpenCommentsModal(false);
     }
 
-
     const handleCellClick = (row) => {
         setSelectedRow(row);
         if (responsive.isMobile) {
@@ -54,8 +71,13 @@ export default function ProductsPage() {
         }
     }
 
+    const filteredRows = rows.filter(row =>
+        row.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
     return (
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
+            <CustomSearchBar searchTerm={searchTerm} handleSearchChange={(e) => setSearchTerm(e.target.value)} />
             <Box sx={{ height: 'calc(100% - 56px)', overflow: 'auto' }}>
                 <TableContainer component={Paper}>
                     <Table >
@@ -72,7 +94,7 @@ export default function ProductsPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.map((row) => (
+                            {filteredRows.map((row) => (
                                 <TableRow key={row.name} onDoubleClick={() => handleCellDoubleClick(row)}>
                                     <TableCell component="th" scope="row" onClick={() => handleCellClick(row)}>
                                         {row.name}
@@ -81,8 +103,11 @@ export default function ProductsPage() {
                                     {!responsive.isMobile && (
                                         <>
                                             <TableCell>{row.address}</TableCell>
-                                            <TableCell>
-                                                <Button variant="outlined" onClick={handleOpenCommentsModal}>Ver Comentarios</Button>
+                                            <TableCell sx={{ display: "flex", gap: "10px" }}>
+                                                <Button variant="outlined" onClick={handleOpenCommentsModal} startIcon={<CommentIcon />}>Comentarios</Button>
+                                                <IconButton aria-label="delete" color="error">
+                                                    <DeleteIcon />
+                                                </IconButton>
                                             </TableCell>
                                         </>
                                     )}
