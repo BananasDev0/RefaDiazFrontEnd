@@ -1,15 +1,14 @@
-import { Box, Fab, Tab, Tabs } from "@mui/material";
+import { Box, Fab, Tab, Tabs } from "@mui/material"
 import { useState } from "react";
 import { useMobile } from "../../components/MobileProvider";
 import ProductSelector from "./ProductSelector";
-import AddIcon from '@mui/icons-material/Add';
 import ProductDialog from "./ProductDialog/ProductDialog";
-
+import AddIcon from "@mui/icons-material/Add";
 
 export default function ProductsPage() {
   const [value, setValue] = useState('one');
   const [openDialog, setOpenDialog] = useState(false);
-  
+
   const responsive = useMobile();
 
   const handleChange = (event, newValue) => {
@@ -39,9 +38,7 @@ export default function ProductsPage() {
         <Tab value="two" label="Tapas" />
         <Tab value="three" label="Abanicos" />
       </Tabs>
-
-        <ProductSelector /> 
-        
+      <ProductSelector />
       <Fab
         color="primary"
         aria-label="add"
