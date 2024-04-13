@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Checkbox, ListItemText } from "@mui/material";
+import { useProductDialogContext } from "../ProductDialog/ProductDialogContext";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -12,48 +13,47 @@ const MenuProps = {
   },
 };
 
-const RadiatorForm = () => {
-    const [autoModels, setAutoModels] = useState([]);
-    const [comments, setComments] = useState('');
-    const [unitsAvailable, setUnitsAvailable] = useState('');
-    const [dpi, setDpi] = useState('');
-    const [productName, setProductName] = useState('...');
-
-    // Opciones de modelos de autos disponibles
+const RadiatorForm = ({ setIsFormValid }) => {
+    const { product, setProduct } = useProductDialogContext();
     const modelOptions = ["CIVIC", "MAZDA", "HR-V", "CX5", "CX30"];
 
     useEffect(() => {
-        // Actualiza el nombre del producto cuando cambian dpi, autoModels o unitsAvailable
-        if (dpi && autoModels.length > 0 && unitsAvailable) {
-            const models = autoModels.join(', ');
-            setProductName(`${dpi} ${models} (${unitsAvailable})`);
+        // Actualizar el nombre del producto y validar el formulario
+        let isValid = false;
+        if (product.dpi && product.product.autoModels && product.product.autoModels.length > 0 && product.product.stockCount) {
+            const models = product.product.autoModels.join(', ');
+            const productName = `${product.dpi} ${models} (${product.product.stockCount})`;
+            setProduct(prev => ({ ...prev, product: { ...prev.product, name: productName } }));
+            isValid = true; // Marcar como válido si todos los campos requeridos están llenos
+        } else {
+            isValid = false; // Marcar como inválido si alguno de los campos requeridos está vacío
         }
-    }, [dpi, autoModels, unitsAvailable]);
+        setIsFormValid(isValid);
+    }, [product.dpi, product.product.autoModels, product.product.stockCount, setProduct, setIsFormValid]);
 
     const handleAutoModelsChange = (event) => {
-        const {
-            target: { value },
-        } = event;
-        setAutoModels(typeof value === 'string' ? value.split(',') : value);
+        const { target: { value } } = event;
+        const autoModels = typeof value === 'string' ? value.split(',') : value;
+        setProduct(prev => ({ ...prev, product: { ...prev.product, autoModels } }));
     };
 
-
-    const handleCommentsChange = (event) => {
-        setComments(event.target.value);
+    const handleChange = (field) => (event) => {
+        if (field === "dpi") {
+            setProduct(prev => ({ ...prev, dpi: event.target.value }));
+        } else {
+            setProduct(prev => ({ ...prev, product: { ...prev.product, [field]: event.target.value } }));
+        }
     };
 
     return (
         <Box>
-            {/* Campo de Nombre del producto que no es editable */}
             <TextField
                 fullWidth
                 label="Nombre del producto"
                 variant="outlined"
                 sx={{ mt: 4 }}
-                value={productName}
-                InputProps={{
-                    readOnly: true,
-                }}
+                value={product.product.name || ''}
+                InputProps={{ readOnly: true }}
             />
 
             <FormControl fullWidth sx={{ mt: 4 }}>
@@ -62,42 +62,39 @@ const RadiatorForm = () => {
                     labelId="auto-model-multiple-checkbox-label"
                     id="auto-model-multiple-checkbox"
                     multiple
-                    value={autoModels}
+                    value={product.product.autoModels || []}
                     onChange={handleAutoModelsChange}
                     renderValue={(selected) => selected.join(', ')}
                     MenuProps={MenuProps}
                 >
                     {modelOptions.map((model) => (
                         <MenuItem key={model} value={model}>
-                            <Checkbox checked={autoModels.indexOf(model) > -1} />
+                            <Checkbox checked={product.product.autoModels && product.product.autoModels.includes(model)} />
                             <ListItemText primary={model} />
                         </MenuItem>
                     ))}
                 </Select>
             </FormControl>
 
-            {/* Campo numérico para Unidades disponibles */}
             <TextField
                 fullWidth
                 label="Unidades disponibles"
                 variant="outlined"
                 type="number"
                 sx={{ mt: 4 }}
-                value={unitsAvailable}
-                onChange={e => setUnitsAvailable(e.target.value)}
+                value={product.product.stockCount || ''}
+                onChange={handleChange('stockCount')}
             />
 
-            {/* Campo de texto para DPI */}
             <TextField
                 fullWidth
                 label="DPI"
                 variant="outlined"
                 sx={{ mt: 4 }}
-                value={dpi}
-                onChange={e => setDpi(e.target.value)}
+                value={product.dpi || ''}
+                onChange={handleChange('dpi')}
             />
 
-            {/* Campo editable para Comentarios */}
             <TextField
                 fullWidth
                 label="Comentarios"
@@ -105,8 +102,8 @@ const RadiatorForm = () => {
                 multiline
                 rows={4}
                 sx={{ mt: 4 }}
-                value={comments}
-                onChange={handleCommentsChange}
+                value={product.product.comments || ''}
+                onChange={handleChange('comments')}
             />
         </Box>
     );
