@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Checkbox, ListItemText } from "@mui/material";
 import { useProductDialogContext } from "../ProductDialog/ProductDialogContext";
+import CustomSelectWithAdd from "../ProductDialog/Test";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -85,6 +86,8 @@ const RadiatorForm = ({ setIsFormValid }) => {
                 value={product.product.stockCount || ''}
                 onChange={handleChange('stockCount')}
             />
+
+            <CustomSelectWithAdd></CustomSelectWithAdd>
 
             <TextField
                 fullWidth
