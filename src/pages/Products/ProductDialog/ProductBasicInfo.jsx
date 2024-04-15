@@ -10,7 +10,7 @@ const ProductBasicInfo = ({ ProductForm }) => {
     const [isFormValid, setIsFormValid] = useState(false); // Estado para la validación del formulario
 
     useEffect(() => {
-        setIsNextEnabled(isFormValid);
+        setIsNextEnabled(true);
     }, [isFormValid, setIsNextEnabled]);
 
     const handleProductTypeChange = (event) => {

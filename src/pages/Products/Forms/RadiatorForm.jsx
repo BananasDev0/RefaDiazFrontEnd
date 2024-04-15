@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Checkbox, ListItemText } from "@mui/material";
 import { useProductDialogContext } from "../ProductDialog/ProductDialogContext";
-import ModelForm from "../ProductDialog/ModelForm";
+import ModelForm from "../ProductDialog/ModelManager";
+import ModelManager from "../ProductDialog/ModelManager";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -48,16 +49,14 @@ const RadiatorForm = ({ setIsFormValid }) => {
 
     return (
         <Box>
-            <TextField
+            {/**<TextField
                 fullWidth
                 label="Nombre del producto"
                 variant="outlined"
                 sx={{ mt: 4 }}
                 value={product.product.name || ''}
                 InputProps={{ readOnly: true }}
-            />
-
-            <ModelForm></ModelForm>
+            /> */}
 
             {/**<FormControl fullWidth sx={{ mt: 4 }}>
                 <InputLabel id="auto-model-multiple-checkbox-label">Modelo de auto</InputLabel>

@@ -1,3 +1,4 @@
+import ModelManager from './ModelManager';
 import PriceManager from './PriceManager';
 import ProviderManager from './ProviderManager';
 
@@ -5,7 +6,8 @@ const ProductDetails = () => {
 
   return (
     <>
-      <PriceManager/>
+      <ModelManager></ModelManager>
+      <PriceManager />
       <ProviderManager />
     </>
   );
