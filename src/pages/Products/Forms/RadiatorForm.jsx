@@ -1,17 +1,17 @@
 import { useEffect } from "react";
 import { Box, FormControl, InputLabel, Select, MenuItem, TextField, Checkbox, ListItemText } from "@mui/material";
 import { useProductDialogContext } from "../ProductDialog/ProductDialogContext";
-import CustomSelectWithAdd from "../ProductDialog/Test";
+import ModelForm from "../ProductDialog/ModelForm";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
     },
-  },
 };
 
 const RadiatorForm = ({ setIsFormValid }) => {
@@ -57,7 +57,9 @@ const RadiatorForm = ({ setIsFormValid }) => {
                 InputProps={{ readOnly: true }}
             />
 
-            <FormControl fullWidth sx={{ mt: 4 }}>
+            <ModelForm></ModelForm>
+
+            {/**<FormControl fullWidth sx={{ mt: 4 }}>
                 <InputLabel id="auto-model-multiple-checkbox-label">Modelo de auto</InputLabel>
                 <Select
                     labelId="auto-model-multiple-checkbox-label"
@@ -75,7 +77,7 @@ const RadiatorForm = ({ setIsFormValid }) => {
                         </MenuItem>
                     ))}
                 </Select>
-            </FormControl>
+            </FormControl> */}
 
             <TextField
                 fullWidth
@@ -86,8 +88,6 @@ const RadiatorForm = ({ setIsFormValid }) => {
                 value={product.product.stockCount || ''}
                 onChange={handleChange('stockCount')}
             />
-
-            <CustomSelectWithAdd></CustomSelectWithAdd>
 
             <TextField
                 fullWidth

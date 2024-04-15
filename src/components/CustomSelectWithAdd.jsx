@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Button, Select, MenuItem, Dialog, DialogActions, DialogContent, DialogTitle, TextField, FormControl, InputLabel } from '@mui/material';
 
-export default function CustomSelectWithAdd() {
-  const [items, setItems] = useState(['Opción 1', 'Opción 2', 'Opción 3']);
+function CustomSelectWithAdd({ initialItems, label, placeholder, selectedItem, setSelectedItem, onItemAdded }) {
+  const [items, setItems] = useState(initialItems);
   const [open, setOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState('');
   const [newItem, setNewItem] = useState('');
 
   const handleOpen = () => setOpen(true);
@@ -15,27 +14,37 @@ export default function CustomSelectWithAdd() {
   };
 
   const handleAddNewItem = () => {
-    setItems([...items, newItem]);
+    const newItems = [...items, newItem];
+    setItems(newItems);
     setSelectedItem(newItem);
     setNewItem('');
     handleClose();
+    if (onItemAdded) {
+      onItemAdded(newItems, newItem);
+    }
   };
 
   return (
     <FormControl fullWidth>
-      <InputLabel id="demo-simple-select-label">Elige o añade una opción</InputLabel>
+      <InputLabel id="custom-select-label">{label}</InputLabel>
       <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
+        labelId="custom-select-label"
+        id="custom-select"
         value={selectedItem}
-        label="Elige o añade una opción"
+        label={label}
         onChange={handleSelectChange}
+        fullWidth
       >
         {items.map((item, index) => (
           <MenuItem key={index} value={item}>{item}</MenuItem>
         ))}
-        <MenuItem value="">
-          <Button color="primary" onClick={handleOpen}>
+        <MenuItem value="" style={{ padding: 0 }}>
+          <Button 
+            fullWidth 
+            color="primary" 
+            onClick={handleOpen}
+            sx={{ justifyContent: 'flex-start', width: '100%' }}
+          >
             Añadir nuevo elemento
           </Button>
         </MenuItem>
@@ -47,8 +56,8 @@ export default function CustomSelectWithAdd() {
           <TextField
             autoFocus
             margin="dense"
-            id="name"
-            label="Nuevo Elemento"
+            id="new-item-name"
+            label={placeholder || 'Nuevo Elemento'}
             type="text"
             fullWidth
             variant="standard"
@@ -64,3 +73,11 @@ export default function CustomSelectWithAdd() {
     </FormControl>
   );
 }
+
+CustomSelectWithAdd.defaultProps = {
+  initialItems: [],
+  label: 'Elige o añade una opción',
+  placeholder: 'Nuevo Elemento'
+};
+
+export default CustomSelectWithAdd;
