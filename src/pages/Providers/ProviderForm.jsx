@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FormControl, TextField, Box, Typography, Alert } from '@mui/material';
-import { getProvider } from '../../services/ProviderService';
 
-const ProviderForm = ({ setFormCompleted, setFormData, providerId }) => {
+const ProviderForm = ({ setFormCompleted, setFormData }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
@@ -38,31 +37,14 @@ const ProviderForm = ({ setFormCompleted, setFormData, providerId }) => {
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                if (providerId) {
-                    const provider = await getProvider(providerId);
-                    setName(provider.name);
-                    setPhoneNumber(provider.phoneNumber);
-                    setAddress(provider.address);
-                    setComments(provider.comments);
-                } else {
-                    setFormData({
-                        name: name,
-                        phoneNumber: phoneNumber,
-                        address: address,
-                        comments: comments
-                    });
-                }
-            } catch (error) {
-                console.error("Error al obtener el proveedor:", error);
-            }
-        };
-    
-        fetchData();
-    
-    }, [name, phoneNumber, address, comments, setFormData, providerId]);
-    
+        // Actualizar el objeto formData cuando cambien los datos del formulario
+        setFormData({
+            name: name,
+            phoneNumber: phoneNumber,
+            address: address,
+            comments: comments
+        });
+    }, [name, phoneNumber, address, comments, setFormData]);
 
     return( 
         <FormControl sx={{ mt: 2, textAlign: 'center', marginLeft: 10, marginRight: 10}}>
@@ -75,7 +57,7 @@ const ProviderForm = ({ setFormCompleted, setFormData, providerId }) => {
                 required
                 label="Nombre"
                 variant="outlined"
-                fullWidth   
+                fullWidth
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 onBlur={() => handleBlur('nombre')}

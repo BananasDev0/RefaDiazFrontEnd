@@ -29,7 +29,6 @@ export default function ProvidersPage() {
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [rows, setRows] = useState([]);
-    const [selectedProviderId, setSelectedProviderId] = useState(null);
 
     const responsive = useMobile();
     useEffect(() => {
@@ -37,10 +36,9 @@ export default function ProvidersPage() {
         getProviders();
     }, []);
 
-    const handleOpenDialog = (providerId) => {
+    const handleOpenDialog = () => {
         setOpenDialog(true);
-        setSelectedProviderId(providerId);
-    };
+    }
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
@@ -120,7 +118,7 @@ export default function ProvidersPage() {
                                             </Tooltip>
 
                                             <Tooltip title="Editar">
-                                                <IconButton color='info' onClick={() => handleOpenDialog(row.id)}>
+                                                <IconButton color='info' onClick={() => handleOpenDialog()}>
                                                     <EditIcon />
                                                 </IconButton>
                                             </Tooltip>
@@ -145,7 +143,7 @@ export default function ProvidersPage() {
                                                 </Tooltip>
 
                                                 <Tooltip title="Editar">
-                                                    <IconButton color='info'  onClick={() => handleOpenDialog(row.id)}>
+                                                    <IconButton color='info' onClick={() => handleOpenDialog()}>
                                                         <EditIcon />
                                                     </IconButton>
                                                 </Tooltip>
@@ -206,7 +204,9 @@ export default function ProvidersPage() {
             >
                 <AddIcon />
             </Fab>
-            <ProviderDialog open={openDialog} onClose={handleCloseDialog} addProviderToList={addProviderToList} providerId={selectedProviderId} />
+            <ProviderDialog open={openDialog} onClose={handleCloseDialog} addProviderToList={addProviderToList} />
+
+
         </Box>
     );
 }
