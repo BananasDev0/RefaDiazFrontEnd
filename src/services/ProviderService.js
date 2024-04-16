@@ -65,9 +65,9 @@ const deleteProvider = async (id) => {
   }
 };
 
-const updateProvider = async (id) => {
+const updateProvider = async (id, updatedData) => {
   try {
-    const response = await axios.put(`${import.meta.env.VITE_API_REFA_BASE_PATH}/provider/${id}`);
+    const response = await axios.put(`${import.meta.env.VITE_API_REFA_BASE_PATH}/provider/${id}`, updatedData);
     
     if(response.status === 200) {
       console.log('Proveedor actualizado');
@@ -81,5 +81,6 @@ const updateProvider = async (id) => {
     return false;
   }
 };
+
 
 export { createProvider, getProvider, getAll, deleteProvider, updateProvider };
