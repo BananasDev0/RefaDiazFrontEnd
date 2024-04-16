@@ -18,19 +18,19 @@ const ProviderDialog = ({ open, onClose }) => {
     const handleSave = async (formData) => {
         try {
             const provider = new Provider(
-                { 
+                {
                     name: formData.name,
                     phoneNumber: formData.phoneNumber,
                     address: formData.address,
                     comments: formData.comments
                 })
-            
+
             await createProvider(provider)
             onClose(); // Cierra el diálogo
         } catch (error) {
             console.log(error);
         }
-       
+
     };
 
     return (

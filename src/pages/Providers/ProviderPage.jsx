@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tooltip, Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -7,10 +7,7 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import CustomInput from "../../components/CustomInput";
 import ProviderDialog from "./ProviderDialog";
 import { useMobile } from "../../components/MobileProvider";
-
-function createData(name, phone, address, comments) {
-    return { name, phone, address, comments };
-}
+import { getAll } from '../../services/ProviderService';
 
 const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     return (
@@ -31,16 +28,13 @@ export default function ProductsPage() {
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [rows, setRows] = useState([]); 
 
     const responsive = useMobile();
-
-    const rows = [
-        createData('Pedro Gonzalez', 8123319310, 'los angeles, cdmx', 'proveedor de carritos'),
-        createData('Angel Martinez', 1231234128, 'Monterrey, nuevo leon', 'proveedor de mangueras'),
-        createData('Lupe Esparza', 1231879832, 'guadalupe, cdmx', 'proveedor de tapas'),
-        createData('Jacob Jahir Calvillo Martinez', 91231231, 'San jacinto 702 Fresnos del Lago 66633, Apodaca, Nuevo Leon, Mexico', 'ninguno'),
-        createData('Roel Mendoza', 1231231)
-    ];
+    useEffect(() => {
+        // Llamar a la función getProviders cuando el componente monta
+        getProviders();
+    }, []);
 
     const handleOpenDialog = () => {
         setOpenDialog(true);
@@ -59,10 +53,15 @@ export default function ProductsPage() {
         setOpenCommentsModal(false);
     }
 
-
-    const filteredRows = rows.filter(row =>
-        row.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const getProviders = async() => {
+        try {
+            const providers = await getAll();
+            setRows(providers)
+            console.log(providers)
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     return (
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
@@ -86,7 +85,7 @@ export default function ProductsPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredRows.map((row, index) => (
+                            {rows.map((row, index) => (
                                 <TableRow key={row.name} >
                                     <TableCell component="th" scope="row">
                                         {row.name}
@@ -114,7 +113,7 @@ export default function ProductsPage() {
                                     )}
                                     {!responsive.isMobile && (
                                         <>
-                                            <TableCell>{row.phone}</TableCell>
+                                            <TableCell>{row.phoneNumber}</TableCell>
                                             <TableCell>{row.address}</TableCell>
                                             <TableCell sx={{ display: "flex", gap: "10px" }}>
                                                 <Tooltip title="Comentarios">
@@ -161,16 +160,16 @@ export default function ProductsPage() {
                                 Detalles del Proveedor
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Nombre:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].name}
+                                <strong>Nombre:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].name}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Teléfono:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].phone}
+                                <strong>Teléfono:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].phone}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Dirección:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].address}
+                                <strong>Dirección:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].address}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Comentarios:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].comments}
+                                <strong>Comentarios:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].comments}
                             </Typography>
                             <Button variant="contained" onClick={handleCloseCommentsModal} style={{ marginTop: 2 }}>Cerrar</Button>
                         </CardContent>
