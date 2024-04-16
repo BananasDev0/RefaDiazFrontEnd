@@ -46,7 +46,24 @@ const getAll = async() => {
     console.error('Error al obtener las marcas:', error);
     return [];
   }
-  
 }
 
-  export { createProvider, getProvider, getAll };
+const deleteProvider = async (id) => {
+  try {
+    const response = await axios.delete(`${import.meta.env.VITE_API_REFA_BASE_PATH}/provider/${id}`);
+
+    if (response.status === 204) {
+      console.log('Proveedor eliminado correctamente');
+      return true;
+    } else {
+      console.error('Error al eliminar proveedor1:', response);
+      return false;
+    }
+  } catch (error) {
+    console.error('Error al eliminar proveedor:', error);
+    return false;
+  }
+};
+
+
+  export { createProvider, getProvider, getAll, deleteProvider };

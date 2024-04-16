@@ -7,7 +7,7 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import CustomInput from "../../components/CustomInput";
 import ProviderDialog from "./ProviderDialog";
 import { useMobile } from "../../components/MobileProvider";
-import { getAll } from '../../services/ProviderService';
+import { getAll, deleteProvider } from '../../services/ProviderService';
 
 const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     return (
@@ -28,7 +28,7 @@ export default function ProductsPage() {
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [rows, setRows] = useState([]); 
+    const [rows, setRows] = useState([]);
 
     const responsive = useMobile();
     useEffect(() => {
@@ -53,13 +53,22 @@ export default function ProductsPage() {
         setOpenCommentsModal(false);
     }
 
-    const getProviders = async() => {
+    const getProviders = async () => {
         try {
             const providers = await getAll();
             setRows(providers)
             console.log(providers)
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    const handleDeleteProvider = async (id) => {
+        try {
+            await deleteProvider(id);
+            getProviders()
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -105,10 +114,11 @@ export default function ProductsPage() {
                                             </Tooltip>
 
                                             <Tooltip title="Eliminar">
-                                                <IconButton aria-label="delete" color="error">
+                                                <IconButton aria-label="delete" color="error" onClick={() => handleDeleteProvider(row.id)}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             </Tooltip>
+
                                         </TableCell>
                                     )}
                                     {!responsive.isMobile && (
@@ -129,7 +139,7 @@ export default function ProductsPage() {
                                                 </Tooltip>
 
                                                 <Tooltip title="Eliminar">
-                                                    <IconButton aria-label="delete" color="error">
+                                                    <IconButton aria-label="delete" color="error" onClick={() => handleDeleteProvider(row.id)}>
                                                         <DeleteIcon />
                                                     </IconButton>
                                                 </Tooltip>
