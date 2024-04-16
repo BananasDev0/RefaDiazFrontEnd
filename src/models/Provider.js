@@ -1,8 +1,7 @@
 export default class Provider {
-    constructor({id,name,phone_number,address,comments}){
-        this.id = id;
+    constructor({name,phoneNumber,address,comments}){
         this.name = name;
-        this.phone_number = phone_number;
+        this.phoneNumber = phoneNumber;
         this.address = address;
         this.comments = comments
     }

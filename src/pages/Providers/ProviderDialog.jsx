@@ -1,7 +1,9 @@
-import { useState,forwardRef } from 'react';
+import { useState, forwardRef } from 'react';
 import { Dialog, Button, AppBar, Toolbar, IconButton, Typography, Slide } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import ProviderForm from './ProviderForm';
+import { createProvider } from '../../services/ProviderService';
+import Provider from '../../models/Provider';
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -11,9 +13,24 @@ const Transition = forwardRef(function Transition(props, ref) {
 const ProviderDialog = ({ open, onClose }) => {
     const [formCompleted, setFormCompleted] = useState(false);
 
-    const handleSave = () => {
-        // Lógica para guardar
-        onClose(); // Cierra el diálogo
+    const [formData, setFormData] = useState({});
+
+    const handleSave = async (formData) => {
+        try {
+            const provider = new Provider(
+                { 
+                    name: formData.name,
+                    phoneNumber: formData.phoneNumber,
+                    address: formData.address,
+                    comments: formData.comments
+                })
+            
+            await createProvider(provider)
+            onClose(); // Cierra el diálogo
+        } catch (error) {
+            console.log(error);
+        }
+       
     };
 
     return (
@@ -38,13 +55,14 @@ const ProviderDialog = ({ open, onClose }) => {
                         Agregar Proveedor
                     </Typography>
 
-                    <Button autoFocus color="inherit" onClick={handleSave} disabled={!formCompleted}>
+                    <Button autoFocus color="inherit" onClick={() => handleSave(formData)} disabled={!formCompleted}>
                         Guardar
                     </Button>
+
                 </Toolbar>
             </AppBar>
-            
-            <ProviderForm setFormCompleted={setFormCompleted} />
+
+            <ProviderForm setFormCompleted={setFormCompleted} setFormData={setFormData} />
 
         </Dialog>
     );

@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react';
 import { FormControl, TextField, Box, Typography, Alert } from '@mui/material';
 
-const ProviderForm = ({ setFormCompleted }) => {
+const ProviderForm = ({ setFormCompleted, setFormData }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [nombre, setNombre] = useState('');
-    const [direccion, setDireccion] = useState('');
+    const [name, setName] = useState('');
+    const [address, setAddress] = useState('');
+    const [comments, setComments] = useState('');
     const [error, setError] = useState({
-        nombre: false,
-        telefono: false,
+        name: false,
+        phoneNumber: false,
     });
+
+    useEffect(() => {
+        // Verificar si los campos requeridos están completos
+        setFormCompleted(name.trim() !== '' && phoneNumber.trim() !== '');
+    }, [name, phoneNumber, setFormCompleted]);
 
     const handlePhoneNumberChange = (event) => {
         const inputValue = event.target.value;
@@ -17,23 +23,28 @@ const ProviderForm = ({ setFormCompleted }) => {
         }
     };
 
-    useEffect(() => {
-        // Verificar si los campos requeridos están completos
-        setFormCompleted(nombre.trim() !== '' && phoneNumber.trim() !== '');
-    }, [nombre, phoneNumber, setFormCompleted]);
-
     const handleBlur = (field) => {
         switch (field) {
             case 'nombre':
-                setError((prevError) => ({ ...prevError, nombre: nombre.trim() === '' }));
+                setError((prevError) => ({ ...prevError, name: name.trim() === '' }));
                 break;
             case 'telefono':
-                setError((prevError) => ({ ...prevError, telefono: phoneNumber.trim() === '' }));
+                setError((prevError) => ({ ...prevError, phoneNumber: phoneNumber.trim() === '' }));
                 break;
             default:
                 break;
         }
     };
+
+    useEffect(() => {
+        // Actualizar el objeto formData cuando cambien los datos del formulario
+        setFormData({
+            name: name,
+            phoneNumber: phoneNumber,
+            address: address,
+            comments: comments
+        });
+    }, [name, phoneNumber, address, comments, setFormData]);
 
     return( 
         <FormControl sx={{ mt: 2, textAlign: 'center', marginLeft: 10, marginRight: 10}}>
@@ -47,12 +58,12 @@ const ProviderForm = ({ setFormCompleted }) => {
                 label="Nombre"
                 variant="outlined"
                 fullWidth
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 onBlur={() => handleBlur('nombre')}
                 sx={{ mb: 2 }}
             />
-            {error.nombre && <Alert severity="error">Por favor ingrese el nombre</Alert>}
+            {error.name && <Alert severity="error">Por favor ingrese el nombre</Alert>}
             <TextField
                 required
                 label="Número Telefónico"
@@ -72,8 +83,8 @@ const ProviderForm = ({ setFormCompleted }) => {
                 label="Dirección"
                 variant="outlined"
                 fullWidth
-                value={direccion}
-                onChange={(e) => setDireccion(e.target.value)}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 onBlur={() => handleBlur('direccion')}
                 sx={{ mb: 2 }}
             />
@@ -81,6 +92,8 @@ const ProviderForm = ({ setFormCompleted }) => {
                 label="Comentarios"
                 multiline
                 rows={4}
+                value={comments}
+                onChange={(e) => setComments(e.target.value)}
                 variant="outlined"
                 fullWidth
                 sx={{ mb: 2 }}

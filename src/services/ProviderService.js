@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Provider from '../models/Provider';
 
-export const createProvider = async (providerData) => {
+const createProvider = async (providerData) => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_REFA_BASE_PATH}/provider`, providerData);
   
@@ -17,7 +17,7 @@ export const createProvider = async (providerData) => {
     }
   };
   
-  export const getProvider = async (id) => {
+const getProvider = async (id) => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_REFA_BASE_PATH}/provider/${id}`);
   
@@ -32,3 +32,5 @@ export const createProvider = async (providerData) => {
       return null;
     }
   };
+
+  export { createProvider, getProvider };
