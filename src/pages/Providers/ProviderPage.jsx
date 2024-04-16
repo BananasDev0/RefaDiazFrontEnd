@@ -7,7 +7,7 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import CustomInput from "../../components/CustomInput";
 import ProviderDialog from "./ProviderDialog";
 import { useMobile } from "../../components/MobileProvider";
-import { getAll, deleteProvider, createProvider } from '../../services/ProviderService';
+import { getAll, deleteProvider, createProvider, updateProvider } from '../../services/ProviderService';
 
 const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     return (
@@ -70,6 +70,20 @@ export default function ProvidersPage() {
             console.log(error);
         }
     }
+
+    const updateProviderInfo = async (providerId, updatedData) => {
+        try {
+            console.log(`Actualizando proveedor con ID: ${providerId} y datos:`, updatedData);
+            // await updateProvider(providerId, updatedData);
+            await updateProvider(providerId, updatedData)
+            // Actualiza la lista de proveedores después de la actualización
+            getProviders();
+            // Cierra el diálogo después de la actualización
+            handleCloseDialog();
+        } catch (error) {
+            console.error("Error al actualizar proveedor:", error);
+        }
+    };
 
     const handleDeleteProvider = async (id) => {
         try {
@@ -212,9 +226,13 @@ export default function ProvidersPage() {
             >
                 <AddIcon />
             </Fab>
-            <ProviderDialog open={openDialog} onClose={handleCloseDialog} addProviderToList={addProviderToList} providerId={providerId}/>
-
-
+            <ProviderDialog 
+                open={openDialog} 
+                onClose={handleCloseDialog} 
+                addProviderToList={addProviderToList} 
+                providerId={providerId}
+                updateProviderInfo={updateProviderInfo}
+            />
         </Box>
     );
 }

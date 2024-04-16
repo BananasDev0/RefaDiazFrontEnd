@@ -3,34 +3,31 @@ import { Dialog, Button, AppBar, Toolbar, IconButton, Typography, Slide } from "
 import CloseIcon from '@mui/icons-material/Close';
 import ProviderForm from './ProviderForm';
 // import { createProvider } from '../../services/ProviderService';
-import Provider from '../../models/Provider';
+// import Provider from '../../models/Provider';
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
 
-const ProviderDialog = ({ open, onClose, addProviderToList, providerId }) => {
+const ProviderDialog = ({ open, onClose, addProviderToList, updateProviderInfo, providerId }) => {
     const [formCompleted, setFormCompleted] = useState(false);
-
     const [formData, setFormData] = useState({});
 
     const handleSave = async (formData) => {
         try {
-            const provider = new Provider({
-                name: formData.name,
-                phoneNumber: formData.phoneNumber,
-                address: formData.address,
-                comments: formData.comments
-            });
-
-            await addProviderToList(provider);
-
-            onClose(); // Cierra el diálogo
+            if (providerId) {
+                // Si hay un providerId existente, llama a la función para actualizar la información del proveedor
+                await updateProviderInfo(providerId, formData);
+            } else {
+                // Si no hay un providerId existente, llama a la función para agregar un nuevo proveedor
+                await addProviderToList(formData);
+            }
         } catch (error) {
-            console.log(error);
+            console.error("Error al guardar proveedor:", error);
         }
     };
+
 
     return (
         <Dialog

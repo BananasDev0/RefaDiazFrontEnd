@@ -69,7 +69,7 @@ const updateProvider = async (id, updatedData) => {
   try {
     const response = await axios.put(`${import.meta.env.VITE_API_REFA_BASE_PATH}/provider/${id}`, updatedData);
     
-    if(response.status === 200) {
+    if(response.status === 204) {
       console.log('Proveedor actualizado');
       return true;
     } else {
