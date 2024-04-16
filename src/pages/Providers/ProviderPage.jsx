@@ -7,7 +7,7 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import CustomInput from "../../components/CustomInput";
 import ProviderDialog from "./ProviderDialog";
 import { useMobile } from "../../components/MobileProvider";
-import { getAll, deleteProvider } from '../../services/ProviderService';
+import { getAll, deleteProvider, createProvider } from '../../services/ProviderService';
 
 const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     return (
@@ -23,7 +23,7 @@ const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     );
 };
 
-export default function ProductsPage() {
+export default function ProvidersPage() {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
@@ -71,6 +71,16 @@ export default function ProductsPage() {
             console.log(error)
         }
     }
+
+    const addProviderToList = async (newProvider) => {
+        try {
+            await createProvider(newProvider);
+            getProviders(); // Asegúrate de que esta función actualiza la lista de proveedores
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    
 
     return (
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
@@ -173,7 +183,7 @@ export default function ProductsPage() {
                                 <strong>Nombre:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].name}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Teléfono:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].phone}
+                                <strong>Teléfono:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].phoneNumber}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
                                 <strong>Dirección:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].address}
@@ -194,7 +204,9 @@ export default function ProductsPage() {
             >
                 <AddIcon />
             </Fab>
-            <ProviderDialog open={openDialog} onClose={handleCloseDialog} />
+            <ProviderDialog open={openDialog} onClose={handleCloseDialog} addProviderToList={addProviderToList} />
+
+
         </Box>
     );
 }
