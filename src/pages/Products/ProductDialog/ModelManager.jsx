@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Button, Table, TableBody, TableCell, TableHead, TableRow, TextField, IconButton, Typography, Box, Grid, FormControl, InputLabel, Select, MenuItem
+  Button, Table, TableBody, TableCell, TableHead, TableRow, TextField, IconButton, Typography, Grid, FormControl, InputLabel, Select, MenuItem
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandableCard from '../../../components/ExpandableCard';
