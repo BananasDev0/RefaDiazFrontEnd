@@ -10,7 +10,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 
-const ProviderDialog = ({ open, onClose, addProviderToList }) => {
+const ProviderDialog = ({ open, onClose, addProviderToList, providerId }) => {
     const [formCompleted, setFormCompleted] = useState(false);
 
     const [formData, setFormData] = useState({});
@@ -61,7 +61,8 @@ const ProviderDialog = ({ open, onClose, addProviderToList }) => {
                 </Toolbar>
             </AppBar>
 
-            <ProviderForm setFormCompleted={setFormCompleted} setFormData={setFormData} />
+            <ProviderForm setFormCompleted={setFormCompleted} setFormData={setFormData} providerId={providerId} />
+
 
         </Dialog>
     );
