@@ -29,6 +29,7 @@ export default function ProvidersPage() {
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [rows, setRows] = useState([]);
+    const [providerId, setProviderId] = useState(null);
 
     const responsive = useMobile();
     useEffect(() => {
@@ -36,9 +37,16 @@ export default function ProvidersPage() {
         getProviders();
     }, []);
 
-    const handleOpenDialog = () => {
-        setOpenDialog(true);
-    }
+    const handleOpenDialog = (id) => {
+        if (providerId !== null && providerId !== undefined) {
+            setOpenDialog(true);
+        } else {
+            // Manejar el caso donde providerId no es válido (por ejemplo, mostrar un mensaje de error)
+            console.error("El ID del proveedor no es válido.");
+        }
+        setProviderId(id)
+    };
+    
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
@@ -118,7 +126,7 @@ export default function ProvidersPage() {
                                             </Tooltip>
 
                                             <Tooltip title="Editar">
-                                                <IconButton color='info' onClick={() => handleOpenDialog()}>
+                                                <IconButton color='info' onClick={() => handleOpenDialog(row.id)}>
                                                     <EditIcon />
                                                 </IconButton>
                                             </Tooltip>
@@ -143,7 +151,7 @@ export default function ProvidersPage() {
                                                 </Tooltip>
 
                                                 <Tooltip title="Editar">
-                                                    <IconButton color='info' onClick={() => handleOpenDialog()}>
+                                                    <IconButton color='info' onClick={() => handleOpenDialog(row.id)}>
                                                         <EditIcon />
                                                     </IconButton>
                                                 </Tooltip>
@@ -204,7 +212,7 @@ export default function ProvidersPage() {
             >
                 <AddIcon />
             </Fab>
-            <ProviderDialog open={openDialog} onClose={handleCloseDialog} addProviderToList={addProviderToList} />
+            <ProviderDialog open={openDialog} onClose={handleCloseDialog} addProviderToList={addProviderToList} providerId={providerId}/>
 
 
         </Box>

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FormControl, TextField, Box, Typography, Alert } from '@mui/material';
+import { getProvider } from '../../services/ProviderService';
 
-const ProviderForm = ({ setFormCompleted, setFormData }) => {
+const ProviderForm = ({ setFormCompleted, setFormData, providerId }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
@@ -35,6 +36,28 @@ const ProviderForm = ({ setFormCompleted, setFormData }) => {
                 break;
         }
     };
+
+    useEffect(() => {
+        if(providerId !== null && typeof providerId === 'number') {
+            console.log(providerId);
+            try {
+                const fetchProvider = async () => {
+                    const provider = await getProvider(providerId);
+                    if(provider) {
+                        setName(provider.name); 
+                        setPhoneNumber(provider.phoneNumber);
+                        setAddress(provider.address); 
+                        setComments(provider.comments);
+                    }
+                };
+    
+                fetchProvider();
+            } catch(error) {
+                console.log("Hubo un error:", error);
+            }
+        }
+    }, [providerId]);
+    
 
     useEffect(() => {
         // Actualizar el objeto formData cuando cambien los datos del formulario
