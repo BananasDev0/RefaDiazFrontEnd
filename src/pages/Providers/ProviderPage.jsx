@@ -68,7 +68,6 @@ export default function ProvidersPage() {
     const getProviders = async () => {
         try {
             const providers = await getAll();
-            console.log("entro")
             setRows(providers);
         } catch (error) {
             console.error(error);
@@ -106,18 +105,20 @@ export default function ProvidersPage() {
             getProviders();
             handleCloseDialog();
             setSnackbarMessage('¡Proveedor agregado con éxito!');
-            setAlertSeverity('succes');
+            setAlertSeverity('success');
             setSnackbarOpen(true);
         } catch (error) {
             console.error(error);
         }
     };
 
-    
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    }
 
     return (
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
-            <CustomSearchBar searchTerm={searchTerm} handleSearchChange={(e) => setSearchTerm(e.target.value)} />
+            <CustomSearchBar searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
             <Box sx={{ height: 'calc(100% - 56px)', overflow: 'auto' }}>
                 <TableContainer component={Paper}>
                     <Table >
@@ -137,7 +138,7 @@ export default function ProvidersPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.map((row, index) => (
+                            {rows.filter(row => row.name.toLowerCase().includes(searchTerm.toLowerCase())).map((row, index) => (
                                 <TableRow key={row.name} >
                                     <TableCell component="th" scope="row">
                                         {row.name}

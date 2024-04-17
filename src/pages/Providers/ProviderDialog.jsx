@@ -2,8 +2,6 @@ import { useState, forwardRef } from 'react';
 import { Dialog, Button, AppBar, Toolbar, IconButton, Typography, Slide } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import ProviderForm from './ProviderForm';
-// import { createProvider } from '../../services/ProviderService';
-// import Provider from '../../models/Provider';
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
