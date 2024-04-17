@@ -40,11 +40,11 @@ const getAll = async() => {
       return response.data.map(provider => (new Provider({...provider})));
     } else {
       console.error('Formato de respuesta inesperado:', response.data);
-      return [];
+      return false;
     }
   } catch (error) {
     console.error('Error al obtener las marcas:', error);
-    return [];
+    return false;
   }
 }
 

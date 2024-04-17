@@ -68,7 +68,15 @@ export default function ProvidersPage() {
     const getProviders = async () => {
         try {
             const providers = await getAll();
-            setRows(providers);
+            if(providers) {
+                setRows(providers);
+            } else {
+                console.log('error')
+                setSnackbarMessage('¡Error en el Servicio! Por favor, inténtalo de nuevo más tarde.');
+                setAlertSeverity('error');
+                setSnackbarOpen(true);
+            }
+            
         } catch (error) {
             console.error(error);
         }
@@ -76,24 +84,38 @@ export default function ProvidersPage() {
 
     const updateProviderInfo = async (providerId, updatedData) => {
         try {
-            await updateProvider(providerId, updatedData);
-            getProviders();
-            handleCloseDialog();
-            setSnackbarMessage('¡Proveedor actualizado con éxito!');
-            setAlertSeverity('info');
-            setSnackbarOpen(true);
+            const updated = await updateProvider(providerId, updatedData);
+            if (updated) {
+                getProviders();
+                handleCloseDialog();
+                setSnackbarMessage('¡Proveedor actualizado con éxito!');
+                setAlertSeverity('info');
+                setSnackbarOpen(true);
+            } else {
+                setSnackbarMessage('¡Error al actualizar proveedor! Por favor, inténtalo de nuevo más tarde.');
+                setAlertSeverity('error');
+                setSnackbarOpen(true);
+            }
         } catch (error) {
             console.error("Error al actualizar proveedor:", error);
+            
         }
     };
 
     const handleDeleteProvider = async (id) => {
         try {
-            await deleteProvider(id);
-            getProviders();
-            setSnackbarMessage('¡Proveedor eliminado con éxito!');
-            setAlertSeverity('info');
-            setSnackbarOpen(true);
+            const provider = await deleteProvider(id);
+            if(provider){
+                getProviders();
+                setSnackbarMessage('¡Proveedor eliminado con éxito!');
+                setAlertSeverity('info');
+                setSnackbarOpen(true);
+            } else {
+                setSnackbarMessage('¡Error al eliminar proveedor! Por favor, inténtalo de nuevo más tarde.');
+                setAlertSeverity('error');
+                setSnackbarOpen(true);
+            }
+           
         } catch (error) {
             console.error(error);
         }
@@ -101,12 +123,13 @@ export default function ProvidersPage() {
 
     const addProviderToList = async (newProvider) => {
         try {
-            await createProvider(newProvider);
+            createProvider(newProvider);
             getProviders();
             handleCloseDialog();
             setSnackbarMessage('¡Proveedor agregado con éxito!');
             setAlertSeverity('success');
             setSnackbarOpen(true);
+            
         } catch (error) {
             console.error(error);
         }
