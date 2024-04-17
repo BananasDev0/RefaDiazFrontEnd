@@ -37,7 +37,7 @@ const getAll = async() => {
   try {
     const response = await axios.get(`${import.meta.env.VITE_API_REFA_BASE_PATH}/providers`);
     if (response.data && Array.isArray(response.data)) {
-      return response.data.map(brand => (new Provider({...brand})));
+      return response.data.map(provider => (new Provider({...provider})));
     } else {
       console.error('Formato de respuesta inesperado:', response.data);
       return [];

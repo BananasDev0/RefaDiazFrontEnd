@@ -37,14 +37,13 @@ export default function ProvidersPage() {
         getProviders();
     }, []);
 
-    const handleOpenDialog = (id) => {
-        if (providerId !== null && providerId !== undefined) {
-            setOpenDialog(true);
+    const handleOpenDialog = (e, id) => {
+        if (id) {
+            setProviderId(id);
         } else {
-            // Manejar el caso donde providerId no es válido (por ejemplo, mostrar un mensaje de error)
-            console.error("El ID del proveedor no es válido.");
+            setProviderId(null);
         }
-        setProviderId(id)
+        setOpenDialog(true);
     };
     
 
@@ -98,6 +97,7 @@ export default function ProvidersPage() {
         try {
             await createProvider(newProvider);
             getProviders(); // Asegúrate de que esta función actualiza la lista de proveedores
+            handleCloseDialog();
         } catch (error) {
             console.log(error);
         }
@@ -165,7 +165,7 @@ export default function ProvidersPage() {
                                                 </Tooltip>
 
                                                 <Tooltip title="Editar">
-                                                    <IconButton color='info' onClick={() => handleOpenDialog(row.id)}>
+                                                    <IconButton color='info' onClick={(e) => handleOpenDialog(e, row.id)}>
                                                         <EditIcon />
                                                     </IconButton>
                                                 </Tooltip>

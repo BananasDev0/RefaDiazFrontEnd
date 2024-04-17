@@ -38,26 +38,25 @@ const ProviderForm = ({ setFormCompleted, setFormData, providerId }) => {
     };
 
     useEffect(() => {
-        if(providerId !== null && typeof providerId === 'number') {
-            console.log(providerId);
+        if (providerId !== null && typeof providerId === 'number') {
             try {
                 const fetchProvider = async () => {
                     const provider = await getProvider(providerId);
-                    if(provider) {
-                        setName(provider.name); 
+                    if (provider) {
+                        setName(provider.name);
                         setPhoneNumber(provider.phoneNumber);
-                        setAddress(provider.address); 
+                        setAddress(provider.address);
                         setComments(provider.comments);
                     }
                 };
-    
+
                 fetchProvider();
-            } catch(error) {
+            } catch (error) {
                 console.log("Hubo un error:", error);
             }
         }
     }, [providerId]);
-    
+
 
     useEffect(() => {
         // Actualizar el objeto formData cuando cambien los datos del formulario
@@ -69,8 +68,8 @@ const ProviderForm = ({ setFormCompleted, setFormData, providerId }) => {
         });
     }, [name, phoneNumber, address, comments, setFormData]);
 
-    return( 
-        <FormControl sx={{ mt: 2, textAlign: 'center', marginLeft: 10, marginRight: 10}}>
+    return (
+        <FormControl sx={{ mt: 2, textAlign: 'center', marginLeft: 10, marginRight: 10 }}>
             <Box sx={{ mb: 2 }}>
                 <Typography variant="h6" gutterBottom>
                     Información del Proveedor
