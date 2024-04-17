@@ -1,20 +1,22 @@
-import { FormControl, Container, Grid, Typography, Button, TextField, IconButton, InputAdornment, Select, MenuItem, InputLabel, Alert } from '@mui/material';
-import * as React from 'react';
+import React, { useState } from 'react';
+import {
+  Container, Grid, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem,
+  InputAdornment, IconButton, Snackbar, Alert
+} from '@mui/material';
 import dayjs from 'dayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../services/Firebase/firebase';
 import validateEmail from '../../util/EmailVerifier';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { createUser } from '../../services/UserService'
+import { createUser } from '../../services/UserService';
 import Person from '../../models/Person';
 import User from '../../models/User';
 
 export default function UserPage() {
-  const [userData, setUserData] = React.useState({
+  const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
     email: '',
@@ -26,11 +28,11 @@ export default function UserPage() {
     active: 1,
     roleId: ''
   });
-
-  const [alertOpen, setAlertOpen] = React.useState(false);
-  const [errorAlertOpen, setErrorAlertOpen] = React.useState(false);
-  const [passwordsMatch, setPasswordsMatch] = React.useState(true);
-  const [showPasswords, setShowPasswords] = React.useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [showPasswords, setShowPasswords] = useState(false);
 
   const handleDateChange = (newValue) => {
     setUserData({ ...userData, birthDate: newValue });
@@ -54,26 +56,19 @@ export default function UserPage() {
     let inputValue = event.target.value.replace(/\D/g, ''); // Elimina todos los caracteres que no sean números
     inputValue = inputValue.slice(0, 10); // Limita la longitud a 10 dígitos
     setUserData({ ...userData, phoneNumber: inputValue });
-};
-
+  };
 
   const handleSubmit = async () => {
+    if (!validateEmail(userData.email)) {
+      setSnackbarOpen(true);
+      setSnackbarMessage('El correo electrónico no es válido.');
+      setSnackbarSeverity('error');
+      return;
+    }
+
     try {
-      if (!validateEmail(userData.email)) {
-        setErrorAlertOpen(true); // Mostrar la alerta de error
-        setTimeout(() => {
-          setErrorAlertOpen(false);
-        }, 5000);
-        console.error('El correo electrónico no es válido.');
-        return;
-      }
-
       const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
-
-      console.log('Usuario creado:', userCredential.user);
-
       const userId = userCredential.user.uid;
-
       const user = new User({
         id: userId,
         person: new Person({
@@ -82,7 +77,7 @@ export default function UserPage() {
           email: userData.email,
           phoneNumber: userData.phoneNumber,
           address: userData.address,
-          birthDate: userData.birthDate,
+          birthDate: userData.birthDate.toISOString(),
           active: userData.active
         }),
         roleId: userData.roleId
@@ -90,6 +85,9 @@ export default function UserPage() {
 
       await createUser(user);
 
+      setSnackbarOpen(true);
+      setSnackbarMessage('¡Usuario creado correctamente!');
+      setSnackbarSeverity('success');
       setUserData({
         firstName: '',
         lastName: '',
@@ -100,34 +98,31 @@ export default function UserPage() {
         active: 1,
         password: '',
         confirmPassword: '',
-        role_id: ''
+        roleId: ''
       });
-
-      setAlertOpen(true);
-      setTimeout(() => {
-        setAlertOpen(false);
-      }, 5000);
     } catch (error) {
-      setErrorAlertOpen(true);
-      setTimeout(() => {
-        setErrorAlertOpen(false);
-      }, 5000);
-      console.error('Error al registrar usuario en Firebase:', error);
+      setSnackbarOpen(true);
+      setSnackbarMessage('Error al registrar usuario en Firebase.');
+      setSnackbarSeverity('error');
     }
   };
 
   const areAllFieldsComplete = () => {
-    const arePasswordsMatching = userData.password === userData.confirmPassword;
-    return Object.values(userData).every(value => value !== '') && arePasswordsMatching;
+    return Object.values(userData).every(value => value !== '') && passwordsMatch;
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   return (
-    <Container style={{ display: 'flex', flexDirection: 'column', height: '100vh', marginTop: '10vh' }}>
-      <Typography variant="h4" align="center" gutterBottom>
-        Registro de usuario
-      </Typography>
-      <Grid container spacing={2} >
-        <Grid item xs={12} sm={6}>
+    <Container style={{ display: 'flex', flexDirection: 'column', height: '100%', paddingTop: '10vh' }}>
+      <Typography variant="h4" align="center" gutterBottom>Registro de usuario</Typography>
+      <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
             <TextField
               required
@@ -198,14 +193,6 @@ export default function UserPage() {
               onChange={handleInputChange}
             />
           </FormControl>
-          {errorAlertOpen && (
-            <Alert
-              sx={{ marginTop: '0.5rem' }}
-              severity="error"
-            >
-              El correo electrónico ingresado no es válido.
-            </Alert>
-          )}
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
@@ -275,28 +262,17 @@ export default function UserPage() {
         </Grid>
         <Grid item xs={12}>
       </Grid>
-      <Grid item xs={12} style={{ textAlign: 'end', marginTop: '16px' }}>
-        <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
-          Registrar
-        </Button>
-        {errorAlertOpen && !Object.values(errorAlertOpen).some(alert => alert) && (
-          <Alert
-            sx={{ position: 'absolute', bottom: 0, right: 0 }}
-            severity="error"
-          >
-            Ha ocurrido un error, por favor inténtelo de nuevo.
-          </Alert>
-        )}
-        {alertOpen && (
-          <Alert
-            sx={{ position: 'absolute', bottom: 0, right: 0 }}
-            severity="success"
-          >
-            ¡Usuario creado correctamente!
-          </Alert>
-        )}
+        <Grid item xs={12} style={{ textAlign: 'end', marginTop: '16px' }}>
+          <Button variant="contained" color="primary" onClick={handleSubmit} disabled={!areAllFieldsComplete()}>
+            Registrar
+          </Button>
+        </Grid>
       </Grid>
-    </Grid>
-  </Container>
-);
+      <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose} anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}>
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </Container>
+  );
 }
