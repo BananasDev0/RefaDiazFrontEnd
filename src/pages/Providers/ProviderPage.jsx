@@ -92,7 +92,7 @@ export default function ProvidersPage() {
             await deleteProvider(id);
             getProviders();
             setSnackbarMessage('¡Proveedor eliminado con éxito!');
-            setAlertSeverity('error');
+            setAlertSeverity('info');
             setSnackbarOpen(true);
         } catch (error) {
             console.error(error);
