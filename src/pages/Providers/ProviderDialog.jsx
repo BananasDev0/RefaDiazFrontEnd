@@ -1,5 +1,5 @@
 import { useState, forwardRef } from 'react';
-import { Dialog, Button, AppBar, Toolbar, IconButton, Typography, Slide } from "@mui/material";
+import { Dialog, Button, AppBar, Toolbar, IconButton, Typography, Slide, Snackbar, Alert } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import ProviderForm from './ProviderForm';
 // import { createProvider } from '../../services/ProviderService';
@@ -13,12 +13,14 @@ const Transition = forwardRef(function Transition(props, ref) {
 const ProviderDialog = ({ open, onClose, addProviderToList, updateProviderInfo, providerId }) => {
     const [formCompleted, setFormCompleted] = useState(false);
     const [formData, setFormData] = useState({});
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
 
     const handleSave = async (formData) => {
         try {
             if (providerId) {
                 // Si hay un providerId existente, llama a la función para actualizar la información del proveedor
                 await updateProviderInfo(providerId, formData);
+                setSnackbarOpen(true);
             } else {
                 // Si no hay un providerId existente, llama a la función para agregar un nuevo proveedor
                 await addProviderToList(formData);
@@ -28,7 +30,10 @@ const ProviderDialog = ({ open, onClose, addProviderToList, updateProviderInfo, 
         }
     };
 
-
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    };
+    
     return (
         <Dialog
             fullScreen
@@ -59,7 +64,11 @@ const ProviderDialog = ({ open, onClose, addProviderToList, updateProviderInfo, 
             </AppBar>
 
             <ProviderForm setFormCompleted={setFormCompleted} setFormData={setFormData} providerId={providerId}/>
-
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+                <Alert onClose={handleCloseSnackbar} severity="success">
+                    ¡Proveedor guardado con éxito!
+                </Alert>
+            </Snackbar>
         </Dialog>
     );
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Tooltip, Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography, IconButton } from "@mui/material";
+import { Tooltip, Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography, IconButton, Snackbar, Alert } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -30,10 +30,12 @@ export default function ProvidersPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [rows, setRows] = useState([]);
     const [providerId, setProviderId] = useState(null);
-
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState('');
     const responsive = useMobile();
+
     useEffect(() => {
-        // Llamar a la función getProviders cuando el componente monta
         getProviders();
     }, []);
 
@@ -45,40 +47,42 @@ export default function ProvidersPage() {
         }
         setOpenDialog(true);
     };
-    
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
-    }
+    };
 
     const handleOpenCommentsModal = (index) => {
         setSelectedRowIndex(index);
         setOpenCommentsModal(true);
-    }
+    };
 
     const handleCloseCommentsModal = () => {
         setOpenCommentsModal(false);
-    }
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    };
 
     const getProviders = async () => {
         try {
             const providers = await getAll();
-            setRows(providers)
-            console.log(providers)
+            console.log("entro")
+            setRows(providers);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
-    }
+    };
 
     const updateProviderInfo = async (providerId, updatedData) => {
         try {
-            console.log(`Actualizando proveedor con ID: ${providerId} y datos:`, updatedData);
-            // await updateProvider(providerId, updatedData);
-            await updateProvider(providerId, updatedData)
-            // Actualiza la lista de proveedores después de la actualización
+            await updateProvider(providerId, updatedData);
             getProviders();
-            // Cierra el diálogo después de la actualización
             handleCloseDialog();
+            setSnackbarMessage('¡Proveedor actualizado con éxito!');
+            setAlertSeverity('info');
+            setSnackbarOpen(true);
         } catch (error) {
             console.error("Error al actualizar proveedor:", error);
         }
@@ -87,21 +91,28 @@ export default function ProvidersPage() {
     const handleDeleteProvider = async (id) => {
         try {
             await deleteProvider(id);
-            getProviders()
+            getProviders();
+            setSnackbarMessage('¡Proveedor eliminado con éxito!');
+            setAlertSeverity('error');
+            setSnackbarOpen(true);
         } catch (error) {
-            console.log(error)
+            console.error(error);
         }
-    }
+    };
 
     const addProviderToList = async (newProvider) => {
         try {
             await createProvider(newProvider);
-            getProviders(); // Asegúrate de que esta función actualiza la lista de proveedores
+            getProviders();
             handleCloseDialog();
+            setSnackbarMessage('¡Proveedor agregado con éxito!');
+            setAlertSeverity('succes');
+            setSnackbarOpen(true);
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     };
+
     
 
     return (
@@ -184,6 +195,11 @@ export default function ProvidersPage() {
                     </Table>
                 </TableContainer>
             </Box>
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+                <Alert onClose={handleCloseSnackbar} severity={alertSeverity} variant='filled'>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
             <Modal
                 open={openCommentsModal}
                 onClose={handleCloseCommentsModal}
