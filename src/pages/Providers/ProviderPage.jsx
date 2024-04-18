@@ -8,6 +8,8 @@ import CustomInput from "../../components/CustomInput";
 import ProviderDialog from "./ProviderDialog";
 import { useMobile } from "../../components/MobileProvider";
 import { getAll, deleteProvider, createProvider, updateProvider } from '../../services/ProviderService';
+import TablePagination from '@mui/material/TablePagination';
+
 
 const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     return (
@@ -24,6 +26,9 @@ const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
 };
 
 export default function ProvidersPage() {
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(6); // Default rowsPerPage value
+    const [totalCount, setTotalCount] = useState(0);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
@@ -37,7 +42,7 @@ export default function ProvidersPage() {
 
     useEffect(() => {
         getProviders();
-    }, []);
+    }, [page, rowsPerPage]); // Run effect whenever page or rowsPerPage change
 
     const handleOpenDialog = (e, id) => {
         if (id) {
@@ -67,20 +72,20 @@ export default function ProvidersPage() {
 
     const getProviders = async () => {
         try {
-            const providers = await getAll();
-            if(providers) {
-                setRows(providers);
+            const response = await getAll(page + 1, rowsPerPage);
+            if (response) {
+                setRows(response.providers);
+                setTotalCount(response.totalCount);
             } else {
-                console.log('error')
                 setSnackbarMessage('¡Error en el Servicio! Por favor, inténtalo de nuevo más tarde.');
                 setAlertSeverity('error');
                 setSnackbarOpen(true);
             }
-            
         } catch (error) {
             console.error(error);
         }
     };
+
 
     const updateProviderInfo = async (providerId, updatedData) => {
         try {
@@ -98,14 +103,14 @@ export default function ProvidersPage() {
             }
         } catch (error) {
             console.error("Error al actualizar proveedor:", error);
-            
+
         }
     };
 
     const handleDeleteProvider = async (id) => {
         try {
             const provider = await deleteProvider(id);
-            if(provider){
+            if (provider) {
                 getProviders();
                 setSnackbarMessage('¡Proveedor eliminado con éxito!');
                 setAlertSeverity('info');
@@ -115,7 +120,7 @@ export default function ProvidersPage() {
                 setAlertSeverity('error');
                 setSnackbarOpen(true);
             }
-           
+
         } catch (error) {
             console.error(error);
         }
@@ -129,7 +134,7 @@ export default function ProvidersPage() {
             setSnackbarMessage('¡Proveedor agregado con éxito!');
             setAlertSeverity('success');
             setSnackbarOpen(true);
-            
+
         } catch (error) {
             console.error(error);
         }
@@ -137,7 +142,9 @@ export default function ProvidersPage() {
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
-    }
+        setPage(0); // Reinicia la página al cambiar el término de búsqueda
+    };
+
 
     return (
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
@@ -217,6 +224,18 @@ export default function ProvidersPage() {
                             ))}
                         </TableBody>
                     </Table>
+                    <TablePagination
+                        rowsPerPageOptions={[5]} // Opciones para seleccionar el número de filas por página
+                        component="div"
+                        count={totalCount} // Recuento total de filas
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={(e, newPage) => setPage(newPage)} 
+                        onRowsPerPageChange={(e) => {
+                            setRowsPerPage(parseInt(e.target.value, 10));
+                            setPage(0); // Reinicia la página al cambiar el número de filas por página
+                        }}
+                    />
                 </TableContainer>
             </Box>
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
@@ -266,10 +285,10 @@ export default function ProvidersPage() {
             >
                 <AddIcon />
             </Fab>
-            <ProviderDialog 
-                open={openDialog} 
-                onClose={handleCloseDialog} 
-                addProviderToList={addProviderToList} 
+            <ProviderDialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                addProviderToList={addProviderToList}
                 providerId={providerId}
                 updateProviderInfo={updateProviderInfo}
             />
