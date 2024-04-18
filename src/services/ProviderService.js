@@ -33,20 +33,30 @@ const getProvider = async (id) => {
     }
   };
 
-const getAll = async() => {
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_API_REFA_BASE_PATH}/providers`);
-    if (response.data && Array.isArray(response.data)) {
-      return response.data.map(provider => (new Provider({...provider})));
-    } else {
-      console.error('Formato de respuesta inesperado:', response.data);
+  const getAll = async (page = 1, limit = 10) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_REFA_BASE_PATH}/providers`, {
+        params: {
+          page: page,
+          limit: limit
+        }
+      });
+  
+      if (response.data && Array.isArray(response.data)) {
+        return {
+          providers: response.data.map(provider => (new Provider({...provider}))),
+          totalCount: response.headers['x-total-count']
+        };
+      } else {
+        console.error('Formato de respuesta inesperado:', response.data);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error al obtener las marcas:', error);
       return false;
     }
-  } catch (error) {
-    console.error('Error al obtener las marcas:', error);
-    return false;
-  }
-}
+  };
+  
 
 const deleteProvider = async (id) => {
   try {
