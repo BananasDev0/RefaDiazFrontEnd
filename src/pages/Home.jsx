@@ -56,13 +56,13 @@ export default function Home() {
     <MobileProvider>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="fixed" open={open}>
+        <AppBar position="fixed" open={open} >
         
           <CustomToolBar handleDrawerOpen={handleDrawerOpen} open={open} />
           
         </AppBar>
         {/* nuevo componente */}
-        <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} setComponent={handleComponentChange}  />
+        <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} setComponent={handleComponentChange} style={{ width: drawerWidth }} />
 
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <ContentHeader />

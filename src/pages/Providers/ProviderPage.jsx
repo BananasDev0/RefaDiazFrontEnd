@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Tooltip, Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography, IconButton } from "@mui/material";
+import { useState, useEffect } from 'react';
+import { Tooltip, Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography, IconButton, Snackbar, Alert } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -7,10 +7,7 @@ import PreviewIcon from '@mui/icons-material/Preview';
 import CustomInput from "../../components/CustomInput";
 import ProviderDialog from "./ProviderDialog";
 import { useMobile } from "../../components/MobileProvider";
-
-function createData(name, phone, address, comments) {
-    return { name, phone, address, comments };
-}
+import { getAll, deleteProvider, createProvider, updateProvider } from '../../services/ProviderService';
 
 const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     return (
@@ -26,47 +23,125 @@ const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     );
 };
 
-export default function ProductsPage() {
+export default function ProvidersPage() {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-
+    const [rows, setRows] = useState([]);
+    const [providerId, setProviderId] = useState(null);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState('');
     const responsive = useMobile();
 
-    const rows = [
-        createData('Pedro Gonzalez', 8123319310, 'los angeles, cdmx', 'proveedor de carritos'),
-        createData('Angel Martinez', 1231234128, 'Monterrey, nuevo leon', 'proveedor de mangueras'),
-        createData('Lupe Esparza', 1231879832, 'guadalupe, cdmx', 'proveedor de tapas'),
-        createData('Jacob Jahir Calvillo Martinez', 91231231, 'San jacinto 702 Fresnos del Lago 66633, Apodaca, Nuevo Leon, Mexico', 'ninguno'),
-        createData('Roel Mendoza', 1231231)
-    ];
+    useEffect(() => {
+        getProviders();
+    }, []);
 
-    const handleOpenDialog = () => {
+    const handleOpenDialog = (e, id) => {
+        if (id) {
+            setProviderId(id);
+        } else {
+            setProviderId(null);
+        }
         setOpenDialog(true);
-    }
+    };
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
-    }
+    };
 
     const handleOpenCommentsModal = (index) => {
         setSelectedRowIndex(index);
         setOpenCommentsModal(true);
-    }
+    };
 
     const handleCloseCommentsModal = () => {
         setOpenCommentsModal(false);
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbarOpen(false);
+    };
+
+    const getProviders = async () => {
+        try {
+            const providers = await getAll();
+            if(providers) {
+                setRows(providers);
+            } else {
+                console.log('error')
+                setSnackbarMessage('¡Error en el Servicio! Por favor, inténtalo de nuevo más tarde.');
+                setAlertSeverity('error');
+                setSnackbarOpen(true);
+            }
+            
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const updateProviderInfo = async (providerId, updatedData) => {
+        try {
+            const updated = await updateProvider(providerId, updatedData);
+            if (updated) {
+                getProviders();
+                handleCloseDialog();
+                setSnackbarMessage('¡Proveedor actualizado con éxito!');
+                setAlertSeverity('info');
+                setSnackbarOpen(true);
+            } else {
+                setSnackbarMessage('¡Error al actualizar proveedor! Por favor, inténtalo de nuevo más tarde.');
+                setAlertSeverity('error');
+                setSnackbarOpen(true);
+            }
+        } catch (error) {
+            console.error("Error al actualizar proveedor:", error);
+            
+        }
+    };
+
+    const handleDeleteProvider = async (id) => {
+        try {
+            const provider = await deleteProvider(id);
+            if(provider){
+                getProviders();
+                setSnackbarMessage('¡Proveedor eliminado con éxito!');
+                setAlertSeverity('info');
+                setSnackbarOpen(true);
+            } else {
+                setSnackbarMessage('¡Error al eliminar proveedor! Por favor, inténtalo de nuevo más tarde.');
+                setAlertSeverity('error');
+                setSnackbarOpen(true);
+            }
+           
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const addProviderToList = async (newProvider) => {
+        try {
+            createProvider(newProvider);
+            getProviders();
+            handleCloseDialog();
+            setSnackbarMessage('¡Proveedor agregado con éxito!');
+            setAlertSeverity('success');
+            setSnackbarOpen(true);
+            
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
     }
-
-
-    const filteredRows = rows.filter(row =>
-        row.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     return (
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
-            <CustomSearchBar searchTerm={searchTerm} handleSearchChange={(e) => setSearchTerm(e.target.value)} />
+            <CustomSearchBar searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
             <Box sx={{ height: 'calc(100% - 56px)', overflow: 'auto' }}>
                 <TableContainer component={Paper}>
                     <Table >
@@ -86,7 +161,7 @@ export default function ProductsPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredRows.map((row, index) => (
+                            {rows.filter(row => row.name.toLowerCase().includes(searchTerm.toLowerCase())).map((row, index) => (
                                 <TableRow key={row.name} >
                                     <TableCell component="th" scope="row">
                                         {row.name}
@@ -100,21 +175,22 @@ export default function ProductsPage() {
                                             </Tooltip>
 
                                             <Tooltip title="Editar">
-                                                <IconButton color='info'>
+                                                <IconButton color='info' onClick={() => handleOpenDialog(row.id)}>
                                                     <EditIcon />
                                                 </IconButton>
                                             </Tooltip>
 
                                             <Tooltip title="Eliminar">
-                                                <IconButton aria-label="delete" color="error">
+                                                <IconButton aria-label="delete" color="error" onClick={() => handleDeleteProvider(row.id)}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                             </Tooltip>
+
                                         </TableCell>
                                     )}
                                     {!responsive.isMobile && (
                                         <>
-                                            <TableCell>{row.phone}</TableCell>
+                                            <TableCell>{row.phoneNumber}</TableCell>
                                             <TableCell>{row.address}</TableCell>
                                             <TableCell sx={{ display: "flex", gap: "10px" }}>
                                                 <Tooltip title="Comentarios">
@@ -124,13 +200,13 @@ export default function ProductsPage() {
                                                 </Tooltip>
 
                                                 <Tooltip title="Editar">
-                                                    <IconButton color='info'>
+                                                    <IconButton color='info' onClick={(e) => handleOpenDialog(e, row.id)}>
                                                         <EditIcon />
                                                     </IconButton>
                                                 </Tooltip>
 
                                                 <Tooltip title="Eliminar">
-                                                    <IconButton aria-label="delete" color="error">
+                                                    <IconButton aria-label="delete" color="error" onClick={() => handleDeleteProvider(row.id)}>
                                                         <DeleteIcon />
                                                     </IconButton>
                                                 </Tooltip>
@@ -143,6 +219,11 @@ export default function ProductsPage() {
                     </Table>
                 </TableContainer>
             </Box>
+            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+                <Alert onClose={handleCloseSnackbar} severity={alertSeverity} variant='filled'>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
             <Modal
                 open={openCommentsModal}
                 onClose={handleCloseCommentsModal}
@@ -161,16 +242,16 @@ export default function ProductsPage() {
                                 Detalles del Proveedor
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Nombre:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].name}
+                                <strong>Nombre:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].name}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Teléfono:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].phone}
+                                <strong>Teléfono:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].phoneNumber}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Dirección:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].address}
+                                <strong>Dirección:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].address}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" gutterBottom>
-                                <strong>Comentarios:</strong> {filteredRows[selectedRowIndex] && filteredRows[selectedRowIndex].comments}
+                                <strong>Comentarios:</strong> {rows[selectedRowIndex] && rows[selectedRowIndex].comments}
                             </Typography>
                             <Button variant="contained" onClick={handleCloseCommentsModal} style={{ marginTop: 2 }}>Cerrar</Button>
                         </CardContent>
@@ -185,7 +266,13 @@ export default function ProductsPage() {
             >
                 <AddIcon />
             </Fab>
-            <ProviderDialog open={openDialog} onClose={handleCloseDialog} />
+            <ProviderDialog 
+                open={openDialog} 
+                onClose={handleCloseDialog} 
+                addProviderToList={addProviderToList} 
+                providerId={providerId}
+                updateProviderInfo={updateProviderInfo}
+            />
         </Box>
     );
 }
