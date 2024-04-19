@@ -8,6 +8,7 @@ export const ProductDialogProvider = ({ children }) => {
     const [activeStep, setActiveStep] = useState(0);
     const [isNextEnabled, setIsNextEnabled] = useState(false);
     const [product, setProduct] = useState({ product: {}});
+    const [associatedVehicleModels, setAssociatedVehicleModels] = useState([])
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -27,7 +28,9 @@ export const ProductDialogProvider = ({ children }) => {
             setIsNextEnabled,
             totalSteps: 3,
             product,
-            setProduct
+            setProduct,
+            associatedVehicleModels,
+            setAssociatedVehicleModels
         }}>
             {children}
         </ProductDialogContext.Provider>
