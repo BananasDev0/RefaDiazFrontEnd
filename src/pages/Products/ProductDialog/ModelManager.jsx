@@ -6,7 +6,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandableCard from '../../../components/ExpandableCard';
 import CustomSelectWithAdd from '../../../components/CustomSelectWithAdd';
 import { useProductDialogContext } from './ProductDialogContext';
-import { getAllBrands } from '../../../services/BrandService';
+import { getVehicleModelsByBrandId, getAllBrands } from '../../../services/BrandService';
+import { createVehicleModel } from '../../../services/VehicleModelService';
+import VehicleModel from '../../../models/VehicleModel';
+import { useSnackbar } from '../../../components/SnackbarContext';
 
 const ModelManager = () => {
   const [brand, setBrand] = useState({
@@ -22,16 +25,42 @@ const ModelManager = () => {
   const { associatedVehicleModels, setAssociatedVehicleModels } = useProductDialogContext();
 
   const [brands, setBrands] = useState([]); // Estado para las marcas
+  const [vehicleModels, setVehicleModels] = useState([]); // Estado para los modelos
+  
+  const { openSnackbar } = useSnackbar(); // Usa el hook de Snackbar
 
   // Llama a getAllBrands en el primer render
   useEffect(() => {
     const fetchBrands = async () => {
-      const brandsData = await getAllBrands();
-      setBrands(brandsData);
+      try {
+        const brandsData = await getAllBrands();
+        setBrands(brandsData);
+      } catch (error) {
+        openSnackbar(`Error al obtener las marcas: ${error.errorMessage}`, 'error');
+      }
     };
 
     fetchBrands();
   }, []);
+
+  // Llama a getVehicleModelsByBrandId cada vez que se seleccione una nueva marca
+  useEffect(() => {
+    const fetchVehicleModels = async () => {
+      try {
+        if (brand.id) {
+          const vehicleModelsData = await getVehicleModelsByBrandId(brand.id);
+          setVehicleModels(vehicleModelsData);
+        } else {
+          setVehicleModels([]);
+        }
+      } catch (error) {
+        openSnackbar(`Error al obtener los modelos: ${error.errorMessage}`, 'error');
+      }
+    };
+
+    fetchVehicleModels();
+  }, [brand.id]);
+
 
   const handleAddModel = () => {
     if (brand.id && currentModel.id && startYear && endYear) {
@@ -60,6 +89,15 @@ const ModelManager = () => {
     }
   };
 
+  const handleOnAddItem = async (elements, newItem) => {
+    const newVehicleModel = new VehicleModel({
+      brandId: brand.id,
+      ...newItem
+    });
+    const createdVehicleModel = await createVehicleModel(newVehicleModel);
+    return createdVehicleModel.id;
+  }
+
   return (
     <ExpandableCard title="Gestión de Modelos">
       <Typography gutterBottom variant="body2" component="p" sx={{ mb: 2 }}>
@@ -87,12 +125,22 @@ const ModelManager = () => {
         </Grid>
         <Grid item xs={6}>
           <CustomSelectWithAdd
-            initialItems={[{ id: 1, name: 'Model A' }, { id: 2, name: 'Model B' }]}
+            elements={vehicleModels}
+            setElements={setVehicleModels}
             label="Modelo"
             placeholder="Introduce un Modelo"
             selectedItem={currentModel}
             setSelectedItem={setCurrentModel}
-            onItemAdded={(newItems, newItem) => console.log(newItems, newItem)}
+            getItemText={item => item.name}
+            onItemAdded={handleOnAddItem}
+            dialogFields={[
+              {
+                name: 'name',
+                label: 'Nombre del Modelo',
+                type: 'text',
+                required: true,
+              },
+            ]}
           />
         </Grid>
         <Grid item xs={6}>
@@ -150,3 +198,4 @@ const ModelManager = () => {
 };
 
 export default ModelManager;
+
