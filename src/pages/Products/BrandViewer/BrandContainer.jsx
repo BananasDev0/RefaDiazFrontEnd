@@ -4,9 +4,11 @@ import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import BrandList from './BrandList';
 import '../../../styles/brandContainer.css';
+import { useSnackbar } from '../../../components/SnackbarContext';
 
 const BrandContainer = ({ onBrandSelect, searchTerm, setLoading }) => {
   const [brands, setBrands] = useState([]);
+  const { openSnackbar } = useSnackbar();
 
   useEffect(() => {
     setLoading(true);
@@ -29,7 +31,7 @@ const BrandContainer = ({ onBrandSelect, searchTerm, setLoading }) => {
         setBrands(brandsWithImages);
         setLoading(false);
       } catch (error) {
-        console.error("Error al obtener las marcas:", error);
+        openSnackbar(error.errorMessage, "error");
         setLoading(false);
       }
     };
