@@ -10,6 +10,8 @@ import CustomInput from "../../components/CustomInput";
 import ProviderDialog from "./ProviderDialog";
 import { useMobile } from "../../components/MobileProvider";
 import { getAll, deleteProvider, createProvider, updateProvider } from '../../services/ProviderService';
+import TablePagination from '@mui/material/TablePagination';
+
 import { useSnackbar } from '../../components/SnackbarContext';
 
 const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
@@ -27,6 +29,9 @@ const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
 };
 
 export default function ProvidersPage() {
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(6); // Default rowsPerPage value
+    const [totalCount, setTotalCount] = useState(0);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
     const [openCommentsModal, setOpenCommentsModal] = useState(false);
@@ -38,7 +43,7 @@ export default function ProvidersPage() {
 
     useEffect(() => {
         getProviders();
-    }, []);
+    }, [page, rowsPerPage]); // Run effect whenever page or rowsPerPage change
 
     const handleOpenDialog = (e, id) => {
         if (id) {
@@ -64,9 +69,10 @@ export default function ProvidersPage() {
 
     const getProviders = async () => {
         try {
-            const providers = await getAll();
-            if (providers) {
-                setRows(providers);
+            const response = await getAll(page + 1, rowsPerPage);
+            if (response) {
+                setRows(response.providers);
+                setTotalCount(response.totalCount);
             } else {
                 openSnackbar('¡Error en el Servicio! Por favor, inténtalo de nuevo más tarde.', 'error');
             }
@@ -75,6 +81,7 @@ export default function ProvidersPage() {
             openSnackbar('¡Error cargando proveedores!', 'error');
         }
     };
+
 
     const updateProviderInfo = async (providerId, updatedData) => {
         try {
@@ -87,7 +94,6 @@ export default function ProvidersPage() {
                 openSnackbar('¡Error al actualizar proveedor! Por favor, inténtalo de nuevo más tarde.', 'error');
             }
         } catch (error) {
-            console.error("Error al actualizar proveedor:", error);
             openSnackbar('¡Error al actualizar proveedor!', 'error');
         }
     };
@@ -101,8 +107,8 @@ export default function ProvidersPage() {
             } else {
                 openSnackbar('¡Error al eliminar proveedor! Por favor, inténtalo de nuevo más tarde.', 'error');
             }
+
         } catch (error) {
-            console.error(error);
             openSnackbar('¡Error al eliminar proveedor!', 'error');
         }
     };
@@ -112,6 +118,7 @@ export default function ProvidersPage() {
             await createProvider(newProvider);
             getProviders();
             handleCloseDialog();
+
             openSnackbar('¡Proveedor agregado con éxito!', 'success');
         } catch (error) {
             console.error(error);
@@ -121,7 +128,9 @@ export default function ProvidersPage() {
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
+        setPage(0); // Reinicia la página al cambiar el término de búsqueda
     };
+
 
     return (
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
@@ -201,6 +210,20 @@ export default function ProvidersPage() {
                             ))}
                         </TableBody>
                     </Table>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                        <TablePagination
+                            rowsPerPageOptions={[5]}
+                            component="div"
+                            count={totalCount}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={(e, newPage) => setPage(newPage)}
+                            onRowsPerPageChange={(e) => {
+                                setRowsPerPage(parseInt(e.target.value, 10));
+                                setPage(0);
+                            }}
+                        />
+                    </Box>
                 </TableContainer>
             </Box>
             <Modal
