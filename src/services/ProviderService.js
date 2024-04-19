@@ -27,14 +27,14 @@ const getAll = async(page, limit) => {
   
 const deleteProvider = async(id) => {
   const result = await axios.delete(`/provider/${id}`);
-
-  return result.response ? true : false;
+  
+  return result.statusCode === 204 ? true : false;
 }
 
 const updateProvider = async(id, updatedData) => {
   const result = await axios.put(`/provider/${id}`, updatedData);
 
-  return result.response ? true : false;
+  return result.statusCode === 204 ? true : false;
 }
 
 
