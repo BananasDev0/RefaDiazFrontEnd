@@ -224,18 +224,20 @@ export default function ProvidersPage() {
                             ))}
                         </TableBody>
                     </Table>
-                    <TablePagination
-                        rowsPerPageOptions={[5]} // Opciones para seleccionar el número de filas por página
-                        component="div"
-                        count={totalCount} // Recuento total de filas
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={(e, newPage) => setPage(newPage)} 
-                        onRowsPerPageChange={(e) => {
-                            setRowsPerPage(parseInt(e.target.value, 10));
-                            setPage(0); // Reinicia la página al cambiar el número de filas por página
-                        }}
-                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                        <TablePagination
+                            rowsPerPageOptions={[5]}
+                            component="div"
+                            count={totalCount}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={(e, newPage) => setPage(newPage)}
+                            onRowsPerPageChange={(e) => {
+                                setRowsPerPage(parseInt(e.target.value, 10));
+                                setPage(0);
+                            }}
+                        />
+                    </Box>
                 </TableContainer>
             </Box>
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
