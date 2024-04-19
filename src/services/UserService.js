@@ -1,34 +1,15 @@
-import axios from 'axios';
+import axios from './axiosConfig';
 import User from '../models/User';
 
-export const createUser = async (userData) => {
-  try {
-    const response = await axios.post(`${import.meta.env.VITE_API_REFA_BASE_PATH}/user`, userData);
 
-    if (response.data) {
-      return new User(response.data);
-    } else {
-      console.error('No se recibieron datos para el usuario creado:', response);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error al crear el usuario:', error);
-    return null;
-  }
-};
+export const createUser = async(userData) => {
+  const result = await axios.post('/user', userData);
 
-export const getUser = async (id) => {
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_API_REFA_BASE_PATH}/user/${id}`);
+  return result.response ? new User(result.response) : [];
+}
 
-    if (response.data) {
-      return new User(response.data);
-    } else {
-      console.error('No se recibieron datos para el usuario', response);
-      return null;
-    }
-  } catch (error) {
-    console.error('Error al recibir usuario', error);
-    return null;
-  }
-};
+export const getUser = async(id) => {
+  const result = await axios.get(`/user/${id}`);
+
+  return result.response ? new User(result.response) : [];
+}
