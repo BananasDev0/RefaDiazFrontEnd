@@ -1,37 +1,23 @@
 import { useEffect } from "react";
 import { Box, TextField } from "@mui/material";
 import { useProductDialogContext } from "../ProductDialog/ProductDialogContext";
+import { modifyAndClone } from "../../../util/generalUtils";
 
 
 const RadiatorForm = ({ setIsFormValid }) => {
     const { product, setProduct } = useProductDialogContext();
-
     useEffect(() => {
         // Actualizar el nombre del producto y validar el formulario
-        
+
         setIsFormValid(product.dpi && product.product.stockCount);
-    }, [product.dpi, product.product.autoModels, product.product.stockCount, setProduct, setIsFormValid]);
+    }, [product.dpi, product.product.stockCount, setProduct, setIsFormValid]);
 
     const handleChange = (field) => (event) => {
-        if (field === "dpi") {
-            setProduct(prev => ({ ...prev, dpi: event.target.value }));
-        } else {
-            setProduct(prev => ({ ...prev, product: { ...prev.product, [field]: event.target.value } }));
-        }
+        setProduct(modifyAndClone(product, field, event.target.value));
     };
 
     return (
         <Box>
-
-            <TextField
-                fullWidth
-                label="Unidades disponibles"
-                variant="outlined"
-                type="number"
-                sx={{ mt: 4 }}
-                value={product.product.stockCount || ''}
-                onChange={handleChange('stockCount')}
-            />
 
             <TextField
                 fullWidth
@@ -44,13 +30,23 @@ const RadiatorForm = ({ setIsFormValid }) => {
 
             <TextField
                 fullWidth
+                label="Unidades disponibles"
+                variant="outlined"
+                type="number"
+                sx={{ mt: 4 }}
+                value={product.product.stockCount || ''}
+                onChange={handleChange('product.stockCount')}
+            />
+
+            <TextField
+                fullWidth
                 label="Comentarios"
                 variant="outlined"
                 multiline
                 rows={4}
                 sx={{ mt: 4 }}
                 value={product.product.comments || ''}
-                onChange={handleChange('comments')}
+                onChange={handleChange('product.comments')}
             />
         </Box>
     );

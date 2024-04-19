@@ -1,7 +1,7 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import {
   Container, Grid, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem,
-  InputAdornment, IconButton, Snackbar, Alert
+  InputAdornment, IconButton, Alert
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
@@ -14,6 +14,7 @@ import validateEmail from '../../util/EmailVerifier';
 import { createUser } from '../../services/UserService';
 import Person from '../../models/Person';
 import User from '../../models/User';
+import { useSnackbar } from '../../components/SnackbarContext';
 
 export default function UserPage() {
   const [userData, setUserData] = useState({
@@ -28,11 +29,9 @@ export default function UserPage() {
     active: 1,
     roleId: ''
   });
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [showPasswords, setShowPasswords] = useState(false);
+  const { openSnackbar } = useSnackbar(); // Usa el hook del Snackbar
 
   const handleDateChange = (newValue) => {
     setUserData({ ...userData, birthDate: newValue });
@@ -60,9 +59,7 @@ export default function UserPage() {
 
   const handleSubmit = async () => {
     if (!validateEmail(userData.email)) {
-      setSnackbarOpen(true);
-      setSnackbarMessage('El correo electrónico no es válido.');
-      setSnackbarSeverity('error');
+      openSnackbar('El correo electrónico no es válido.', 'error');
       return;
     }
 
@@ -85,9 +82,7 @@ export default function UserPage() {
 
       await createUser(user);
 
-      setSnackbarOpen(true);
-      setSnackbarMessage('¡Usuario creado correctamente!');
-      setSnackbarSeverity('success');
+      openSnackbar('¡Usuario creado correctamente!', 'success');
       setUserData({
         firstName: '',
         lastName: '',
@@ -101,21 +96,12 @@ export default function UserPage() {
         roleId: ''
       });
     } catch (error) {
-      setSnackbarOpen(true);
-      setSnackbarMessage('Error al registrar usuario en Firebase.');
-      setSnackbarSeverity('error');
+      openSnackbar('Error al registrar usuario en Firebase.', 'error');
     }
   };
 
   const areAllFieldsComplete = () => {
     return Object.values(userData).every(value => value !== '') && passwordsMatch;
-  };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen(false);
   };
 
   return (
@@ -268,11 +254,6 @@ export default function UserPage() {
           </Button>
         </Grid>
       </Grid>
-      <Snackbar open={snackbarOpen} autoHideDuration={2000} onClose={handleSnackbarClose} anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}>
-        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </Container>
   );
 }

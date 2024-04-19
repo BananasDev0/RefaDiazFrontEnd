@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Tooltip, Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography, IconButton, Snackbar, Alert } from "@mui/material";
+import {
+    Tooltip, Fab, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Modal, Card, CardContent, Typography, IconButton
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -8,6 +10,7 @@ import CustomInput from "../../components/CustomInput";
 import ProviderDialog from "./ProviderDialog";
 import { useMobile } from "../../components/MobileProvider";
 import { getAll, deleteProvider, createProvider, updateProvider } from '../../services/ProviderService';
+import { useSnackbar } from '../../components/SnackbarContext';
 
 const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     return (
@@ -30,10 +33,8 @@ export default function ProvidersPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [rows, setRows] = useState([]);
     const [providerId, setProviderId] = useState(null);
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [alertSeverity, setAlertSeverity] = useState('');
     const responsive = useMobile();
+    const { openSnackbar } = useSnackbar(); // Usa el hook de Snackbar
 
     useEffect(() => {
         getProviders();
@@ -61,24 +62,17 @@ export default function ProvidersPage() {
         setOpenCommentsModal(false);
     };
 
-    const handleCloseSnackbar = () => {
-        setSnackbarOpen(false);
-    };
-
     const getProviders = async () => {
         try {
             const providers = await getAll();
-            if(providers) {
+            if (providers) {
                 setRows(providers);
             } else {
-                console.log('error')
-                setSnackbarMessage('¡Error en el Servicio! Por favor, inténtalo de nuevo más tarde.');
-                setAlertSeverity('error');
-                setSnackbarOpen(true);
+                openSnackbar('¡Error en el Servicio! Por favor, inténtalo de nuevo más tarde.', 'error');
             }
-            
         } catch (error) {
             console.error(error);
+            openSnackbar('¡Error cargando proveedores!', 'error');
         }
     };
 
@@ -88,56 +82,46 @@ export default function ProvidersPage() {
             if (updated) {
                 getProviders();
                 handleCloseDialog();
-                setSnackbarMessage('¡Proveedor actualizado con éxito!');
-                setAlertSeverity('info');
-                setSnackbarOpen(true);
+                openSnackbar('¡Proveedor actualizado con éxito!', 'info');
             } else {
-                setSnackbarMessage('¡Error al actualizar proveedor! Por favor, inténtalo de nuevo más tarde.');
-                setAlertSeverity('error');
-                setSnackbarOpen(true);
+                openSnackbar('¡Error al actualizar proveedor! Por favor, inténtalo de nuevo más tarde.', 'error');
             }
         } catch (error) {
             console.error("Error al actualizar proveedor:", error);
-            
+            openSnackbar('¡Error al actualizar proveedor!', 'error');
         }
     };
 
     const handleDeleteProvider = async (id) => {
         try {
             const provider = await deleteProvider(id);
-            if(provider){
+            if (provider) {
                 getProviders();
-                setSnackbarMessage('¡Proveedor eliminado con éxito!');
-                setAlertSeverity('info');
-                setSnackbarOpen(true);
+                openSnackbar('¡Proveedor eliminado con éxito!', 'info');
             } else {
-                setSnackbarMessage('¡Error al eliminar proveedor! Por favor, inténtalo de nuevo más tarde.');
-                setAlertSeverity('error');
-                setSnackbarOpen(true);
+                openSnackbar('¡Error al eliminar proveedor! Por favor, inténtalo de nuevo más tarde.', 'error');
             }
-           
         } catch (error) {
             console.error(error);
+            openSnackbar('¡Error al eliminar proveedor!', 'error');
         }
     };
 
     const addProviderToList = async (newProvider) => {
         try {
-            createProvider(newProvider);
+            await createProvider(newProvider);
             getProviders();
             handleCloseDialog();
-            setSnackbarMessage('¡Proveedor agregado con éxito!');
-            setAlertSeverity('success');
-            setSnackbarOpen(true);
-            
+            openSnackbar('¡Proveedor agregado con éxito!', 'success');
         } catch (error) {
             console.error(error);
+            openSnackbar('¡Error al agregar proveedor!', 'error');
         }
     };
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
-    }
+    };
 
     return (
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
@@ -219,11 +203,6 @@ export default function ProvidersPage() {
                     </Table>
                 </TableContainer>
             </Box>
-            <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-                <Alert onClose={handleCloseSnackbar} severity={alertSeverity} variant='filled'>
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
             <Modal
                 open={openCommentsModal}
                 onClose={handleCloseCommentsModal}
@@ -266,10 +245,10 @@ export default function ProvidersPage() {
             >
                 <AddIcon />
             </Fab>
-            <ProviderDialog 
-                open={openDialog} 
-                onClose={handleCloseDialog} 
-                addProviderToList={addProviderToList} 
+            <ProviderDialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                addProviderToList={addProviderToList}
                 providerId={providerId}
                 updateProviderInfo={updateProviderInfo}
             />

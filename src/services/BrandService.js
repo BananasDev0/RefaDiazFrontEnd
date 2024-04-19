@@ -1,20 +1,15 @@
+import axios from './axiosConfig';
 import Brand from "../models/Brand";
-import axios from 'axios';
+import VehicleModel from "../models/VehicleModel";
 
 const getAllBrands = async () => {
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_API_REFA_BASE_PATH}/brands`);
-
-    if (response.data && Array.isArray(response.data)) {
-      return response.data.map(brand => (new Brand({...brand})));
-    } else {
-      console.error('Formato de respuesta inesperado:', response.data);
-      return [];
-    }
-  } catch (error) {
-    console.error('Error al obtener las marcas:', error);
-    return [];
-  }
+  const result = await axios.get(`/brands`);
+  return Array.isArray(result.response) ? result.response.map(brand => new Brand(brand)) : [];
 };
 
-export { getAllBrands };
+const getVehicleModelsByBrandId = async (brandId) => {
+  const result = await axios.get(`/brand/${brandId}/models`);
+  return Array.isArray(result.response) ? result.response.map(model => new VehicleModel(model)) : [];
+};
+
+export { getAllBrands, getVehicleModelsByBrandId };
