@@ -1,29 +1,22 @@
 import Radiator from "../models/Radiator.js";
-import Product from '../models/Product.js';
-import axios from 'axios';
+import Product from "../models/Product.js";
+import axios from "./axiosConfig.js";
 
-const getAllRadiators = async (name = '') => {
-  try {
-      const response = await axios.get(`${import.meta.env.VITE_API_REFA_BASE_PATH}/radiators`, {
-          params: { name } // Pasar el parámetro 'name' como consulta
+const getAllRadiators = async (name = "") => {
+      const result = await axios.get(`/radiators`, {
+        params: { name },
       });
-
-      if (response.data && Array.isArray(response.data)) {
-          const radiators = response.data.map(radiatorData => {
-              const productData = radiatorData.product; 
-              const product = new Product(productData); 
-              return new Radiator({...radiatorData, product});
-          });
-          return radiators;
+      if (Array.isArray(result.response)) {
+        const radiators = result.response.map((radiatorData) => {
+          const productData = radiatorData.product;
+          const product = new Product(productData);
+          return new Radiator({...radiatorData, product});
+        });
+        return radiators;
       } else {
-          console.error('Formato de respuesta inesperado:', response.data);
-          return [];
+        return [];
       }
-  } catch (error) {
-      console.error('Error al obtener los radiadores:', error);
-      return [];
-  }
-};
-
+  };
+  
 
 export { getAllRadiators };
