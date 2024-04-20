@@ -4,9 +4,11 @@ import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import RadiatorList from './RadiatorList';
 import '../../../styles/brandContainer.css';
+import { useSnackbar } from '../../../components/SnackbarContext';
 
 const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading }) => {
   const [radiators, setRadiators] = useState([]);
+  const { openSnackbar } = useSnackbar();
 
   useEffect(() => {
     setLoading(true);
@@ -28,9 +30,11 @@ const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading }) => {
 
         setRadiators(radiatorsWithImages);
         setLoading(false);
+        
       } catch (error) {
         console.error("Error al obtener los radiadores:", error);
         setLoading(false);
+        openSnackbar(`Error al cargar los radiadores!: ${error.errorMessage}`, 'error')
       }
     };
 
