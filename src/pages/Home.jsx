@@ -1,21 +1,77 @@
-import React from 'react';
-import { Container, Typography, Button } from '@mui/material';
-import { BODY_PAGE_HOME, BUTTON_LBLCOMENZAR, TITLE_PAGE_HOME_WELCOME } from '../../constants';
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import MuiAppBar from '@mui/material/AppBar';
+import CssBaseline from '@mui/material/CssBaseline';
+import CustomToolBar from '../components/CustomToolBar';
+import ProductsPage from './Products/ProductsPage';
+import ResponsiveDrawer from '../components/ResponsiveDrawer/ResponsiveDrawer';
+import { MobileProvider } from '../components/MobileProvider';
 
-function Home() {
+
+const drawerWidth = 240;
+
+const ContentHeader = styled('div')(({ theme }) => ({
+  ...theme.mixins.toolbar,
+}));
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+
+export default function Home() {
+
+  const [open, setOpen] = React.useState(false);
+  
+  const [selectedComponent, setSelectedComponent] = React.useState(<ProductsPage />); 
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  const handleComponentChange = (component) => {
+    setSelectedComponent(component); // Actualiza el componente seleccionado
+  };
+
   return (
-    <Container>
-      <Typography variant="h1" component="h1" gutterBottom>
-        {TITLE_PAGE_HOME_WELCOME}
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        {BODY_PAGE_HOME}
-      </Typography>
-      <Button variant="contained" color="primary">
-        {BUTTON_LBLCOMENZAR}
-      </Button>
-    </Container>
+    <MobileProvider>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBar position="fixed" open={open} >
+        
+          <CustomToolBar handleDrawerOpen={handleDrawerOpen} open={open} />
+          
+        </AppBar>
+        {/* nuevo componente */}
+        <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} setComponent={handleComponentChange} style={{ width: drawerWidth }} />
+
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <ContentHeader />
+          {/* aca va la page*/}
+
+          {selectedComponent}
+          
+        </Box>
+      </Box>
+    </MobileProvider>
   );
 }
-
-export default Home;

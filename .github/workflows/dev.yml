@@ -1,0 +1,36 @@
+name: DEV Despliegue en EC2
+
+on:
+  push:
+    branches:
+      - dev # Cambia 'dev' por la rama que desees
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Copiar archivos al servidor
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEV_EC2_HOST }}
+          username: ${{ secrets.DEV_EC2_USER }}
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          port: 22
+          source: "."
+          target: "projects/RefaDiazFrontEnd"
+
+      - name: Ejecutar comandos remotos
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_EC2_HOST }}
+          username: ${{ secrets.DEV_EC2_USER }}
+          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd projects/RefaDiazFrontEnd
+            npm install
+            pm2 restart RefaDiazApp
