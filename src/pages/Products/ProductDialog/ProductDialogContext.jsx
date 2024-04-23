@@ -10,6 +10,7 @@ export const ProductDialogProvider = ({ children }) => {
     const [product, setProduct] = useState({ product: {}});
     const [associatedVehicleModels, setAssociatedVehicleModels] = useState([])
 
+    console.log(product)
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
