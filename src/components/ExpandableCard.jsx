@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardActions, CardHeader, Collapse, IconButton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/material/styles';
@@ -16,13 +16,20 @@ const ExpandMore = styled((props) => {
 
 const ExpandableCard = ({ title, children }) => {
   const [expanded, setExpanded] = useState(false);
+  const cardRef = useRef(null);  // Crear la referencia
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
+  useEffect(() => {
+    if (expanded && cardRef.current) {
+      cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [expanded]);
+
   return (
-    <Card sx={{ maxWidth: '95%', margin: 'auto', mt: 2 }}>
+    <Card sx={{ maxWidth: '95%', margin: 'auto', mt: 2 }} ref={cardRef}>
       <CardHeader title={title} />
       <CardActions disableSpacing>
         <ExpandMore

@@ -6,6 +6,6 @@ export class ProductVehicleModel {
         this.vehicleModelId = vehicleModelId;
         this.initialYear = initialYear;
         this.lastYear = lastYear;
-        this.vehicleModelId = vehicleModel;
+        this.vehicleModel = vehicleModel;
     }
 }

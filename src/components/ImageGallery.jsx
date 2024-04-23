@@ -1,10 +1,12 @@
 import { Box, Grid, Paper, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-const ImageGallery = ({ images, onImageDeleted }) => {
+const ImageGallery = ({ images, onImageDeleted, readOnly = false }) => {
+  console.log("rendering")
     const handleDeleteImage = (index) => {
-      // Llama a la prop `onImageDeleted` con el índice de la imagen a eliminar
-      onImageDeleted(index);
+      if (!readOnly) {
+        onImageDeleted(index);
+      }
     };
   
     return (
@@ -24,12 +26,14 @@ const ImageGallery = ({ images, onImageDeleted }) => {
                   borderRadius: '4px',
                 }}
               />
-              <IconButton
-                onClick={() => handleDeleteImage(index)}
-                sx={{ position: 'absolute', top: 0, right: 0, color: 'error.main' }}
-              >
-                <CloseIcon />
-              </IconButton>
+              {!readOnly && (
+                <IconButton
+                  onClick={() => handleDeleteImage(index)}
+                  sx={{ position: 'absolute', top: 0, right: 0, color: 'error.main' }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              )}
             </Box>
           </Grid>
         ))}
@@ -49,13 +53,15 @@ const ImageGallery = ({ images, onImageDeleted }) => {
                       borderRadius: '4px',
                     }}
                   />
+                  {!readOnly && (
+                    <IconButton
+                      onClick={() => handleDeleteImage(index + 1)} // +1 para ajustar el índice correctamente
+                      sx={{ position: 'absolute', top: 0, right: 0, color: 'error.main' }}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  )}
                 </Paper>
-                <IconButton
-                  onClick={() => handleDeleteImage(index + 1)} // +1 para ajustar el índice correctamente
-                  sx={{ position: 'absolute', top: 0, right: 0, color: 'error.main' }}
-                >
-                  <CloseIcon />
-                </IconButton>
               </Box>
             </Grid>
           ))}

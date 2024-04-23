@@ -6,7 +6,7 @@ import { useProductDialogContext } from "./ProductDialogContext";
 
 const ProductBasicInfo = ({ ProductForm }) => {
     const { productType, setProductType } = useProductsContext();
-    const { setIsNextEnabled } = useProductDialogContext();
+    const { setIsNextEnabled, images, handleImageUpload, handleImageDelete } = useProductDialogContext();
     const [isFormValid, setIsFormValid] = useState(false); // Estado para la validación del formulario
 
     useEffect(() => {
@@ -22,9 +22,7 @@ const ProductBasicInfo = ({ ProductForm }) => {
             <Typography variant="h6" component="h2" sx={{ textAlign: 'center', marginBottom: 2 }}>
                 Imagen del Producto
             </Typography>
-            <ImageUpload onFileSelected={(file) => {
-                console.log(file);
-            }} />
+            <ImageUpload onImageDelete={handleImageDelete} onImageUpload={handleImageUpload} uploadedImages={images}/>
         </Box>
     );
 
@@ -50,7 +48,7 @@ const ProductBasicInfo = ({ ProductForm }) => {
             <Grid container spacing={2}>
                 <Grid item xs={12} md={7} sx={{ display: 'flex', flexDirection: 'column' }}>
                     <InputProductSelector />
-                    <ProductForm isFormValid={isFormValid} setIsFormValid={setIsFormValid} />
+                    <ProductForm isFormValid={isFormValid} setIsFormValid={setIsFormValid} readOnly/>
                 </Grid>
                 <Grid item xs={12} md={5}>
                     <ProductImageSection />

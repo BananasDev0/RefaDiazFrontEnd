@@ -1,6 +1,7 @@
 import { AppBar, Toolbar, IconButton, Typography, Button } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import { useProductDialogContext } from "./ProductDialogContext";
+import { useProductsContext } from "../ProductsContext";
 
 const ProductDialogToolbar = ({ handleCloseDialog }) => {
     const {
@@ -8,9 +9,12 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
         handleBack,
         handleNext,
         totalSteps,
-        isNextEnabled
+        isNextEnabled,
+        handleSubmit
     } = useProductDialogContext();
-
+    
+    const { productType } = useProductsContext();
+    
     return (
         <AppBar sx={{ position: 'relative' }}>
             <Toolbar>
@@ -35,9 +39,7 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
                         Siguiente
                     </Button>
                 ) : (
-                    <Button autoFocus color="inherit" disabled={!isNextEnabled} onClick={() => {
-                        handleCloseDialog();
-                    }}>
+                    <Button autoFocus color="inherit" disabled={!isNextEnabled} onClick={ () => handleSubmit(productType)}>
                         Guardar
                     </Button>
                 )}
@@ -47,3 +49,4 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
 };
 
 export default ProductDialogToolbar;
+
