@@ -4,6 +4,7 @@ import ImageUpload from "./ImageUpload";
 import { useProductsContext } from "../ProductsContext";
 import { useProductDialogContext } from "./ProductDialogContext";
 
+
 const ProductBasicInfo = ({ ProductForm }) => {
     const { productType, setProductType } = useProductsContext();
     const { setIsNextEnabled, images, handleImageUpload, handleImageDelete } = useProductDialogContext();
@@ -16,15 +17,6 @@ const ProductBasicInfo = ({ ProductForm }) => {
     const handleProductTypeChange = (event) => {
         setProductType(event.target.value);
     };
-
-    const ProductImageSection = () => (
-        <Box sx={{ paddingTop: 2 }}>
-            <Typography variant="h6" component="h2" sx={{ textAlign: 'center', marginBottom: 2 }}>
-                Imagen del Producto
-            </Typography>
-            <ImageUpload onImageDelete={handleImageDelete} onImageUpload={handleImageUpload} uploadedImages={images}/>
-        </Box>
-    );
 
     const InputProductSelector = () => (
         <FormControl fullWidth sx={{ mt: 4 }}>
@@ -48,10 +40,15 @@ const ProductBasicInfo = ({ ProductForm }) => {
             <Grid container spacing={2}>
                 <Grid item xs={12} md={7} sx={{ display: 'flex', flexDirection: 'column' }}>
                     <InputProductSelector />
-                    <ProductForm isFormValid={isFormValid} setIsFormValid={setIsFormValid} readOnly/>
+                    <ProductForm isFormValid={isFormValid} setIsFormValid={setIsFormValid} readOnly />
                 </Grid>
                 <Grid item xs={12} md={5}>
-                    <ProductImageSection />
+                    <Box sx={{ paddingTop: 2 }}>
+                        <Typography variant="h6" component="h2" sx={{ textAlign: 'center', marginBottom: 2 }}>
+                            Imagen del Producto
+                        </Typography>
+                        <ImageUpload onImageDelete={handleImageDelete} onImageUpload={handleImageUpload} uploadedImages={images} key={"ProductImage"} />
+                    </Box>
                 </Grid>
             </Grid>
         </Box>

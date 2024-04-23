@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ImageGallery from '../../../components/ImageGallery';
 
-const ImageUpload = ({ uploadedImages, onImageUpload, onImageDelete, readOnly = false }) => {
+const ImageUpload = React.memo(({ uploadedImages, onImageUpload, onImageDelete, readOnly = false }) => {
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef(null);
 
@@ -56,7 +56,7 @@ const ImageUpload = ({ uploadedImages, onImageUpload, onImageDelete, readOnly = 
             onDrop={readOnly ? null : handleDrop}
         >
             {readOnly ? (
-                <ImageGallery images={uploadedImages} readOnly/>
+                <ImageGallery images={uploadedImages} readOnly />
             ) : (
                 <>
                     <input
@@ -68,7 +68,7 @@ const ImageUpload = ({ uploadedImages, onImageUpload, onImageDelete, readOnly = 
                         onChange={handleChange}
                         ref={fileInputRef}
                     />
-                    <ImageGallery images={uploadedImages} onImageDeleted={onImageDelete}/>
+                    <ImageGallery images={uploadedImages} onImageDeleted={onImageDelete} />
                     <label htmlFor="raised-button-file">
                         <Button
                             variant="contained"
@@ -84,6 +84,13 @@ const ImageUpload = ({ uploadedImages, onImageUpload, onImageDelete, readOnly = 
             {uploadedImages.length === 0 && !readOnly ? <Typography>Arrastra imágenes aquí, o haz clic para seleccionarlas.</Typography> : null}
         </Box>
     );
-};
+}, areEqual);
+
+ImageUpload.displayName = 'ImageUpload';
+
+function areEqual(prevProps, nextProps) {
+    return prevProps.uploadedImages === nextProps.uploadedImages &&
+        prevProps.readOnly === nextProps.readOnly;
+}
 
 export default ImageUpload;
