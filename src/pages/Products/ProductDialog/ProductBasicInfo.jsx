@@ -42,12 +42,14 @@ const ProductBasicInfo = ({ ProductForm }) => {
                     <InputProductSelector />
                     <ProductForm isFormValid={isFormValid} setIsFormValid={setIsFormValid} readOnly />
                 </Grid>
-                <Grid item xs={12} md={5}>
-                    <Box sx={{ paddingTop: 2 }}>
+                <Grid item xs={12} md={5} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Box sx={{ paddingTop: 2, }}>
                         <Typography variant="h6" component="h2" sx={{ textAlign: 'center', marginBottom: 2 }}>
                             Imagen del Producto
                         </Typography>
-                        <ImageUpload onImageDelete={handleImageDelete} onImageUpload={handleImageUpload} uploadedImages={images} key={"ProductImage"} />
+                        <Box sx={{ display: 'flex', justifyContent: 'center', maxWidth: 450 }}>
+                            <ImageUpload onImageDelete={handleImageDelete} onImageUpload={handleImageUpload} uploadedImages={images} key={"ProductImage"} />
+                        </Box>
                     </Box>
                 </Grid>
             </Grid>

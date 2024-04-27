@@ -10,7 +10,8 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
         handleNext,
         totalSteps,
         isNextEnabled,
-        handleSubmit
+        handleSubmit,
+        resetState
     } = useProductDialogContext();
     
     const { productType } = useProductsContext();
@@ -21,7 +22,10 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
                 <IconButton
                     edge="start"
                     color="inherit"
-                    onClick={handleCloseDialog}
+                    onClick={() => {
+                        handleCloseDialog();
+                        resetState();
+                    }}
                     aria-label="close"
                 >
                     <CloseIcon />

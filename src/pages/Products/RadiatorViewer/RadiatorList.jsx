@@ -7,10 +7,11 @@ const columns = [
 ];
 
 const RadiatorList = ({ radiators, onRadiatorSelect }) => {
+  console.log(radiators);
   return (
     <div>
       <ItemsCardList rows={radiators.map(radiator => ({
-        id: radiator.id,
+        id: radiator.product.id,
         dpi: radiator.dpi,
         name: radiator.product.name,
         imageUrl: radiator.product.imageUrl // Se muestra la imagen

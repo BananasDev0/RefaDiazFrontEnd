@@ -1,15 +1,15 @@
 import React from 'react';
 import { Dialog, Slide } from "@mui/material";
-import RadiatorFlow from './RadiatorFlow';
 import ProductDialogToolbar from './ProductDialogToolbar';
 import { ProductDialogProvider } from './ProductDialogContext';
+import ProductFlow from './ProductFlow';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
 
-const ProductDialog = ({ open, onClose }) => {
+const ProductDialog = ({ open, onClose, selectedProduct }) => {
     return (
         <ProductDialogProvider>
             <Dialog
@@ -20,7 +20,7 @@ const ProductDialog = ({ open, onClose }) => {
                 TransitionComponent={Transition}
             >
                 <ProductDialogToolbar handleCloseDialog={onClose} />
-                <RadiatorFlow></RadiatorFlow>
+                <ProductFlow></ProductFlow>
             </Dialog>
         </ProductDialogProvider>
     );

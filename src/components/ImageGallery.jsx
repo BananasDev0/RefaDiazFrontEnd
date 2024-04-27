@@ -2,7 +2,6 @@ import { Box, Grid, Paper, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 const ImageGallery = ({ images, onImageDeleted, readOnly = false }) => {
-  console.log("rendering")
     const handleDeleteImage = (index) => {
       if (!readOnly) {
         onImageDeleted(index);

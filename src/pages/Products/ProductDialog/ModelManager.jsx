@@ -240,6 +240,7 @@ const ModelManager = () => {
       handleAddModel={handleAddModel}
       associatedVehicleModels={associatedVehicleModels}
       handleDeleteModel={handleDeleteModel}
+      setVehicleModels={setVehicleModels}
     />
   );
 };

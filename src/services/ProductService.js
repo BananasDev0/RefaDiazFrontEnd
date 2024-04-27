@@ -20,4 +20,9 @@ const getProductVehicleModels = async (productId) => {
     return response.data;
 }
 
-export { createProductVehicles, createProductPrices, getProductPrices, getProductVehicleModels}
+const createProductFiles = async (productId, files) => {
+    const response = await axiosInstance.post(`/product/${productId}/files`, files);
+    return response.data;
+}
+
+export { createProductVehicles, createProductPrices, getProductPrices, getProductVehicleModels, createProductFiles}

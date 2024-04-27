@@ -4,7 +4,6 @@ import { useProductDialogContext } from "../ProductDialog/ProductDialogContext";
 import { modifyAndClone } from "../../../util/generalUtils";
 
 const RadiatorFormDisplay = ({ product, handleChange, readOnly }) => {
-    modifyAndClone
     return (
         <Box>
             <TextField

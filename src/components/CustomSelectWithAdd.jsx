@@ -30,7 +30,6 @@ const CustomSelectWithAdd = ({
       const newItemId = await onItemAdded(elements, newItemWithoutId);
       const newItemWithId = { id: newItemId, ...newItemWithoutId };
       const newElements = [...elements, newItemWithId];
-      console.log(newItemId, newElements)
       setElements(newElements);
       setSelectedItem(newItemWithId);
     } else {

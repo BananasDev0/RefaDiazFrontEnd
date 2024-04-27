@@ -81,7 +81,8 @@ const ImageUpload = React.memo(({ uploadedImages, onImageUpload, onImageDelete, 
                     </label>
                 </>
             )}
-            {uploadedImages.length === 0 && !readOnly ? <Typography>Arrastra imágenes aquí, o haz clic para seleccionarlas.</Typography> : null}
+            {uploadedImages.length === 0 && !readOnly && <Typography>Arrastra imágenes aquí, o haz clic para seleccionarlas.</Typography> }
+            {uploadedImages.length === 0 && readOnly && <Typography>No hay imagenes cargadas</Typography> }
         </Box>
     );
 }, areEqual);

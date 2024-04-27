@@ -41,6 +41,8 @@ const processRadiatorData = async (radiatorData, vehicleModels, prices) => {
     if (prices) {
         await createProductPrices(id, prices);
     }
+
+    return createdRadiator;
 }
 
 

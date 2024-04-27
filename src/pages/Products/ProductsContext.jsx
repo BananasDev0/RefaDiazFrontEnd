@@ -6,6 +6,7 @@ export const useProductsContext = () => useContext(ProductsContext);
 
 export const ProductsProvider = ({ children }) => {
     const [productType, setProductType] = useState('radiadores');
+    const [selectedProduct, setSelectedProduct] = useState({});
     const [openDialog, setOpenDialog] = useState(false);
 
     const handleChangeProductType = (newValue) => {
@@ -27,7 +28,9 @@ export const ProductsProvider = ({ children }) => {
             handleChangeProductType,
             openDialog,
             handleOpenDialog,
-            handleCloseDialog
+            handleCloseDialog,
+            selectedProduct,
+            setSelectedProduct
         }}>
             {children}
         </ProductsContext.Provider>
