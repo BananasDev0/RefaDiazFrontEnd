@@ -1,33 +1,17 @@
-import { Box, Fab, Tab, Tabs } from "@mui/material";
-import { useMobile } from "../../components/MobileProvider";
+import { Box, Fab } from "@mui/material";
 import ProductSelector from "./ProductSelector";
 import ProductDialog from "./ProductDialog/ProductDialog";
 import AddIcon from "@mui/icons-material/Add";
 import { ProductsProvider, useProductsContext } from "./ProductsContext";
+import { ProductTypeTabs } from "./ProductTypeTabs";
 
 function ProductsPresentation() {
-  const { productType, handleChangeProductType, openDialog, handleOpenDialog, handleCloseDialog } = useProductsContext();
-  const responsive = useMobile();
+  const { productType, openDialog, handleOpenDialog, handleCloseDialog } = useProductsContext();
   const { selectedProduct } = useProductsContext();
-
-  const handleChange = (event, newValue) => {
-    handleChangeProductType(newValue);
-  };
 
   return (
     <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
-      <Tabs
-        value={productType}
-        onChange={handleChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label="product tabs"
-        sx={{ width: responsive.isMobile ? '85vw' : '100%' }}
-      >
-        <Tab value="radiadores" label="Radiadores" />
-        <Tab value="tapas" label="Tapas" />
-        <Tab value="abanicos" label="Abanicos" />
-      </Tabs>
+      <ProductTypeTabs />
 
       <ProductSelector productType={productType} />
 
