@@ -2,27 +2,34 @@ import { useEffect, useState } from 'react';
 import { getAllRadiators } from '../../../services/RadiatorService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
-import RadiatorList from './RadiatorList';
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import { getVehicleModelRadiators } from '../../../services/VehicleModelService';
+import { useProductsContext } from '../ProductsContext';
+import { Screens } from '../ProductsConstants';
+import ProductList from './ProductList';
 
-const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading, vehicleModel }) => {
-  const [radiators, setRadiators] = useState([]);
+const ProductContainer = () => {
+  const [products, setProducts] = useState([]);
   const { openSnackbar } = useSnackbar();
+  const { handleItemSelect, searchTerm, setLoading, selectedCarModel } = useProductsContext();
+
+  const handleProductSelect = (e, radiator) => {
+    handleItemSelect(radiator, Screens.PRODUCTS);
+  }
 
   useEffect(() => {
     setLoading(true);
     const fetchRadiators = async () => {
       try {
-        let radiatorsData = [];
+        let productsData = [];
 
-        if (vehicleModel && vehicleModel.id) {
-          radiatorsData = await getVehicleModelRadiators(vehicleModel.id);
+        if (selectedCarModel && selectedCarModel.id) {
+          productsData = await getVehicleModelRadiators(selectedCarModel.id);
         } else {
-          radiatorsData = await getAllRadiators(searchTerm);
+          productsData = await getAllRadiators(searchTerm);
         }
-        const radiatorsWithImages = await Promise.all(radiatorsData.map(async (radiator) => {
+        const radiatorsWithImages = await Promise.all(productsData.map(async (radiator) => {
           let productImage = radiator.product.productFiles[0];
           if (productImage) {
             const imageUrl = await getImageURLFromStorage(productImage.file.storagePath).catch(error => {
@@ -35,9 +42,9 @@ const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading, vehicleMo
           }
         }));
 
-        setRadiators(radiatorsWithImages);
+        setProducts(radiatorsWithImages);
         setLoading(false);
-        
+
       } catch (error) {
         console.error("Error al obtener los radiadores:", error);
         setLoading(false);
@@ -51,16 +58,16 @@ const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading, vehicleMo
 
   return (
     <CSSTransition
-      in={radiators.length > 0} // Establece la condición para mostrar la animación
-      timeout={300} 
-      classNames="fade" 
-      unmountOnExit 
+      in={products.length > 0} // Establece la condición para mostrar la animación
+      timeout={300}
+      classNames="fade"
+      unmountOnExit
     >
       <div>
-        <RadiatorList title="Lista de Radiadores" radiators={radiators} onRadiatorSelect={onRadiatorSelect} />
+        <ProductList title="Lista de Radiadores" products={products} onProductSelect={handleProductSelect} />
       </div>
     </CSSTransition>
   );
 };
 
-export default RadiatorContainer;
+export default ProductContainer;

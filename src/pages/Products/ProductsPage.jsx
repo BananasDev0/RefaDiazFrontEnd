@@ -13,7 +13,7 @@ function ProductsPresentation() {
     <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
       <ProductTypeTabs />
 
-      <ProductSelector productType={productType} />
+      <ProductSelector />
 
       <Fab
         color="primary"

@@ -5,10 +5,17 @@ import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import BrandList from './BrandList';
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
+import { useProductsContext } from '../ProductsContext';
+import { Screens } from '../ProductsConstants';
 
-const BrandContainer = ({ onBrandSelect, searchTerm, setLoading }) => {
+const BrandContainer = () => {
   const [brands, setBrands] = useState([]);
   const { openSnackbar } = useSnackbar();
+  const { handleItemSelect, searchTerm, setLoading } = useProductsContext();
+
+  const onBrandSelect = (e, brand) => {
+    handleItemSelect(brand, Screens.BRANDS);
+  }
 
   useEffect(() => {
     setLoading(true);

@@ -1,6 +1,7 @@
 import { Tab, Tabs } from "@mui/material"
 import { useProductsContext } from "./ProductsContext";
 import { useMobile } from "../../components/MobileProvider";
+import { ProductTypes } from "./ProductsConstants";
 
 export const ProductTypeTabs = () => {
     const { productType, handleChangeProductType } = useProductsContext();
@@ -19,8 +20,8 @@ export const ProductTypeTabs = () => {
         aria-label="product tabs"
         sx={{ width: responsive.isMobile ? '85vw' : '100%' }}
     >
-        <Tab value="radiadores" label="Radiadores" />
-        <Tab value="tapas" label="Tapas" />
-        <Tab value="abanicos" label="Abanicos" />
+        <Tab value={ProductTypes.RADIATOR} label="Radiadores" />
+        <Tab value={ProductTypes.CAP} label="Tapas" />
+        <Tab value={ProductTypes.FAN} label="Abanicos" />
     </Tabs>
 }

@@ -3,18 +3,25 @@ import { getVehicleModelsByBrandId } from '../../../services/BrandService';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import VehicleModelList from './VehicleList';
 import { getVehicleModels } from '../../../services/VehicleModelService';
+import { useProductsContext } from '../ProductsContext';
+import { Screens } from '../ProductsConstants';
 
-const VehicleModelListContainer = ({ brand, onVehicleModelSelect, setLoading, searchTerm }) => {
+const VehicleModelListContainer = () => {
     const [vehicleModels, setVehicleModels] = useState([]);
     const { openSnackbar } = useSnackbar();
+    const { selectedBrand, handleItemSelect, setLoading, searchTerm } = useProductsContext();
+
+    const onCarModelSelect = (e, carModel) => {
+        handleItemSelect(carModel, Screens.MODELS);
+    }
 
     useEffect(() => {
         const fetchVehicleModels = async () => {
             try {
                 setLoading(true);
                 let models = [];
-                if (brand && brand.id) {
-                    models = await getVehicleModelsByBrandId(brand.id);
+                if (selectedBrand && selectedBrand.id) {
+                    models = await getVehicleModelsByBrandId(selectedBrand.id);
                 } else {
                     models = await getVehicleModels(searchTerm);
                 }
@@ -27,10 +34,10 @@ const VehicleModelListContainer = ({ brand, onVehicleModelSelect, setLoading, se
         };
 
         fetchVehicleModels();
-    }, [brand, searchTerm]);
+    }, [selectedBrand, searchTerm]);
 
     return (
-        <VehicleModelList vehicleModels={vehicleModels} onVehicleModelSelect={onVehicleModelSelect} />
+        <VehicleModelList carModels={vehicleModels} onCarModelSelect={onCarModelSelect} />
     );
 };
 
