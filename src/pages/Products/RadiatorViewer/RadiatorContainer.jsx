@@ -5,8 +5,9 @@ import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import RadiatorList from './RadiatorList';
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
+import { getVehicleModelRadiators } from '../../../services/VehicleModelService';
 
-const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading }) => {
+const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading, vehicleModel }) => {
   const [radiators, setRadiators] = useState([]);
   const { openSnackbar } = useSnackbar();
 
@@ -14,11 +15,17 @@ const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading }) => {
     setLoading(true);
     const fetchRadiators = async () => {
       try {
-        const radiatorsData = await getAllRadiators(searchTerm);
+        let radiatorsData = [];
 
+        if (vehicleModel && vehicleModel.id) {
+          radiatorsData = await getVehicleModelRadiators(vehicleModel.id);
+        } else {
+          radiatorsData = await getAllRadiators(searchTerm);
+        }
         const radiatorsWithImages = await Promise.all(radiatorsData.map(async (radiator) => {
-          if (radiator.imageUrl) {
-            const imageUrl = await getImageURLFromStorage(radiator.imageUrl).catch(error => {
+          let productImage = radiator.product.productFiles[0];
+          if (productImage) {
+            const imageUrl = await getImageURLFromStorage(productImage.file.storagePath).catch(error => {
               console.error("Error al obtener url imagen de storage para radiador:", radiator.name, error);
               return '';
             });
@@ -40,6 +47,7 @@ const RadiatorContainer = ({ onRadiatorSelect, searchTerm, setLoading }) => {
 
     fetchRadiators();
   }, [searchTerm, setLoading]);
+
 
   return (
     <CSSTransition

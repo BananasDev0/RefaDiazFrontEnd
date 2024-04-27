@@ -4,9 +4,10 @@ import ImageUpload from "./ImageUpload";
 import { useProductsContext } from "../ProductsContext";
 import { useProductDialogContext } from "./ProductDialogContext";
 
+
 const ProductBasicInfo = ({ ProductForm }) => {
     const { productType, setProductType } = useProductsContext();
-    const { setIsNextEnabled } = useProductDialogContext();
+    const { setIsNextEnabled, images, handleImageUpload, handleImageDelete } = useProductDialogContext();
     const [isFormValid, setIsFormValid] = useState(false); // Estado para la validación del formulario
 
     useEffect(() => {
@@ -16,17 +17,6 @@ const ProductBasicInfo = ({ ProductForm }) => {
     const handleProductTypeChange = (event) => {
         setProductType(event.target.value);
     };
-
-    const ProductImageSection = () => (
-        <Box sx={{ paddingTop: 2 }}>
-            <Typography variant="h6" component="h2" sx={{ textAlign: 'center', marginBottom: 2 }}>
-                Imagen del Producto
-            </Typography>
-            <ImageUpload onFileSelected={(file) => {
-                console.log(file);
-            }} />
-        </Box>
-    );
 
     const InputProductSelector = () => (
         <FormControl fullWidth sx={{ mt: 4 }}>
@@ -50,10 +40,17 @@ const ProductBasicInfo = ({ ProductForm }) => {
             <Grid container spacing={2}>
                 <Grid item xs={12} md={7} sx={{ display: 'flex', flexDirection: 'column' }}>
                     <InputProductSelector />
-                    <ProductForm isFormValid={isFormValid} setIsFormValid={setIsFormValid} />
+                    <ProductForm isFormValid={isFormValid} setIsFormValid={setIsFormValid} readOnly />
                 </Grid>
-                <Grid item xs={12} md={5}>
-                    <ProductImageSection />
+                <Grid item xs={12} md={5} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Box sx={{ paddingTop: 2, }}>
+                        <Typography variant="h6" component="h2" sx={{ textAlign: 'center', marginBottom: 2 }}>
+                            Imagen del Producto
+                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', maxWidth: 450 }}>
+                            <ImageUpload onImageDelete={handleImageDelete} onImageUpload={handleImageUpload} uploadedImages={images} key={"ProductImage"} />
+                        </Box>
+                    </Box>
                 </Grid>
             </Grid>
         </Box>

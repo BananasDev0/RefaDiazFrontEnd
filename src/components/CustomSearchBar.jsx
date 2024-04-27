@@ -12,6 +12,7 @@ const CustomSearchBar = ({ searchOption, searchTerm, handleSearchOptionChange, h
         sx={{ height: '35px', marginRight: '5px' }}
       >
         <MenuItem value="marcas">Marcas</MenuItem>
+        <MenuItem value="vehiculos">Modelos</MenuItem>
         <MenuItem value="radiadores">Radiadores</MenuItem>
       </Select>
       <div style={{ flex: 1 }}>

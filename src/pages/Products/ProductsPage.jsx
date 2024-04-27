@@ -8,6 +8,7 @@ import { ProductsProvider, useProductsContext } from "./ProductsContext";
 function ProductsPresentation() {
   const { productType, handleChangeProductType, openDialog, handleOpenDialog, handleCloseDialog } = useProductsContext();
   const responsive = useMobile();
+  const { selectedProduct } = useProductsContext();
 
   const handleChange = (event, newValue) => {
     handleChangeProductType(newValue);
@@ -39,7 +40,7 @@ function ProductsPresentation() {
         <AddIcon />
       </Fab>
 
-      <ProductDialog open={openDialog} onClose={handleCloseDialog} initialType={productType} />
+      <ProductDialog open={openDialog} onClose={handleCloseDialog} initialType={productType} selectedProduct={selectedProduct} />
     </Box>
   );
 }
