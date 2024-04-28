@@ -10,7 +10,6 @@ const CarModelListContainer = () => {
     const [carModels, setCarModels] = useState([]);
     const { openSnackbar } = useSnackbar();
     const { selectedBrand, handleItemSelect, setLoading, searchTerm } = useProductsContext();
-    console.log(selectedBrand)
 
     const onCarModelSelect = (e, carModel) => {
         handleItemSelect(carModel, Screens.MODELS);

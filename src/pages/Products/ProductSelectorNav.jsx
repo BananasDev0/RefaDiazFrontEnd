@@ -3,10 +3,10 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useProductsContext } from './ProductsContext';
-import { Screens } from './ProductsConstants';
+import { ProductTypes, Screens } from './ProductsConstants';
 
 const ProductSelectorNav = () => {
-  const { selectedBrand, selectedCarModel, handleBack } = useProductsContext();
+  const { selectedBrand, selectedCarModel, handleBack, productType } = useProductsContext();
 
   const handleBackToBrands = () => {
     handleBack(Screens.BRANDS);
@@ -15,6 +15,8 @@ const ProductSelectorNav = () => {
   const handleBackToCarModels = () => {
     handleBack(Screens.MODELS);
   }
+
+  const productVerbiage = productType === ProductTypes.CAP ? 'Tapas' : productType === ProductTypes.FAN ? 'Abanicos' : 'Radiadores';
 
   return (
     <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
@@ -37,9 +39,9 @@ const ProductSelectorNav = () => {
       )}
 
       {selectedBrand && selectedCarModel ? (
-        <Typography color="text.primary">Radiadores</Typography>
+        <Typography color="text.primary">{productVerbiage}</Typography>
       ) : (
-        <Typography color="text.disabled">Radiadores</Typography>
+        <Typography color="text.disabled">{productVerbiage}</Typography>
       )}
     </Breadcrumbs>
   );

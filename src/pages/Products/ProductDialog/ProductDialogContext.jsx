@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { processRadiatorData } from '../../../services/RadiatorService';
-import { ProductVehicleModel } from '../../../models/ProductVehicleModel';
+import { ProductCarModel } from '../../../models/ProductCarModel';
 import ProductPrice from '../../../models/ProductPrice';
 import Price from '../../../models/Price';
 import { useProductsContext } from '../ProductsContext';
@@ -84,7 +84,7 @@ export const ProductDialogProvider = ({ children }) => {
             let createdProduct = null;
 
             let vehicleModels = associatedVehicleModels.map(vehicleModel => {
-                return new ProductVehicleModel({
+                return new ProductCarModel({
                     vehicleModelId: vehicleModel.model.id,
                     initialYear: vehicleModel.startYear,
                     lastYear: vehicleModel.endYear

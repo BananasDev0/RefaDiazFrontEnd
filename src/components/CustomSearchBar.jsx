@@ -33,7 +33,7 @@ const CustomSearchBar = () => {
     <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', marginBottom: '10px' }}>
       <Select
         value={searchOption}
-        onChange={handleSearchOptionChange}
+        onChange={(event) => handleSearchOptionChange(event.target.value)}
         displayEmpty
         inputProps={{ 'aria-label': 'Buscar por' }}
         sx={{ height: '35px', marginRight: '5px' }}

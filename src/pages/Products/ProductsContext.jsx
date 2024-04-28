@@ -63,6 +63,7 @@ export const ProductsProvider = ({ children }) => {
             setSelectedCarModel(null);
         } else if (screen === Screens.MODELS) {
             setCurrentScreen(Screens.MODELS);
+            setSearchOption(SearchOptions.MODELS);
             setSelectedCarModel(null);
         }
     };
@@ -71,7 +72,9 @@ export const ProductsProvider = ({ children }) => {
         setSearchTerm('');
         setSelectedBrand(null);
         setSelectedCarModel(null);
+        setSelectedProduct(null);
         setSearchOption(value);
+        
         if (value === SearchOptions.BRANDS) {
             setCurrentScreen(Screens.BRANDS);
         } else if (value === SearchOptions.MODELS) {

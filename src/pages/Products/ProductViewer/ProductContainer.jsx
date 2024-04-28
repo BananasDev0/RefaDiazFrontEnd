@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { getAllRadiators } from '../../../services/RadiatorService';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
-import { getVehicleModelRadiators } from '../../../services/CarModelService';
+import { getAllCarModelsProducts, getCarModelProducts } from '../../../services/CarModelService';
 import { useProductsContext } from '../ProductsContext';
 import { Screens } from '../ProductsConstants';
 import ProductList from './ProductList';
+import { ProductCarModel } from '../../../models/ProductCarModel';
 
 const ProductContainer = () => {
-  const [products, setProducts] = useState([]);
+  const [productCarModels, setProductCarModels] = useState([]);
   const { openSnackbar } = useSnackbar();
-  const { handleItemSelect, searchTerm, setLoading, selectedCarModel } = useProductsContext();
+  const { handleItemSelect, searchTerm, setLoading, selectedCarModel, productType } = useProductsContext();
 
   const handleProductSelect = (e, radiator) => {
     handleItemSelect(radiator, Screens.PRODUCTS);
@@ -20,29 +20,38 @@ const ProductContainer = () => {
 
   useEffect(() => {
     setLoading(true);
-    const fetchRadiators = async () => {
+
+    const fetchProducts = async () => {
       try {
-        let productsData = [];
+        let response = null;
+        let productCarModelsData = [];
 
         if (selectedCarModel && selectedCarModel.id) {
-          productsData = await getVehicleModelRadiators(selectedCarModel.id);
+          response = await getCarModelProducts(selectedCarModel.id, productType, searchTerm);
+          productCarModelsData = response.data;
         } else {
-          productsData = await getAllRadiators(searchTerm);
+          response = await getAllCarModelsProducts('',searchTerm);
+          productCarModelsData = response.data;
         }
-        const radiatorsWithImages = await Promise.all(productsData.map(async (radiator) => {
-          let productImage = radiator.product.productFiles[0];
-          if (productImage) {
-            const imageUrl = await getImageURLFromStorage(productImage.file.storagePath).catch(error => {
-              console.error("Error al obtener url imagen de storage para radiador:", radiator.name, error);
+
+        productCarModelsData = productCarModelsData.map(productCarModel => new ProductCarModel(productCarModel));
+
+        const productsWithImages = await Promise.all(productCarModelsData.map(async (productCarModel) => {
+          console.log(productCarModel.product.files)
+          let file = productCarModel.product.files.find(file => file.orderId == 1);
+          if (file) {
+            console.log(file)
+            const imageUrl = await getImageURLFromStorage(file.storagePath).catch(error => {
+              console.error("Error al obtener url imagen de storage para producto:", productCarModel.product.name, error);
               return '';
             });
-            return { ...radiator, imageUrl };
+            return { ...productCarModel, imageUrl };
           } else {
-            return radiator;
+            return productCarModel;
           }
         }));
 
-        setProducts(radiatorsWithImages);
+        setProductCarModels(productsWithImages);
         setLoading(false);
 
       } catch (error) {
@@ -50,21 +59,21 @@ const ProductContainer = () => {
         setLoading(false);
         openSnackbar(`Error al cargar los radiadores!: ${error.errorMessage}`, 'error')
       }
-    };
+    }
 
-    fetchRadiators();
+    fetchProducts();
   }, [searchTerm, setLoading]);
 
 
   return (
     <CSSTransition
-      in={products.length > 0} // Establece la condición para mostrar la animación
+      in={productCarModels.length > 0} // Establece la condición para mostrar la animación
       timeout={300}
       classNames="fade"
       unmountOnExit
     >
       <div>
-        <ProductList title="Lista de Radiadores" products={products} onProductSelect={handleProductSelect} />
+        <ProductList title="Lista de Radiadores" products={productCarModels} onProductSelect={handleProductSelect} />
       </div>
     </CSSTransition>
   );

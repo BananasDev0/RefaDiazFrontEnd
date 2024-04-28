@@ -8,11 +8,11 @@ const columns = [
 const ProductList = ({ products, onProductSelect }) => {
   return (
     <div>
-      <ItemsCardList rows={products.map(radiator => ({
-        id: radiator.product.id,
-        dpi: radiator.dpi,
-        name: radiator.product.name,
-        imageUrl: radiator.product.imageUrl // Se muestra la imagen
+      <ItemsCardList rows={products.map(productCarModel => ({
+        id: productCarModel.product.id,
+        dpi: productCarModel.productdpi,
+        name: productCarModel.product.name,
+        imageUrl: productCarModel.imageUrl // Se muestra la imagen
       }))} columns={columns} itemCardProps={{onClick: onProductSelect}} />
     </div>
   );

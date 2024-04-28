@@ -5,7 +5,6 @@ import { PriceManagerDisplay } from "./ProductDialog/PriceManager";
 import ImageUpload from './ProductDialog/ImageUpload';
 
 const ProductSummary = ({ productType, product, associatedVehicleModels, associatedPrices, images }) => {
-    console.log("asd", productType)
     return (
         <div>
             <Box sx={{ paddingY: 2 }}>
