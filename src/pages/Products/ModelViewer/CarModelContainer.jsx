@@ -1,31 +1,32 @@
 import { useEffect, useState } from 'react';
-import { getVehicleModelsByBrandId } from '../../../services/BrandService';
+import { getCarModelsByBrandId } from '../../../services/BrandService';
 import { useSnackbar } from '../../../components/SnackbarContext';
-import VehicleModelList from './VehicleList';
-import { getVehicleModels } from '../../../services/VehicleModelService';
+import CarModelList from './CarModelList';
+import { getCarModels } from '../../../services/CarModelService';
 import { useProductsContext } from '../ProductsContext';
 import { Screens } from '../ProductsConstants';
 
-const VehicleModelListContainer = () => {
-    const [vehicleModels, setVehicleModels] = useState([]);
+const CarModelListContainer = () => {
+    const [carModels, setCarModels] = useState([]);
     const { openSnackbar } = useSnackbar();
     const { selectedBrand, handleItemSelect, setLoading, searchTerm } = useProductsContext();
+    console.log(selectedBrand)
 
     const onCarModelSelect = (e, carModel) => {
         handleItemSelect(carModel, Screens.MODELS);
     }
 
     useEffect(() => {
-        const fetchVehicleModels = async () => {
+        const fetchCarModels = async () => {
             try {
                 setLoading(true);
                 let models = [];
                 if (selectedBrand && selectedBrand.id) {
-                    models = await getVehicleModelsByBrandId(selectedBrand.id);
+                    models = await getCarModelsByBrandId(selectedBrand.id);
                 } else {
-                    models = await getVehicleModels(searchTerm);
+                    models = await getCarModels(searchTerm);
                 }
-                setVehicleModels(models);
+                setCarModels(models);
                 setLoading(false);
             } catch (error) {
                 setLoading(false);
@@ -33,12 +34,12 @@ const VehicleModelListContainer = () => {
             }
         };
 
-        fetchVehicleModels();
+        fetchCarModels();
     }, [selectedBrand, searchTerm]);
 
     return (
-        <VehicleModelList carModels={vehicleModels} onCarModelSelect={onCarModelSelect} />
+        <CarModelList carModels={carModels} onCarModelSelect={onCarModelSelect} />
     );
 };
 
-export default VehicleModelListContainer;
+export default CarModelListContainer;

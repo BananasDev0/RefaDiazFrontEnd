@@ -6,9 +6,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandableCard from '../../../components/ExpandableCard';
 import CustomSelectWithAdd from '../../../components/CustomSelectWithAdd';
 import { useProductDialogContext } from './ProductDialogContext';
-import { getVehicleModelsByBrandId, getAllBrands } from '../../../services/BrandService';
-import { createVehicleModel } from '../../../services/VehicleModelService';
-import VehicleModel from '../../../models/VehicleModel';
+import { getCarModelsByBrandId, getAllBrands } from '../../../services/BrandService';
+import { createVehicleModel } from '../../../services/CarModelService';
+import CarModel from '../../../models/CarModel';
 import { useSnackbar } from '../../../components/SnackbarContext';
 
 
@@ -169,12 +169,12 @@ const ModelManager = () => {
     fetchBrands();
   }, []);
 
-  // Llama a getVehicleModelsByBrandId cada vez que se seleccione una nueva marca
+  // Llama a getCarModelsByBrandId cada vez que se seleccione una nueva marca
   useEffect(() => {
     const fetchVehicleModels = async () => {
       try {
         if (brand.id) {
-          const vehicleModelsData = await getVehicleModelsByBrandId(brand.id);
+          const vehicleModelsData = await getCarModelsByBrandId(brand.id);
           setVehicleModels(vehicleModelsData);
         } else {
           setVehicleModels([]);
@@ -216,7 +216,7 @@ const ModelManager = () => {
   };
 
   const handleOnAddItem = async (elements, newItem) => {
-    const newVehicleModel = new VehicleModel({
+    const newVehicleModel = new CarModel({
       brandId: brand.id,
       ...newItem
     });

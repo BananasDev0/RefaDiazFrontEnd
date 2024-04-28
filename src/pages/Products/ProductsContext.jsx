@@ -15,7 +15,7 @@ export const ProductsProvider = ({ children }) => {
     const [selectedCarModel, setSelectedCarModel] = useState(null);
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [searchOption, setSearchOption] = useState('marcas');
+    const [searchOption, setSearchOption] = useState(SearchOptions.BRANDS);
 
     const [loading, setLoading] = useState(false);
 
@@ -26,12 +26,13 @@ export const ProductsProvider = ({ children }) => {
             case Screens.BRANDS:
                 setSelectedBrand(item);
                 setSearchOption(SearchOptions.MODELS);
-                setCurrentScreen(Screen.VEHICLES);
+                setCurrentScreen(Screens.MODELS);
+                setSelectedBrand(item);
                 break;
             case Screens.MODELS:
                 setSelectedCarModel(item);
                 setSearchOption(SearchOptions.PRODUCTS);
-                setCurrentScreen(Screen.RADIATORS);
+                setCurrentScreen(Screens.PRODUCTS);
                 break;
             case Screens.PRODUCTS:
                 setSelectedProduct(item);

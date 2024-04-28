@@ -24,8 +24,8 @@ const BrandContainer = () => {
         const brandsData = await getAllBrands();
 
         const brandsWithImages = await Promise.all(brandsData.map(async (brand) => {
-          if (brand.imageUrl) {
-            const imageUrl = await getImageURLFromStorage(brand.imageUrl).catch(error => {
+          if (brand.file) {
+            const imageUrl = await getImageURLFromStorage(brand.file.storagePath).catch(error => {
               console.error("Error al obtener url imagen de storage para marca:", brand.name, error);
               return '';
             });

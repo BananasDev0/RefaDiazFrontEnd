@@ -3,10 +3,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import BrandContainer from './BrandViewer/BrandContainer';
 import ProductSelectorNav from './ProductSelectorNav';
 import CustomSearchBar from '../../components/CustomSearchBar';
-import VehicleModelListContainer from './VehicleModelViewer/VehicleModelContainer';
 import { useProductsContext } from './ProductsContext';
 import { Screens } from './ProductsConstants';
 import ProductContainer from './ProductViewer/ProductContainer';
+import CarModelListContainer from './ModelViewer/CarModelContainer';
 
 const ProductSelector = () => {
     const { currentScreen, loading } = useProductsContext();
@@ -18,7 +18,7 @@ const ProductSelector = () => {
 
             <Box sx={{ height: 'calc(100vh - 320px)', overflowY: 'auto' }}>
                 {currentScreen === Screens.BRANDS && <BrandContainer />}
-                {currentScreen === Screens.MODELS && <VehicleModelListContainer />}
+                {currentScreen === Screens.MODELS && <CarModelListContainer />}
                 {currentScreen === Screens.PRODUCTS && <ProductContainer />}
 
                 {loading && (

@@ -4,7 +4,7 @@ import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
-import { getVehicleModelRadiators } from '../../../services/VehicleModelService';
+import { getVehicleModelRadiators } from '../../../services/CarModelService';
 import { useProductsContext } from '../ProductsContext';
 import { Screens } from '../ProductsConstants';
 import ProductList from './ProductList';
