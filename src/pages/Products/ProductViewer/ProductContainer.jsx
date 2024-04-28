@@ -30,7 +30,7 @@ const ProductContainer = () => {
           response = await getCarModelProducts(selectedCarModel.id, productType, searchTerm);
           productCarModelsData = response.data;
         } else {
-          response = await getAllCarModelsProducts('',searchTerm);
+          response = await getAllCarModelsProducts(productType,searchTerm);
           productCarModelsData = response.data;
         }
 
@@ -73,7 +73,7 @@ const ProductContainer = () => {
       unmountOnExit
     >
       <div>
-        <ProductList title="Lista de Radiadores" products={productCarModels} onProductSelect={handleProductSelect} />
+        <ProductList products={productCarModels} onProductSelect={handleProductSelect} />
       </div>
     </CSSTransition>
   );

@@ -2,9 +2,11 @@ import React, { useRef, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ImageGallery from '../../../components/ImageGallery';
+import { useMobile } from '../../../components/MobileProvider';
 
 const ImageUpload = React.memo(({ uploadedImages, onImageUpload, onImageDelete, readOnly = false }) => {
     const [dragOver, setDragOver] = useState(false);
+    const { isMobile } = useMobile();
     const fileInputRef = useRef(null);
 
     const handleDragOver = (event) => {
@@ -50,6 +52,10 @@ const ImageUpload = React.memo(({ uploadedImages, onImageUpload, onImageDelete, 
                 backgroundColor: dragOver ? 'action.hover' : 'background.paper',
                 textAlign: 'center',
                 cursor: readOnly ? 'default' : 'pointer',
+                minHeight: isMobile ? 200 : 300,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
             }}
             onDragOver={readOnly ? null : handleDragOver}
             onDragLeave={readOnly ? null : handleDragLeave}
@@ -81,8 +87,8 @@ const ImageUpload = React.memo(({ uploadedImages, onImageUpload, onImageDelete, 
                     </label>
                 </>
             )}
-            {uploadedImages.length === 0 && !readOnly && <Typography>Arrastra imágenes aquí, o haz clic para seleccionarlas.</Typography> }
-            {uploadedImages.length === 0 && readOnly && <Typography>No hay imagenes cargadas</Typography> }
+            {uploadedImages.length === 0 && !readOnly && <Typography>Arrastra imágenes aquí, o haz clic para seleccionarlas.</Typography>}
+            {uploadedImages.length === 0 && readOnly && <Typography>No hay imagenes cargadas</Typography>}
         </Box>
     );
 }, areEqual);

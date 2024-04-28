@@ -1,4 +1,4 @@
-import ProductSummary from "../ProductSummary";
+import { ProductTypes } from "../ProductsConstants";
 import { useProductsContext } from "../ProductsContext";
 import { useProductDialogContext } from "./ProductDialogContext";
 import RadiatorFlow from "./RadiatorFlow";
@@ -6,7 +6,7 @@ import { CircularProgress, Box } from '@mui/material';
 
 const ProductFlow = () => {
     const { isLoading } = useProductDialogContext();
-    const { productType, selectedProduct } = useProductsContext();
+    const { productType } = useProductsContext();
 
     return (
         <>
@@ -23,7 +23,7 @@ const ProductFlow = () => {
                 </Box>
             ) : (
                 <div>
-                    {productType === 'radiadores' && <RadiatorFlow />}
+                    {productType === ProductTypes.RADIATOR && <RadiatorFlow />}
                 </div>
             )}
         </>

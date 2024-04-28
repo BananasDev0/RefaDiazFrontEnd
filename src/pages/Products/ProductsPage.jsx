@@ -6,8 +6,7 @@ import { ProductsProvider, useProductsContext } from "./ProductsContext";
 import { ProductTypeTabs } from "./ProductTypeTabs";
 
 function ProductsPresentation() {
-  const { productType, openDialog, handleOpenDialog, handleCloseDialog } = useProductsContext();
-  const { selectedProduct } = useProductsContext();
+  const { handleOpenDialog } = useProductsContext();
 
   return (
     <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
@@ -22,7 +21,7 @@ function ProductsPresentation() {
         <AddIcon />
       </Fab>
 
-      <ProductDialog open={openDialog} onClose={handleCloseDialog} initialType={productType} selectedProduct={selectedProduct} />
+      <ProductDialog />
     </Box>
   );
 }
