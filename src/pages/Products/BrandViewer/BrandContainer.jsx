@@ -38,6 +38,7 @@ const BrandContainer = () => {
         setBrands(brandsWithImages);
         setLoading(false);
       } catch (error) {
+        console.error("Error al obtener las marcas:", error);
         openSnackbar(error.errorMessage, "error");
         setLoading(false);
       }
