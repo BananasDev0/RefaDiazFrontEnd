@@ -7,28 +7,29 @@ import ExpandableCard from '../../../components/ExpandableCard';
 import CustomSelectWithAdd from '../../../components/CustomSelectWithAdd';
 import { useProductDialogContext } from './ProductDialogContext';
 import { getCarModelsByBrandId, getAllBrands } from '../../../services/BrandService';
-import { createVehicleModel } from '../../../services/CarModelService';
+import { createCarModel } from '../../../services/CarModelService';
 import CarModel from '../../../models/CarModel';
 import { useSnackbar } from '../../../components/SnackbarContext';
+import { ProductCarModel } from '../../../models/ProductCarModel';
+import Brand from '../../../models/Brand';
+import { modifyAndClone } from '../../../util/generalUtils';
 
 
 const ModelManagerDisplay = ({
+  product,
   brand,
   brands,
   handleBrandChange,
-  currentModel,
-  vehicleModels,
-  setCurrentModel,
-  handleOnAddItem,
-  startYear,
-  setStartYear,
-  endYear,
-  setEndYear,
-  handleAddModel,
-  associatedVehicleModels,
+  carModels,
+  productModel,
+  handleCarModelAdded,
+  handleModelChange,
   handleDeleteModel,
-  setVehicleModels,
-  readOnly = false
+  setCarModels,
+  readOnly = false,
+  handleStartYearChange,
+  handleLastYearChange,
+  handleOnItemAdded
 }) => {
   return (
 
@@ -60,14 +61,14 @@ const ModelManagerDisplay = ({
             </Grid>
             <Grid item xs={6}>
               <CustomSelectWithAdd
-                elements={vehicleModels}
-                setElements={setVehicleModels}
+                elements={carModels}
+                setElements={setCarModels}
                 label="Modelo"
                 placeholder="Introduce un Modelo"
-                selectedItem={currentModel}
-                setSelectedItem={setCurrentModel}
+                selectedItem={carModels.find(model => model.id === productModel.carModelId)}
+                setSelectedItem={handleModelChange}
                 getItemText={item => item.name}
-                onItemAdded={handleOnAddItem}
+                onItemAdded={handleOnItemAdded}
                 dialogFields={[
                   {
                     name: 'name',
@@ -83,8 +84,8 @@ const ModelManagerDisplay = ({
                 label="Año Inicial"
                 type="number"
                 variant="outlined"
-                value={startYear}
-                onChange={(e) => setStartYear(e.target.value)}
+                value={productModel.initialYear}
+                onChange={(e) => handleStartYearChange(e.target.value)}
                 fullWidth
               />
             </Grid>
@@ -93,13 +94,13 @@ const ModelManagerDisplay = ({
                 label="Año Final"
                 type="number"
                 variant="outlined"
-                value={endYear}
-                onChange={(e) => setEndYear(e.target.value)}
+                value={productModel.lastYear}
+                onChange={(e) => handleLastYearChange(e.target.value)}
                 fullWidth
               />
             </Grid>
           </Grid>
-          <Button onClick={handleAddModel} variant="contained" sx={{ mt: 2 }}>
+          <Button onClick={handleCarModelAdded} variant="contained" sx={{ mt: 2 }}>
             Agregar Modelo
           </Button>
         </>
@@ -108,7 +109,6 @@ const ModelManagerDisplay = ({
       <Table size="small" sx={{ mt: 4 }}>
         <TableHead>
           <TableRow>
-            <TableCell>Marca</TableCell>
             <TableCell>Modelo</TableCell>
             <TableCell align="right">Año Inicial</TableCell>
             <TableCell align="right">Año Final</TableCell>
@@ -116,21 +116,25 @@ const ModelManagerDisplay = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {associatedVehicleModels.map((vehicleModel, index) => (
-            <TableRow key={index}>
-              <TableCell>{vehicleModel.brand.name}</TableCell>
-              <TableCell>{vehicleModel.model.name}</TableCell>
-              <TableCell align="right">{vehicleModel.startYear}</TableCell>
-              <TableCell align="right">{vehicleModel.endYear}</TableCell>
-              {!readOnly && (
-                <TableCell align="right">
-                  <IconButton onClick={() => handleDeleteModel(index)} size="large">
-                    <DeleteIcon />
-                  </IconButton>
+          {product.carModels.map((productCarModel, index) => {
+            let model = carModels.find(model => model.id === productCarModel.carModelId);
+            return (
+              <TableRow key={productCarModel.id}>
+                <TableCell component="th" scope="row">
+                  {model.name}
                 </TableCell>
-              )}
-            </TableRow>
-          ))}
+                <TableCell align="right">{productCarModel.initialYear}</TableCell>
+                <TableCell align="right">{productCarModel.lastYear}</TableCell>
+                {!readOnly && (
+                  <TableCell align="right">
+                    <IconButton onClick={() => handleDeleteModel(index)} aria-label="delete">
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                )}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </ExpandableCard>
@@ -138,109 +142,97 @@ const ModelManagerDisplay = ({
 };
 
 const ModelManager = () => {
-  const [brand, setBrand] = useState({
-    id: null,
-    name: ''
-  });
-  const [currentModel, setCurrentModel] = useState({
-    id: null,
-    name: ''
-  });
-  const [startYear, setStartYear] = useState('');
-  const [endYear, setEndYear] = useState('');
-  const { associatedVehicleModels, setAssociatedVehicleModels } = useProductDialogContext();
+  const [productModel, setProductModel] = useState(new ProductCarModel({}));
+  const [selectedBrand, setSelectedBrand] = useState(new Brand({}));
+  const [brands, setBrands] = useState([]);
+  const [models, setModels] = useState([]);
+  const { openSnackbar } = useSnackbar();
+  const { product, handleSetProduct } = useProductDialogContext();
 
-  const [brands, setBrands] = useState([]); // Estado para las marcas
-  const [vehicleModels, setVehicleModels] = useState([]); // Estado para los modelos
-
-  const { openSnackbar } = useSnackbar(); // Usa el hook de Snackbar
-
-  // Llama a getAllBrands en el primer render
   useEffect(() => {
     const fetchBrands = async () => {
       try {
         const brandsData = await getAllBrands();
         setBrands(brandsData);
       } catch (error) {
-        openSnackbar(`Error al obtener las marcas: ${error.errorMessage}`, 'error');
+        openSnackbar(`Error al obtener las marcas: ${error.message}`, 'error');
       }
     };
-
     fetchBrands();
   }, []);
 
-  // Llama a getCarModelsByBrandId cada vez que se seleccione una nueva marca
   useEffect(() => {
-    const fetchVehicleModels = async () => {
+    const fetchCarModels = async () => {
       try {
-        if (brand.id) {
-          const vehicleModelsData = await getCarModelsByBrandId(brand.id);
-          setVehicleModels(vehicleModelsData);
-        } else {
-          setVehicleModels([]);
-        }
+        const carModelsData = await getCarModelsByBrandId(selectedBrand.id);
+        setModels(carModelsData);
       } catch (error) {
-        openSnackbar(`Error al obtener los modelos: ${error.errorMessage}`, 'error');
+        openSnackbar(`Error al obtener los modelos de la marca: ${selectedBrand.name}`, 'error');
       }
     };
+    if (selectedBrand) fetchCarModels();
+  }, [selectedBrand]);
 
-    fetchVehicleModels();
-  }, [brand.id]);
+  const handleBrandChange = (event) => {
+    let selectedBrand = brands.find(brand => brand.id === event.target.value);
+    setSelectedBrand(selectedBrand);
+  };
 
-
-  const handleAddModel = () => {
-    if (brand.id && currentModel.id && startYear && endYear) {
-      setAssociatedVehicleModels([...associatedVehicleModels, { brand, model: currentModel, startYear, endYear }]);
-      setCurrentModel({});
-      setStartYear('');
-      setEndYear('');
-    }
+  const handleModelChange = (carModelSelected) => {
+    setProductModel(new ProductCarModel({ ...productModel, carModelId: carModelSelected.id }));
   };
 
   const handleDeleteModel = (index) => {
-    const updatedModels = associatedVehicleModels.filter((_, i) => i !== index);
-    setAssociatedVehicleModels(updatedModels);
+    const updatedModels = productModel.associatedVehicleModels.filter((_, i) => i !== index);
+    setProductModel({ ...productModel, associatedVehicleModels: updatedModels });
   };
 
-  const handleBrandChange = (event) => {
-    const newBrandId = event.target.value;
-    const newBrand = brands.find(brand => brand.id.toString() === newBrandId.toString());
-    if (newBrand) {
-      setBrand(newBrand);
-    } else {
-      setBrand({
-        id: '',
-        name: ''
-      });
-    }
+  const handleCarModelCreated = (model) => {
+    setModels([...models, new CarModel(model)]);
+    setProductModel({ ...productModel, carModelId: model.id });
   };
 
-  const handleOnAddItem = async (elements, newItem) => {
+  const handleStartYearChange = (year) => {
+    setProductModel({ ...productModel, initialYear: year });
+  }
+
+  const handleLastYearChange = (year) => {
+    setProductModel({ ...productModel, lastYear: year });
+  }
+
+  const handleOnItemAdded = async (elements, newItem) => {
     const newVehicleModel = new CarModel({
-      brandId: brand.id,
+      brandId: selectedBrand.id,
       ...newItem
     });
-    const createdVehicleModel = await createVehicleModel(newVehicleModel);
+    const createdVehicleModel = await createCarModel(newVehicleModel);
     return createdVehicleModel.id;
   }
 
+  const handleCarModelAdded = () => {
+    console.log("before", [...product.carModels, productModel])
+    handleSetProduct(modifyAndClone(product, 'carModels', [...product.carModels, productModel]));
+  }
+
+
   return (
     <ModelManagerDisplay
-      brand={brand}
+      product={product}
+      carModels={models}
+      setCarModels={setModels}
+      productModel={productModel}
+      brand={selectedBrand}
+      setProductModel={setProductModel}
       brands={brands}
       handleBrandChange={handleBrandChange}
-      currentModel={currentModel}
-      vehicleModels={vehicleModels}
-      setCurrentModel={setCurrentModel}
-      handleOnAddItem={handleOnAddItem}
-      startYear={startYear}
-      setStartYear={setStartYear}
-      endYear={endYear}
-      setEndYear={setEndYear}
-      handleAddModel={handleAddModel}
-      associatedVehicleModels={associatedVehicleModels}
+      handleModelChange={handleModelChange}
       handleDeleteModel={handleDeleteModel}
-      setVehicleModels={setVehicleModels}
+      readOnly={false}
+      handleCarModelCreated={handleCarModelCreated}
+      handleStartYearChange={handleStartYearChange}
+      handleLastYearChange={handleLastYearChange}
+      handleOnItemAdded={handleOnItemAdded}
+      handleCarModelAdded={handleCarModelAdded}
     />
   );
 };

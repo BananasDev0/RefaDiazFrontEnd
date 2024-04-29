@@ -24,9 +24,9 @@ const RadiatorFormDisplay = ({ product, handleChange, readOnly }) => {
                 variant="outlined"
                 type="number"
                 sx={{ mt: 4 }}
-                value={product.product.stockCount || ''}
+                value={product.stockCount || ''}
                 onChange={(e) => {
-                    handleChange(e,'product.stockCount')
+                    handleChange(e,'stockCount')
                 }}
                 InputProps={{ readOnly }}
             />
@@ -38,9 +38,9 @@ const RadiatorFormDisplay = ({ product, handleChange, readOnly }) => {
                 multiline
                 rows={4}
                 sx={{ mt: 4 }}
-                value={product.product.comments || ''}
+                value={product.comments || ''}
                 onChange={(e) => {
-                    handleChange(e,'product.comments')
+                    handleChange(e,'comments')
                 }}
                 InputProps={{ readOnly }}
             />
@@ -50,14 +50,14 @@ const RadiatorFormDisplay = ({ product, handleChange, readOnly }) => {
 
 
 const RadiatorFormContainer = ({ setIsFormValid }) => {
-    const { product, setProduct } = useProductDialogContext();
+    const { product, handleSetProduct } = useProductDialogContext();
 
     useEffect(() => {
-        setIsFormValid(product.dpi && product.product.stockCount);
-    }, [product.dpi, product.product.stockCount, setIsFormValid]);
+        setIsFormValid(product.dpi && product.stockCount);
+    }, [product.dpi, product.stockCount, setIsFormValid]);
 
     const handleChange = (event, field) => {
-        setProduct(modifyAndClone(product, field, event.target.value));
+        handleSetProduct(modifyAndClone(product, field, event.target.value));
     };
 
     return <RadiatorFormDisplay 

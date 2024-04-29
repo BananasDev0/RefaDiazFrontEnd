@@ -9,8 +9,9 @@ import RadiatorForm from '../Forms/RadiatorForm';
 
 const ProductBasicInfo = ({ ProductForm }) => {
     const { productType, handleChangeProductType } = useProductsContext();
-    const { setIsNextEnabled, images, handleImageUpload, handleImageDelete } = useProductDialogContext();
+    const { setIsNextEnabled, handleImageUpload, handleImageDelete, product } = useProductDialogContext();
     const [isFormValid, setIsFormValid] = useState(false); // Estado para la validación del formulario
+    let images = product.files.map(file => file.fileData);
 
     useEffect(() => {
         setIsNextEnabled(isFormValid);

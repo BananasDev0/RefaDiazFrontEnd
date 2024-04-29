@@ -1,18 +1,18 @@
 import axios from './axiosConfig';
-import VehicleModel from "../models/CarModel";
 import { ProductCarModel } from '../models/ProductCarModel';
+import CarModel from '../models/CarModel';
 
 
-const createVehicleModel = async(vehicleModelData) => {
-  const result = await axios.post('/model', vehicleModelData);
+const createCarModel = async(carModelData) => {
+  const result = await axios.post('/model', carModelData);
 
-  return result.statusCode === 201 ? new VehicleModel(result.response) : false;
+  return result.statusCode === 201 ? new CarModel(result.response) : false;
 }
 
 const getCarModels = async(name = '') => {
   const result = await axios.get(`/models?name=${name}`);
 
-  return Array.isArray(result.response) ? result.response.map(model => new VehicleModel(model)) : [];
+  return Array.isArray(result.response) ? result.response.map(model => new CarModel(model)) : [];
 }
 
 const getVehicleModelRadiators = async (id) => {
@@ -31,4 +31,4 @@ const getAllCarModelsProducts = async (productTypeId, searchTerm) => {
 }
 
 
-export { createVehicleModel, getCarModels, getVehicleModelRadiators, getCarModelProducts, getAllCarModelsProducts};
+export { createCarModel, getCarModels, getVehicleModelRadiators, getCarModelProducts, getAllCarModelsProducts};

@@ -5,10 +5,11 @@ import ProductPrice from '../../../models/ProductPrice';
 import Price from '../../../models/Price';
 import { useProductsContext } from '../ProductsContext';
 import { uploadImageToStorage } from '../../../services/Firebase/storage';
-import { base64ToBlob, getMimeType } from '../../../util/generalUtils';
+import { base64ToBlob, getMimeType, modifyAndClone } from '../../../util/generalUtils';
 import File from '../../../models/File';
 import { createProductFiles } from '../../../services/ProductService';
 import { useSnackbar } from '../../../components/SnackbarContext';
+import Product from '../../../models/Product';
 
 const ProductDialogContext = createContext();
 
@@ -17,14 +18,15 @@ export const useProductDialogContext = () => useContext(ProductDialogContext);
 export const ProductDialogProvider = ({ children }) => {
     const [activeStep, setActiveStep] = useState(0);
     const [isNextEnabled, setIsNextEnabled] = useState(false);
-    const [product, setProduct] = useState({ product: {} });
+    const [product, setProduct] = useState(new Product({}));
     const [associatedVehicleModels, setAssociatedVehicleModels] = useState([])
     const [associatedPrices, setAssociatedPrices] = useState([]);
     const { productType, handleCloseDialog } = useProductsContext();
     const dependencies = [productType, associatedVehicleModels,
-        associatedPrices, product.product.stockCount, product.product.comments, product.dpi];
+        associatedPrices, product.stockCount, product.comments, product.dpi];
     const [isLoading, setIsLoading] = useState(false);
     const { openSnackbar } = useSnackbar()
+    console.log('asd', product)
 
     const [images, setImages] = useState([]);
 
@@ -36,36 +38,37 @@ export const ProductDialogProvider = ({ children }) => {
         setImages([]);
     };
 
+    const handleSetProduct = (newProduct) => {
+        console.log('dafaq', newProduct)
+        setProduct(new Product(newProduct));
+    };
+
     const handleImageUpload = (file) => {
         const reader = new FileReader();
         reader.onloadend = () => {
-            setImages(prevImages => [...prevImages, reader.result]);
+            let orderId = product.files.length + 1;
+            let newFile = new File({ fileData: reader.result, orderId });
+            setProduct(modifyAndClone(product, 'files', [...product.files, newFile]));
         };
         reader.readAsDataURL(file);
     };
 
     const handleImageDelete = (index) => {
-        setImages(prevImages => prevImages.filter((_, i) => i !== index));
+        setProduct(modifyAndClone(product, 'files', product.files.filter((_, i) => i !== index)));
     };
 
     useEffect(() => {
         const formattedName = formatProductName(productType, product, associatedVehicleModels, associatedPrices);
-        setProduct(currentProduct => ({
-            ...currentProduct,
-            product: {
-                ...currentProduct.product,
-                name: formattedName
-            }
-        }));
+        
     }, dependencies);
 
 
     const formatProductName = (productType, product, vehicleModels) => {
         switch (productType) {
             case 'radiadores':
-                return `${product.dpi} ${vehicleModels.map(vm => `${vm.model.name} (${vm.startYear}-${vm.endYear})`).join('-')} [${product.product.stockCount}]`;
+                return `${product.dpi} ${vehicleModels.map(vm => `${vm.model.name} (${vm.startYear}-${vm.endYear})`).join('-')} [${product.stockCount}]`;
             default:
-                return product.product.name; // Devuelve el nombre existente si el tipo de producto no coincide
+                return product.name; // Devuelve el nombre existente si el tipo de producto no coincide
         }
     };
 
@@ -117,7 +120,7 @@ export const ProductDialogProvider = ({ children }) => {
                     mimeType: getMimeType(image),
                     storagePath: fileName
                 }));
-                product.product.imageUrl = fileName;
+                product.imageUrl = fileName;
             });
 
             await createProductFiles(createdProduct.product.id, files);
@@ -134,26 +137,28 @@ export const ProductDialogProvider = ({ children }) => {
     return (
         <ProductDialogContext.Provider value={{
             activeStep,
-            setActiveStep,
-            handleNext,
-            handleBack,
-            isNextEnabled,
-            setIsNextEnabled,
-            totalSteps: 3,
-            product,
-            setProduct,
-            associatedVehicleModels,
-            setAssociatedVehicleModels,
-            handleSubmit,
             associatedPrices,
-            setAssociatedPrices,
+            associatedVehicleModels,
             images,
-            handleImageUpload,
-            handleImageDelete,
             isLoading,
-            resetState
+            isNextEnabled,
+            product,
+            totalSteps: 3,
+        
+            handleBack,
+            handleImageDelete,
+            handleImageUpload,
+            handleNext,
+            handleSetProduct,
+            handleSubmit,
+            resetState,
+            setActiveStep,
+            setAssociatedPrices,
+            setAssociatedVehicleModels,
+            setIsNextEnabled
         }}>
             {children}
         </ProductDialogContext.Provider>
+        
     );
 };
