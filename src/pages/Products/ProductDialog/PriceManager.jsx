@@ -5,14 +5,14 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandableCard from '../../../components/ExpandableCard';
 import { useProductDialogContext } from './ProductDialogContext';
+import Price from '../../../models/Price';
+import ProductPrice from '../../../models/ProductPrice';
 
 const PriceManagerDisplay = ({
-  associatedPrices,
+  product,
+  price,
+  setPrice,
   handleDeletePrice,
-  description,
-  setDescription,
-  cost,
-  setCost,
   handleAddPrice,
   readOnly = false
 }) => {
@@ -26,8 +26,11 @@ const PriceManagerDisplay = ({
           <TextField
             label="Descripción"
             variant="outlined"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={price.description ?? ''}
+            onChange={(e) => {
+              let newDescription = e.target.value;
+              setPrice(new Price({ ...price, description: newDescription }));
+            }}
             fullWidth
             sx={{ mb: 1 }}
           />
@@ -35,8 +38,11 @@ const PriceManagerDisplay = ({
             label="Costo"
             type="number"
             variant="outlined"
-            value={cost}
-            onChange={(e) => setCost(e.target.value)}
+            value={price.cost ?? ''}
+            onChange={(e) => {
+              let newCost = e.target.value;
+              setPrice(new Price({ ...price, cost: newCost }));
+            }}
             fullWidth
           />
           <Button onClick={handleAddPrice} variant="contained" sx={{ mt: 2 }}>
@@ -53,10 +59,10 @@ const PriceManagerDisplay = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {associatedPrices.map((price, index) => (
+          {product.prices.map((productPrice, index) => (
             <TableRow key={index}>
-              <TableCell>{price.description}</TableCell>
-              <TableCell align="right">{price.cost}</TableCell>
+              <TableCell>{productPrice.price.description}</TableCell>
+              <TableCell align="right">{productPrice.price.cost}</TableCell>
               {!readOnly && <TableCell align="right">
                 <IconButton onClick={() => handleDeletePrice(index)} size="large">
                   <DeleteIcon />
@@ -71,30 +77,27 @@ const PriceManagerDisplay = ({
 };
 
 const PriceManagerContainer = () => {
-  const { associatedPrices, setAssociatedPrices } = useProductDialogContext();
-  const [description, setDescription] = useState('');
-  const [cost, setCost] = useState('');
+  const { product, handleSetProduct } = useProductDialogContext();
+  const [price, setPrice] = useState(new Price({}));
 
   const handleAddPrice = () => {
-    if (!description || !cost) return;
-    setAssociatedPrices([...associatedPrices, { description, cost: Number(cost) }]);
-    setDescription('');
-    setCost('');
+    const updatedPrices = [...product.prices, new ProductPrice({price})];
+    console.log(updatedPrices)
+    handleSetProduct({ ...product, prices: updatedPrices });
+    setPrice(new Price({}));
   };
 
   const handleDeletePrice = (index) => {
-    const updatedPrices = associatedPrices.filter((_, i) => i !== index);
-    setAssociatedPrices(updatedPrices);
+    const updatedPrices = product.prices.filter((price, i) => i !== index);
+    handleSetProduct({ ...product, prices: updatedPrices });
   };
 
   return (
     <PriceManagerDisplay
-      associatedPrices={associatedPrices}
+      product={product}
+      price={price}
+      setPrice={setPrice}
       handleDeletePrice={handleDeletePrice}
-      description={description}
-      setDescription={setDescription}
-      cost={cost}
-      setCost={setCost}
       handleAddPrice={handleAddPrice}
     />
   );

@@ -117,11 +117,10 @@ const ModelManagerDisplay = ({
         </TableHead>
         <TableBody>
           {product.carModels.map((productCarModel, index) => {
-            let model = carModels.find(model => model.id === productCarModel.carModelId);
             return (
               <TableRow key={productCarModel.id}>
                 <TableCell component="th" scope="row">
-                  {model.name}
+                  {productCarModel.carModel.name}
                 </TableCell>
                 <TableCell align="right">{productCarModel.initialYear}</TableCell>
                 <TableCell align="right">{productCarModel.lastYear}</TableCell>
@@ -179,12 +178,12 @@ const ModelManager = () => {
   };
 
   const handleModelChange = (carModelSelected) => {
-    setProductModel(new ProductCarModel({ ...productModel, carModelId: carModelSelected.id }));
+    setProductModel(new ProductCarModel({ ...productModel, carModelId: carModelSelected.id, carModel: carModelSelected}));
   };
 
   const handleDeleteModel = (index) => {
-    const updatedModels = productModel.associatedVehicleModels.filter((_, i) => i !== index);
-    setProductModel({ ...productModel, associatedVehicleModels: updatedModels });
+    const newProductsCarModels = product.carModels.filter((_, i) => i !== index);
+    handleSetProduct(modifyAndClone(product, 'carModels', newProductsCarModels));
   };
 
   const handleCarModelCreated = (model) => {
@@ -210,7 +209,6 @@ const ModelManager = () => {
   }
 
   const handleCarModelAdded = () => {
-    console.log("before", [...product.carModels, productModel])
     handleSetProduct(modifyAndClone(product, 'carModels', [...product.carModels, productModel]));
   }
 
