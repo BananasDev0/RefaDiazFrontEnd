@@ -169,7 +169,7 @@ const ModelManager = () => {
         openSnackbar(`Error al obtener los modelos de la marca: ${selectedBrand.name}`, 'error');
       }
     };
-    if (selectedBrand) fetchCarModels();
+    if (selectedBrand.id) fetchCarModels();
   }, [selectedBrand]);
 
   const handleBrandChange = (event) => {

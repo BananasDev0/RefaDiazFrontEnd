@@ -10,6 +10,7 @@ import File from '../../../models/File';
 import { createProductFiles } from '../../../services/ProductService';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import Product from '../../../models/Product';
+import { ProductTypes } from '../ProductsConstants';
 
 const ProductDialogContext = createContext();
 
@@ -22,11 +23,10 @@ export const ProductDialogProvider = ({ children }) => {
     const [associatedVehicleModels, setAssociatedVehicleModels] = useState([])
     const [associatedPrices, setAssociatedPrices] = useState([]);
     const { productType, handleCloseDialog } = useProductsContext();
-    const dependencies = [productType, associatedVehicleModels,
-        associatedPrices, product.stockCount, product.comments, product.dpi];
+    const dependencies = [productType, product.carModels,
+        product.prices, product.stockCount, product.comments, product.dpi];
     const [isLoading, setIsLoading] = useState(false);
     const { openSnackbar } = useSnackbar()
-    console.log('asd', product)
 
     const [images, setImages] = useState([]);
 
@@ -39,7 +39,6 @@ export const ProductDialogProvider = ({ children }) => {
     };
 
     const handleSetProduct = (newProduct) => {
-        console.log('dafaq', newProduct)
         setProduct(new Product(newProduct));
     };
 
@@ -58,15 +57,16 @@ export const ProductDialogProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        const formattedName = formatProductName(productType, product, associatedVehicleModels, associatedPrices);
-        
+        const formattedName = formatProductName(productType, product);
+        setProduct({ ...product, name: formattedName });
     }, dependencies);
 
 
-    const formatProductName = (productType, product, vehicleModels) => {
+    const formatProductName = (productType, product) => {
+        console.log(product.carModels)
         switch (productType) {
-            case 'radiadores':
-                return `${product.dpi} ${vehicleModels.map(vm => `${vm.model.name} (${vm.startYear}-${vm.endYear})`).join('-')} [${product.stockCount}]`;
+            case ProductTypes.RADIATOR:
+                return `${product.dpi} ${product.carModels.map(cm => `${cm.carModel.name} (${cm.initialYear}-${cm.lastYear})`).join('-')} [${product.stockCount}]`;
             default:
                 return product.name; // Devuelve el nombre existente si el tipo de producto no coincide
         }

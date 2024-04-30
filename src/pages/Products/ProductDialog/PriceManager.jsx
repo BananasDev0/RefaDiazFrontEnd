@@ -82,7 +82,6 @@ const PriceManagerContainer = () => {
 
   const handleAddPrice = () => {
     const updatedPrices = [...product.prices, new ProductPrice({price})];
-    console.log(updatedPrices)
     handleSetProduct({ ...product, prices: updatedPrices });
     setPrice(new Price({}));
   };

@@ -37,10 +37,8 @@ const ProductContainer = () => {
         productCarModelsData = productCarModelsData.map(productCarModel => new ProductCarModel(productCarModel));
 
         const productsWithImages = await Promise.all(productCarModelsData.map(async (productCarModel) => {
-          console.log(productCarModel.product.files)
           let file = productCarModel.product.files.find(file => file.orderId == 1);
           if (file) {
-            console.log(file)
             const imageUrl = await getImageURLFromStorage(file.storagePath).catch(error => {
               console.error("Error al obtener url imagen de storage para producto:", productCarModel.product.name, error);
               return '';

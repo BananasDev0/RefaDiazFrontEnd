@@ -4,7 +4,8 @@ import { ModelManagerDisplay } from "./ProductDialog/ModelManager";
 import { PriceManagerDisplay } from "./ProductDialog/PriceManager";
 import ImageUpload from './ProductDialog/ImageUpload';
 
-const ProductSummary = ({ productType, product, associatedVehicleModels, associatedPrices, images }) => {
+const ProductSummary = ({ productType, product }) => {
+    let images = product.files.map(file => file.fileData);
     return (
         <div>
             <Box sx={{ paddingY: 2 }}>
@@ -15,7 +16,7 @@ const ProductSummary = ({ productType, product, associatedVehicleModels, associa
                                 label="Nombre del Producto"
                                 variant="outlined"
                                 fullWidth
-                                value={product.product.name || ''}
+                                value={product.name || ''}
                                 InputProps={{
                                     readOnly: true,
                                 }}
@@ -37,10 +38,10 @@ const ProductSummary = ({ productType, product, associatedVehicleModels, associa
                 {/* Display model and price information in read-only mode */}
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <ModelManagerDisplay associatedVehicleModels={associatedVehicleModels} readOnly={true} />
+                        <ModelManagerDisplay product={product} readOnly={true} />
                     </Grid>
                     <Grid item xs={12}>
-                        <PriceManagerDisplay associatedPrices={associatedPrices} readOnly={true} />
+                        <PriceManagerDisplay product={product} readOnly={true} />
                     </Grid>
                 </Grid>
             </Box>
