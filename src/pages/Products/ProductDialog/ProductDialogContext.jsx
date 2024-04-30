@@ -1,16 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { processRadiatorData } from '../../../services/RadiatorService';
-import { ProductCarModel } from '../../../models/ProductCarModel';
-import ProductPrice from '../../../models/ProductPrice';
-import Price from '../../../models/Price';
 import { useProductsContext } from '../ProductsContext';
 import { uploadImageToStorage } from '../../../services/Firebase/storage';
 import { base64ToBlob, getMimeType, modifyAndClone } from '../../../util/generalUtils';
 import File from '../../../models/File';
-import { createProductFiles } from '../../../services/ProductService';
+import { createProduct } from '../../../services/ProductService';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import Product from '../../../models/Product';
-import { ProductTypes } from '../ProductsConstants';
+import { FileTypes, ProductTypes } from '../ProductsConstants';
+import { v4 } from 'uuid';
 
 const ProductDialogContext = createContext();
 
@@ -20,22 +17,15 @@ export const ProductDialogProvider = ({ children }) => {
     const [activeStep, setActiveStep] = useState(0);
     const [isNextEnabled, setIsNextEnabled] = useState(false);
     const [product, setProduct] = useState(new Product({}));
-    const [associatedVehicleModels, setAssociatedVehicleModels] = useState([])
-    const [associatedPrices, setAssociatedPrices] = useState([]);
     const { productType, handleCloseDialog } = useProductsContext();
     const dependencies = [productType, product.carModels,
         product.prices, product.stockCount, product.comments, product.dpi];
     const [isLoading, setIsLoading] = useState(false);
     const { openSnackbar } = useSnackbar()
 
-    const [images, setImages] = useState([]);
-
     const resetState = () => {
         setActiveStep(0);
-        setProduct({ product: {} });
-        setAssociatedVehicleModels([]);
-        setAssociatedPrices([]);
-        setImages([]);
+        setProduct(new Product({}));
     };
 
     const handleSetProduct = (newProduct) => {
@@ -46,7 +36,8 @@ export const ProductDialogProvider = ({ children }) => {
         const reader = new FileReader();
         reader.onloadend = () => {
             let orderId = product.files.length + 1;
-            let newFile = new File({ fileData: reader.result, orderId });
+            let newFile = new File({ fileData: reader.result, orderId, fileTypeId: FileTypes.PRODUCT_IMAGE });
+            newFile = getFileInfo(newFile);
             setProduct(modifyAndClone(product, 'files', [...product.files, newFile]));
         };
         reader.readAsDataURL(file);
@@ -84,46 +75,19 @@ export const ProductDialogProvider = ({ children }) => {
     const handleSubmit = async (productType) => {
         try {
             setIsLoading(true);
-            let createdProduct = null;
 
-            let vehicleModels = associatedVehicleModels.map(vehicleModel => {
-                return new ProductCarModel({
-                    vehicleModelId: vehicleModel.model.id,
-                    initialYear: vehicleModel.startYear,
-                    lastYear: vehicleModel.endYear
-                });
+            const productToCreate = {
+                ...product,
+                productTypeId: productType,
+                files: product.files.map(file => ({ ...file, fileData: null }))
+            };
+
+            await createProduct(productToCreate);
+
+            product.files.forEach((file) => {
+                uploadImageToStorage(base64ToBlob(file.fileData), file.storagePath);
             });
 
-            let prices = associatedPrices.map(price => {
-                return new ProductPrice({
-                    price: new Price({
-                        description: price.description,
-                        cost: price.cost
-                    })
-                });
-            });
-
-            switch (productType) {
-                case 'radiadores':
-                    createdProduct = await processRadiatorData(product, vehicleModels, prices);
-                    break
-            }
-
-            let baseFileName = `/products/images/${createdProduct.product.id}`;  // Usa UUID en lugar de product.id
-            let files = [];
-
-            images.forEach((image, index) => {
-                let fileName = `${baseFileName}(${index})`;
-                uploadImageToStorage(base64ToBlob(image), fileName);
-                files.push(new File({
-                    name: `${createdProduct.product.id}(${index})`,
-                    mimeType: getMimeType(image),
-                    storagePath: fileName
-                }));
-                product.imageUrl = fileName;
-            });
-
-            await createProductFiles(createdProduct.product.id, files);
             setIsLoading(false);
             handleCloseDialog();
             resetState();
@@ -134,17 +98,25 @@ export const ProductDialogProvider = ({ children }) => {
         }
     }
 
+    const getFileInfo = (file) => {
+        let uuid = v4();
+        let filename = `/products/images/${uuid}`;
+        return {
+            ...file,
+            mimeType: getMimeType(file.fileData),
+            name: uuid,
+            storagePath: filename
+        };
+    }
+
     return (
         <ProductDialogContext.Provider value={{
             activeStep,
-            associatedPrices,
-            associatedVehicleModels,
-            images,
             isLoading,
             isNextEnabled,
             product,
             totalSteps: 3,
-        
+
             handleBack,
             handleImageDelete,
             handleImageUpload,
@@ -153,12 +125,10 @@ export const ProductDialogProvider = ({ children }) => {
             handleSubmit,
             resetState,
             setActiveStep,
-            setAssociatedPrices,
-            setAssociatedVehicleModels,
             setIsNextEnabled
         }}>
             {children}
         </ProductDialogContext.Provider>
-        
+
     );
 };

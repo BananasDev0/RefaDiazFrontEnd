@@ -16,3 +16,8 @@ export const SearchOptions = {
     MODELS: 2,
     PRODUCTS: 3
 };
+
+export const FileTypes = {
+    PRODUCT_IMAGE: 2,
+    BRAND_IMAGE: 1,
+};
