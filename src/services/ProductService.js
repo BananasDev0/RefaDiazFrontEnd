@@ -1,3 +1,4 @@
+import Product from "../models/Product";
 import axiosInstance from "./axiosConfig";
 
 const createProductVehicles = async (productId, productVehicleModels) => {
@@ -30,4 +31,9 @@ const createProductFiles = async (productId, files) => {
     return response.data;
 }
 
-export { createProductVehicles, createProductPrices, getProductPrices, getProductVehicleModels, createProductFiles, createProduct}
+const getProductById = async (productId) => {
+    const result = await axiosInstance.get(`/product/${productId}`);
+    return new Product(result.response);
+}
+
+export { createProductVehicles, createProductPrices, getProductPrices, getProductVehicleModels, createProductFiles, createProduct, getProductById }

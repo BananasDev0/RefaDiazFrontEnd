@@ -20,7 +20,7 @@ const CarModelListContainer = () => {
             try {
                 setLoading(true);
                 let models = [];
-                if (selectedBrand && selectedBrand.id) {
+                if (selectedBrand && selectedBrand.id ) {
                     models = await getCarModelsByBrandId(selectedBrand.id);
                 } else {
                     models = await getCarModels(searchTerm);

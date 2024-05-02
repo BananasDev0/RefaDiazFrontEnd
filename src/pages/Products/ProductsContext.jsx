@@ -95,6 +95,7 @@ export const ProductsProvider = ({ children }) => {
             handleSearchOptionChange,
             setLoading,
             setSearchTerm,
+            setSelectedProduct,
 
             currentScreen,
             loading,

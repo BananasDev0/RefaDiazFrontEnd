@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useProductsContext } from '../ProductsContext';
-import { uploadImageToStorage } from '../../../services/Firebase/storage';
+import { getBase64ImgFromURL, getImageURLFromStorage, uploadImageToStorage } from '../../../services/Firebase/storage';
 import { base64ToBlob, getMimeType, modifyAndClone } from '../../../util/generalUtils';
 import File from '../../../models/File';
-import { createProduct } from '../../../services/ProductService';
+import { createProduct, getProductById } from '../../../services/ProductService';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import Product from '../../../models/Product';
 import { FileTypes, ProductTypes } from '../ProductsConstants';
@@ -17,14 +17,41 @@ export const ProductDialogProvider = ({ children }) => {
     const [activeStep, setActiveStep] = useState(0);
     const [isNextEnabled, setIsNextEnabled] = useState(false);
     const [product, setProduct] = useState(new Product({}));
-    const { productType, handleCloseDialog } = useProductsContext();
+    const { productType, handleCloseDialog, selectedProduct, handleOpenDialog, setSelectedProduct } = useProductsContext();
     const dependencies = [productType, product.carModels,
         product.prices, product.stockCount, product.comments, product.dpi];
     const [isLoading, setIsLoading] = useState(false);
-    const { openSnackbar } = useSnackbar()
+    const [isEditable, setIsEditable] = useState(false);
+    const { openSnackbar } = useSnackbar();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            if (selectedProduct) {
+                handleOpenDialog();
+
+                let productFullInfo = await getProductById(selectedProduct.id);
+                let imagePromises = productFullInfo.files.map(async (file) => {
+                    console.log(file.storagePath)
+                    let url = await getImageURLFromStorage(file.storagePath);
+                    console.log(url)
+                    file.fileData = await getBase64ImgFromURL(url);
+                    return file;
+                });
+                await Promise.all(imagePromises);
+
+                setProduct(productFullInfo);
+                setIsLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [selectedProduct]);
 
     const resetState = () => {
         setActiveStep(0);
+        setSelectedProduct(null);
+        setIsEditable(false);
         setProduct(new Product({}));
     };
 
@@ -116,6 +143,7 @@ export const ProductDialogProvider = ({ children }) => {
             isNextEnabled,
             product,
             totalSteps: 3,
+            isEditable,
 
             handleBack,
             handleImageDelete,
@@ -125,7 +153,8 @@ export const ProductDialogProvider = ({ children }) => {
             handleSubmit,
             resetState,
             setActiveStep,
-            setIsNextEnabled
+            setIsNextEnabled,
+            setIsEditable
         }}>
             {children}
         </ProductDialogContext.Provider>

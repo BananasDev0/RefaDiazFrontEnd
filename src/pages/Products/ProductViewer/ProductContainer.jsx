@@ -14,8 +14,9 @@ const ProductContainer = () => {
   const { openSnackbar } = useSnackbar();
   const { handleItemSelect, searchTerm, setLoading, selectedCarModel, productType } = useProductsContext();
 
-  const handleProductSelect = (e, radiator) => {
-    handleItemSelect(radiator, Screens.PRODUCTS);
+  const handleProductSelect = (e, item) => {
+    const productCarModel = productCarModels.find(productCarModel => productCarModel.product.id === item.id);
+    handleItemSelect(productCarModel.product, Screens.PRODUCTS);
   }
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const ProductContainer = () => {
 
     const fetchProducts = async () => {
       try {
+        setProductCarModels([]);
         let response = null;
         let productCarModelsData = [];
 

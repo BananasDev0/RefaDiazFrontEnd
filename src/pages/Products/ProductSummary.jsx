@@ -3,6 +3,7 @@ import { RadiatorFormDisplay } from "./Forms/RadiatorForm";
 import { ModelManagerDisplay } from "./ProductDialog/ModelManager";
 import { PriceManagerDisplay } from "./ProductDialog/PriceManager";
 import ImageUpload from './ProductDialog/ImageUpload';
+import { ProductTypes } from './ProductsConstants';
 
 const ProductSummary = ({ productType, product }) => {
     let images = product.files.map(file => file.fileData);
@@ -22,7 +23,7 @@ const ProductSummary = ({ productType, product }) => {
                                 }}
                                 sx={{ marginTop: 2 }}
                             />
-                            {productType === 'radiadores' && (
+                            {productType === ProductTypes.RADIATOR && (
                                 <RadiatorFormDisplay product={product} readOnly={true} />
                             )}
                         </Box>

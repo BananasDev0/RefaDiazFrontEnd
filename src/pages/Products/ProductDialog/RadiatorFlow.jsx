@@ -3,6 +3,7 @@ import RadiatorForm from '../Forms/RadiatorForm';
 import ProductBasicInfo from './ProductBasicInfo';
 import ProductDetails from './ProductDetails';
 import ProductSummary from '../ProductSummary';
+import { ProductTypes } from '../ProductsConstants';
 
 const RadiatorFlow = () => {
     const { activeStep, product } = useProductDialogContext();
@@ -18,7 +19,7 @@ const RadiatorFlow = () => {
             ComponentToRender = <ProductDetails/>;
             break;
         default:
-            ComponentToRender = <ProductSummary productType='radiadores' product={product} readOnly/>;
+            ComponentToRender = <ProductSummary productType={ProductTypes.RADIATOR} product={product} readOnly/>;
             break;
     }
 
