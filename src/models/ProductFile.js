@@ -1,7 +1,9 @@
+import File from "./File";
+
 export default class ProductFile {
-    constructor({ productId, fileId, file}) {
+    constructor({ productId, fileId, file = {}}) {
         this.productId = productId;
         this.fileId = fileId;
-        this.file = file;
+        this.file = new File(file);
     }
 }

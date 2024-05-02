@@ -1,6 +1,8 @@
+import Product from "./Product";
+
 export default class Radiator {
-  constructor({dpi, product}) {
+  constructor({dpi, product = {}}) {
     this.dpi = dpi;
-    this.product = product;
+    this.product = new Product(product);
   }
 }

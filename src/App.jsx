@@ -12,16 +12,18 @@ import { SnackbarProvider } from './components/SnackbarContext';
 export default function App() {
 
   return (
-    <SnackbarProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route exact path='/' element={<AuthGuard><Home /></AuthGuard>} />
-          <Route exact path="/home" element={<AuthGuard><Home /></AuthGuard>} />
-          <Route exact path="/login" element={<MobileProvider><Login /></MobileProvider>} />
-          <Route exact path='/user' element={<UserPage />} />
-        </Routes>
-      </BrowserRouter>
-    </SnackbarProvider>
+    <MobileProvider>
+      <SnackbarProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route exact path='/' element={<AuthGuard><Home /></AuthGuard>} />
+            <Route exact path="/home" element={<AuthGuard><Home /></AuthGuard>} />
+            <Route exact path="/login" element={<Login />} />
+            <Route exact path='/user' element={<UserPage />} />
+          </Routes>
+        </BrowserRouter>
+      </SnackbarProvider>
+    </MobileProvider>
   );
 }
 

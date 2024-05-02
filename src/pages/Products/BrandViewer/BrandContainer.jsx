@@ -5,10 +5,17 @@ import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import BrandList from './BrandList';
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
+import { useProductsContext } from '../ProductsContext';
+import { Screens } from '../ProductsConstants';
 
-const BrandContainer = ({ onBrandSelect, searchTerm, setLoading }) => {
+const BrandContainer = () => {
   const [brands, setBrands] = useState([]);
   const { openSnackbar } = useSnackbar();
+  const { handleItemSelect, searchTerm, setLoading } = useProductsContext();
+
+  const onBrandSelect = (e, brand) => {
+    handleItemSelect(brand, Screens.BRANDS);
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -17,8 +24,8 @@ const BrandContainer = ({ onBrandSelect, searchTerm, setLoading }) => {
         const brandsData = await getAllBrands();
 
         const brandsWithImages = await Promise.all(brandsData.map(async (brand) => {
-          if (brand.imageUrl) {
-            const imageUrl = await getImageURLFromStorage(brand.imageUrl).catch(error => {
+          if (brand.file) {
+            const imageUrl = await getImageURLFromStorage(brand.file.storagePath).catch(error => {
               console.error("Error al obtener url imagen de storage para marca:", brand.name, error);
               return '';
             });
@@ -31,6 +38,7 @@ const BrandContainer = ({ onBrandSelect, searchTerm, setLoading }) => {
         setBrands(brandsWithImages);
         setLoading(false);
       } catch (error) {
+        console.error("Error al obtener las marcas:", error);
         openSnackbar(error.errorMessage, "error");
         setLoading(false);
       }

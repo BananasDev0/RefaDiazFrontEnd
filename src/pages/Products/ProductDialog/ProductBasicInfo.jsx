@@ -3,20 +3,37 @@ import { Box, Grid, FormControl, InputLabel, Select, MenuItem, Typography } from
 import ImageUpload from "./ImageUpload";
 import { useProductsContext } from "../ProductsContext";
 import { useProductDialogContext } from "./ProductDialogContext";
+import { ProductTypes } from "../ProductsConstants";
+import RadiatorForm from '../Forms/RadiatorForm';
 
 
 const ProductBasicInfo = ({ ProductForm }) => {
-    const { productType, setProductType } = useProductsContext();
-    const { setIsNextEnabled, images, handleImageUpload, handleImageDelete } = useProductDialogContext();
+    const { productType, handleChangeProductType } = useProductsContext();
+    const { setIsNextEnabled, handleImageUpload, handleImageDelete, product } = useProductDialogContext();
     const [isFormValid, setIsFormValid] = useState(false); // Estado para la validación del formulario
+    let images = product.files.map(file => file.fileData);
 
     useEffect(() => {
         setIsNextEnabled(isFormValid);
     }, [isFormValid, setIsNextEnabled]);
 
     const handleProductTypeChange = (event) => {
-        setProductType(event.target.value);
+        handleChangeProductType(event.target.value);
     };
+
+    const renderProductForm = (setIsFormValid) => {
+        switch (productType) {
+            case ProductTypes.RADIATOR:
+                return <RadiatorForm setIsFormValid={setIsFormValid}/>;
+            case ProductTypes.CAP:
+                return <ProductForm />;
+            case ProductTypes.FAN:
+                return <ProductForm />;
+            default:
+                return <ProductForm />;
+        }
+    };
+
 
     const InputProductSelector = () => (
         <FormControl fullWidth sx={{ mt: 4 }}>
@@ -28,9 +45,9 @@ const ProductBasicInfo = ({ ProductForm }) => {
                 label="Tipo de Producto"
                 onChange={handleProductTypeChange}
             >
-                <MenuItem value="radiadores">Radiador</MenuItem>
-                <MenuItem value="tapas">Tapas</MenuItem>
-                <MenuItem value="abanicos">Abanicos</MenuItem>
+                <MenuItem value={ProductTypes.RADIATOR}>Radiador</MenuItem>
+                <MenuItem value={ProductTypes.CAP}>Tapas</MenuItem>
+                <MenuItem value={ProductTypes.FAN}>Abanicos</MenuItem>
             </Select>
         </FormControl>
     );
@@ -40,7 +57,7 @@ const ProductBasicInfo = ({ ProductForm }) => {
             <Grid container spacing={2}>
                 <Grid item xs={12} md={7} sx={{ display: 'flex', flexDirection: 'column' }}>
                     <InputProductSelector />
-                    <ProductForm isFormValid={isFormValid} setIsFormValid={setIsFormValid} readOnly />
+                    {renderProductForm(setIsFormValid)}
                 </Grid>
                 <Grid item xs={12} md={5} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Box sx={{ paddingTop: 2, }}>
