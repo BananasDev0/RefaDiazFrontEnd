@@ -32,9 +32,7 @@ export const ProductDialogProvider = ({ children }) => {
 
                 let productFullInfo = await getProductById(selectedProduct.id);
                 let imagePromises = productFullInfo.files.map(async (file) => {
-                    console.log(file.storagePath)
                     let url = await getImageURLFromStorage(file.storagePath);
-                    console.log(url)
                     file.fileData = await getBase64ImgFromURL(url);
                     return file;
                 });
@@ -81,7 +79,6 @@ export const ProductDialogProvider = ({ children }) => {
 
 
     const formatProductName = (productType, product) => {
-        console.log(product.carModels)
         switch (productType) {
             case ProductTypes.RADIATOR:
                 return `${product.dpi} ${product.carModels.map(cm => `${cm.carModel.name} (${cm.initialYear}-${cm.lastYear})`).join('-')} [${product.stockCount}]`;
