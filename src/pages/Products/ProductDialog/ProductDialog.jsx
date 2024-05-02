@@ -34,7 +34,7 @@ const ProductDialogContent = () => {
                             <ProductSummary product={product} productType={productType} />
                         )}
                         {
-                            !selectedProduct || (selectedProduct && isEditable) && (<ProductFlow></ProductFlow>)
+                            (!selectedProduct || (selectedProduct && isEditable)) && <ProductFlow />
                         }
                     </>
                 )

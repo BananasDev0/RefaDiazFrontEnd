@@ -26,8 +26,8 @@ export const ProductDialogProvider = ({ children }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            setIsLoading(true);
             if (selectedProduct) {
+                setIsLoading(true);
                 handleOpenDialog();
 
                 let productFullInfo = await getProductById(selectedProduct.id);
@@ -96,7 +96,7 @@ export const ProductDialogProvider = ({ children }) => {
         setActiveStep((prevActiveStep) => Math.max(prevActiveStep - 1, 0));
     };
 
-    const handleSubmit = async (productType) => {
+    const handleSubmit = async () => {
         try {
             setIsLoading(true);
 
@@ -118,6 +118,7 @@ export const ProductDialogProvider = ({ children }) => {
             openSnackbar('Producto creado exitosamente', 'success');
         } catch (error) {
             setIsLoading(false);
+            console.log(error)
             openSnackbar(`Error al procesar el producto: ${error.errorMessage}`, 'error');
         }
     }
