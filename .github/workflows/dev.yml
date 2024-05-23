@@ -26,13 +26,7 @@ jobs:
       run: echo "${{ secrets.ENV_CONFIG }}" > .env.development
 
     - name: Build the application
-      env:
-        NODE_ENV: development
-      run: |
-        # Cargar variables de entorno desde el archivo de configuración
-        source .env.development
-        # Construir la aplicación usando Vite
-        npm run build
+      run: npm run build -- --mode development
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
