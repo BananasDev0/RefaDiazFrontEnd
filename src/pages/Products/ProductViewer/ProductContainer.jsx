@@ -8,6 +8,7 @@ import { useProductsContext } from '../ProductsContext';
 import { Screens } from '../ProductsConstants';
 import ProductList from './ProductList';
 import { ProductCarModel } from '../../../models/ProductCarModel';
+import { deleteProduct } from '../../../services/ProductService';
 
 const ProductContainer = () => {
   const [productCarModels, setProductCarModels] = useState([]);
@@ -17,6 +18,22 @@ const ProductContainer = () => {
   const handleProductSelect = (e, item) => {
     const productCarModel = productCarModels.find(productCarModel => productCarModel.product.id === item.id);
     handleItemSelect(productCarModel.product, Screens.PRODUCTS);
+  }
+
+  const handleOnDelete = async (productCarModel) => {
+    try {
+      console.log(productCarModel)
+      let result = await deleteProduct(productCarModel.id);
+      if (result) {
+        const products = productCarModels.filter(pcm => pcm.product.id !== productCarModel.id);
+        setProductCarModels(products);
+        openSnackbar('Producto eliminado correctamente', 'success');
+      } else {
+        openSnackbar('Error al eliminar el producto', 'error');
+      }
+    } catch (error) {
+      openSnackbar(`Error al eliminar el producto: ${error.errorMessage}`, 'error');
+    }
   }
 
   useEffect(() => {
@@ -73,7 +90,7 @@ const ProductContainer = () => {
       unmountOnExit
     >
       <div>
-        <ProductList products={productCarModels} onProductSelect={handleProductSelect} />
+        <ProductList products={productCarModels} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete}/>
       </div>
     </CSSTransition>
   );

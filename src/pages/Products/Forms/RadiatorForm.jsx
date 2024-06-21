@@ -53,7 +53,7 @@ const RadiatorFormContainer = ({ setIsFormValid }) => {
     const { product, handleSetProduct } = useProductDialogContext();
 
     useEffect(() => {
-        setIsFormValid(product.dpi && product.stockCount);
+        setIsFormValid(product.stockCount);
     }, [product.dpi, product.stockCount, setIsFormValid]);
 
     const handleChange = (event, field) => {

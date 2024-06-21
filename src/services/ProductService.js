@@ -36,4 +36,10 @@ const getProductById = async (productId) => {
     return new Product(result.response);
 }
 
-export { createProductVehicles, createProductPrices, getProductPrices, getProductVehicleModels, createProductFiles, createProduct, getProductById }
+const deleteProduct = async (productId) => {
+    const response = await axiosInstance.delete(`/product/${productId}`);
+    return response.statusCode === 204;
+}
+
+export { createProductVehicles, createProductPrices, getProductPrices, 
+    getProductVehicleModels, createProductFiles, createProduct, getProductById, deleteProduct }
