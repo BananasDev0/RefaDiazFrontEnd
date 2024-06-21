@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getCarModelsByBrandId } from '../../../services/BrandService';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import CarModelList from './CarModelList';
-import { getCarModels } from '../../../services/CarModelService';
+import { deleteCarModel, getCarModels } from '../../../services/CarModelService';
 import { useProductsContext } from '../ProductsContext';
 import { Screens } from '../ProductsConstants';
 
@@ -13,6 +13,21 @@ const CarModelListContainer = () => {
 
     const onCarModelSelect = (e, carModel) => {
         handleItemSelect(carModel, Screens.MODELS);
+    }
+
+    const handleOnDelete = async (carModel) => {
+        try {
+            const isDeleted = await deleteCarModel(carModel.id);
+            if (isDeleted) {
+                const models = carModels.filter(model => model.id !== carModel.id);
+                setCarModels(models);
+                openSnackbar('Modelo eliminado correctamente', 'success');
+            } else {
+                openSnackbar('Error al eliminar el modelo', 'error');
+            }
+        } catch (error) {
+            openSnackbar(`Error al eliminar el modelo: ${error.errorMessage}`, 'error');
+        }
     }
 
     useEffect(() => {
@@ -37,7 +52,7 @@ const CarModelListContainer = () => {
     }, [selectedBrand, searchTerm]);
 
     return (
-        <CarModelList carModels={carModels} onCarModelSelect={onCarModelSelect} />
+        <CarModelList carModels={carModels} onCarModelSelect={onCarModelSelect} handleOnDelete={handleOnDelete}/>
     );
 };
 
