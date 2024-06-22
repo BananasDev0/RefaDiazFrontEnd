@@ -41,5 +41,10 @@ const deleteProduct = async (productId) => {
     return response.statusCode === 204;
 }
 
-export { createProductVehicles, createProductPrices, getProductPrices, 
+const updateProduct = async (productId, product) => {
+    const response = await axiosInstance.put(`/product/${productId}`, product);
+    return response.data;
+}
+
+export { createProductVehicles, createProductPrices, getProductPrices, updateProduct,
     getProductVehicleModels, createProductFiles, createProduct, getProductById, deleteProduct }
