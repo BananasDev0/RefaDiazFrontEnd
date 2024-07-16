@@ -47,7 +47,6 @@ export const ProductDialogProvider = ({ children }) => {
     }, [selectedProduct]);
 
     const resetState = () => {
-        setActiveStep(0);
         setSelectedProduct(null);
         setIsEditable(false);
         setProduct(new Product({}));

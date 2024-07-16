@@ -20,8 +20,6 @@ export const ProductsProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
 
     const handleItemSelect = (item, type) => {
-        setSearchTerm('');
-
         switch (type) {
             case Screens.BRANDS:
                 setSelectedBrand(item);
