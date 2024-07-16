@@ -3,17 +3,17 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { useProductsContext } from './ProductsContext';
-import { ProductTypes, Screens } from './ProductsConstants';
+import { ProductTypes } from './ProductsConstants';
 
 const ProductSelectorNav = () => {
-  const { selectedBrand, selectedCarModel, handleBack, productType } = useProductsContext();
+  const { selectedBrand, selectedCarModel, productType, navigateBack, } = useProductsContext();
 
   const handleBackToBrands = () => {
-    handleBack(Screens.BRANDS);
+    navigateBack();
   }
 
   const handleBackToCarModels = () => {
-    handleBack(Screens.MODELS);
+    navigateBack();
   }
 
   const productVerbiage = productType === ProductTypes.CAP ? 'Tapas' : productType === ProductTypes.FAN ? 'Abanicos' : 'Radiadores';
