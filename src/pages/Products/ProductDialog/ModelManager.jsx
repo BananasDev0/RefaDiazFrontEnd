@@ -14,7 +14,6 @@ import { ProductCarModel } from '../../../models/ProductCarModel';
 import Brand from '../../../models/Brand';
 import { modifyAndClone } from '../../../util/generalUtils';
 
-
 const ModelManagerDisplay = ({
   product,
   brand,
@@ -29,10 +28,10 @@ const ModelManagerDisplay = ({
   readOnly = false,
   handleStartYearChange,
   handleLastYearChange,
-  handleOnItemAdded
+  handleOnItemAdded,
+  isAddButtonDisabled
 }) => {
   return (
-
     <ExpandableCard title={"Modelos"}>
       <Typography gutterBottom variant="body2" component="p" sx={{ mb: 2 }}>
         {readOnly ? '' : 'Agrega y gestiona los modelos.'}
@@ -100,7 +99,12 @@ const ModelManagerDisplay = ({
               />
             </Grid>
           </Grid>
-          <Button onClick={handleCarModelAdded} variant="contained" sx={{ mt: 2 }}>
+          <Button 
+            onClick={handleCarModelAdded} 
+            variant="contained" 
+            sx={{ mt: 2 }}
+            disabled={isAddButtonDisabled}
+          >
             Agregar Modelo
           </Button>
         </>
@@ -186,11 +190,6 @@ const ModelManager = () => {
     handleSetProduct(modifyAndClone(product, 'carModels', newProductsCarModels));
   };
 
-  const handleCarModelCreated = (model) => {
-    setModels([...models, new CarModel(model)]);
-    setProductModel({ ...productModel, carModelId: model.id });
-  };
-
   const handleStartYearChange = (year) => {
     setProductModel({ ...productModel, initialYear: year });
   }
@@ -212,6 +211,7 @@ const ModelManager = () => {
     handleSetProduct(modifyAndClone(product, 'carModels', [...product.carModels, productModel]));
   }
 
+  const isAddButtonDisabled = !productModel.carModelId || !productModel.initialYear || !productModel.lastYear;
 
   return (
     <ModelManagerDisplay
@@ -226,14 +226,13 @@ const ModelManager = () => {
       handleModelChange={handleModelChange}
       handleDeleteModel={handleDeleteModel}
       readOnly={false}
-      handleCarModelCreated={handleCarModelCreated}
       handleStartYearChange={handleStartYearChange}
       handleLastYearChange={handleLastYearChange}
       handleOnItemAdded={handleOnItemAdded}
       handleCarModelAdded={handleCarModelAdded}
+      isAddButtonDisabled={isAddButtonDisabled}
     />
   );
 };
 
 export { ModelManager as default, ModelManagerDisplay }
-
