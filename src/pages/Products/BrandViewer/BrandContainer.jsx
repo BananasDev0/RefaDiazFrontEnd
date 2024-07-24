@@ -7,14 +7,17 @@ import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import { useProductsContext } from '../ProductsContext';
 import { Screens } from '../ProductsConstants';
+import CarModelListContainer from '../ModelViewer/CarModelContainer';
+import ListContainer from '../ListContainer';
 
-const BrandContainer = () => {
+const BrandContainer = ({navigate}) => {
   const [brands, setBrands] = useState([]);
   const { openSnackbar } = useSnackbar();
-  const { handleItemSelect, searchTerm, setLoading } = useProductsContext();
+  const { handleItemSelect, searchTerm, setLoading, navigateBack} = useProductsContext();
 
   const onBrandSelect = (e, brand) => {
     handleItemSelect(brand, Screens.BRANDS);
+    navigate(<CarModelListContainer/>, 'Modelos', navigateBack);
   }
 
   useEffect(() => {
@@ -48,17 +51,31 @@ const BrandContainer = () => {
   }, [setLoading]);
 
   return (
-    <CSSTransition
-      in={brands.length > 0} // Establece la condición para mostrar la animación
-      timeout={300} 
-      classNames="fade" 
-      unmountOnExit 
-    >
-      <div>
-        <BrandList title="Automotriz" brands={brands.filter(brand => brand.brandTypeId === 1 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
-        <BrandList title="Carga Pesada" brands={brands.filter(brand => brand.brandTypeId === 2 && brand.name.toLowerCase().includes(searchTerm.toLowerCase()))} onBrandSelect={onBrandSelect} />
-      </div>
-    </CSSTransition>
+    <ListContainer>
+      <CSSTransition
+        in={brands.length > 0}
+        timeout={300}
+        classNames="fade"
+        unmountOnExit
+      >
+        <div>
+          <BrandList 
+            title="Automotriz" 
+            brands={brands.filter(brand => 
+              brand.brandTypeId === 1 && brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+            )} 
+            onBrandSelect={onBrandSelect} 
+          />
+          <BrandList 
+            title="Carga Pesada" 
+            brands={brands.filter(brand => 
+              brand.brandTypeId === 2 && brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+            )} 
+            onBrandSelect={onBrandSelect} 
+          />
+        </div>
+      </CSSTransition>
+    </ListContainer>
   );
 };
 

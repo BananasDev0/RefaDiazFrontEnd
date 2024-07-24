@@ -9,6 +9,7 @@ import { Screens } from '../ProductsConstants';
 import ProductList from './ProductList';
 import { ProductCarModel } from '../../../models/ProductCarModel';
 import { deleteProduct } from '../../../services/ProductService';
+import ListContainer from '../ListContainer';
 
 const ProductContainer = () => {
   const [productCarModels, setProductCarModels] = useState([]);
@@ -83,7 +84,8 @@ const ProductContainer = () => {
 
 
   return (
-    <CSSTransition
+    <ListContainer>
+      <CSSTransition
       in={productCarModels.length > 0} // Establece la condición para mostrar la animación
       timeout={300}
       classNames="fade"
@@ -93,6 +95,7 @@ const ProductContainer = () => {
         <ProductList products={productCarModels} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete}/>
       </div>
     </CSSTransition>
+    </ListContainer>
   );
 };
 

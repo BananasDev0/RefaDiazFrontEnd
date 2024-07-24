@@ -5,14 +5,17 @@ import CarModelList from './CarModelList';
 import { deleteCarModel, getCarModels } from '../../../services/CarModelService';
 import { useProductsContext } from '../ProductsContext';
 import { Screens } from '../ProductsConstants';
+import ProductContainer from '../ProductViewer/ProductContainer';
+import ListContainer from '../ListContainer';
 
-const CarModelListContainer = () => {
+const CarModelListContainer = ({navigate}) => {
     const [carModels, setCarModels] = useState([]);
     const { openSnackbar } = useSnackbar();
-    const { selectedBrand, handleItemSelect, setLoading, searchTerm } = useProductsContext();
+    const { selectedBrand, handleItemSelect, setLoading, searchTerm, navigateBack} = useProductsContext();
 
     const onCarModelSelect = (e, carModel) => {
         handleItemSelect(carModel, Screens.MODELS);
+        navigate(<ProductContainer/>, 'Productos', navigateBack);
     }
 
     const handleOnDelete = async (carModel) => {
@@ -52,7 +55,9 @@ const CarModelListContainer = () => {
     }, [selectedBrand, searchTerm]);
 
     return (
-        <CarModelList carModels={carModels} onCarModelSelect={onCarModelSelect} handleOnDelete={handleOnDelete}/>
+        <ListContainer>
+            <CarModelList carModels={carModels} onCarModelSelect={onCarModelSelect} handleOnDelete={handleOnDelete}/>
+        </ListContainer>
     );
 };
 

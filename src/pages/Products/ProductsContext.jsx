@@ -33,9 +33,11 @@ export const ProductsProvider = ({ children }) => {
       case Screens.PRODUCTS:
         setCurrentScreen(Screens.MODELS);
         setSelectedCarModel(null);
+        setSearchOption(SearchOptions.MODELS);
         break;
       case Screens.MODELS:
         setCurrentScreen(Screens.BRANDS);
+        setSearchOption(SearchOptions.BRANDS);
         setSelectedBrand(null);
         break;
       case Screens.BRANDS:

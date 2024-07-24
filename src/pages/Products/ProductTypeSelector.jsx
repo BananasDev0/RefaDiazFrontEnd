@@ -1,6 +1,7 @@
 import { Grid, Card, CardContent, CardMedia, Typography, CardActionArea } from '@mui/material';
 import { ProductTypes } from './ProductsConstants';
 import { useProductsContext } from './ProductsContext';
+import BrandContainer from './BrandViewer/BrandContainer';
 
 const productTypeData = [
   {
@@ -23,15 +24,20 @@ const productTypeData = [
   }
 ];
 
-const ProductTypeSelector = () => {
+const ProductTypeSelector = ({navigate}) => {
   const { handleChangeProductType } = useProductsContext();
+
+  const handleOnProductTypeClick = (type) => {
+    handleChangeProductType(type);
+    navigate(<BrandContainer/>, 'Marcas');
+  }
 
   return (
     <Grid container spacing={4} justifyContent="center" alignItems="stretch">
       {productTypeData.map((item) => (
         <Grid item xs={12} sm={6} md={4} key={item.type}>
           <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CardActionArea onClick={() => handleChangeProductType(item.type)} sx={{ flexGrow: 1 }}>
+            <CardActionArea onClick={() => handleOnProductTypeClick(item.type)} sx={{ flexGrow: 1 }}>
               <CardMedia
                 component="img"
                 height="250"  // Aumentado para mostrar más de la imagen
