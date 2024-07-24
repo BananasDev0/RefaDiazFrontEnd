@@ -61,7 +61,7 @@ const BrandContainer = ({navigate}) => {
   };
 
   return (
-    <ListContainer>
+    <ListContainer navigate={navigate}>
       <CSSTransition
         in={brands.length > 0}
         timeout={300}

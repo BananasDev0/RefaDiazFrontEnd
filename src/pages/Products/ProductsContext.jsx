@@ -44,6 +44,17 @@ export const ProductsProvider = ({ children }) => {
     }
   }, [currentScreen, openDialog]);
 
+  const resetState = () => {
+    setCurrentScreen(Screens.BRANDS);
+    setOpenDialog(false);
+    setSelectedBrand(null);
+    setSelectedCarModel(null);
+    setSearchTerm('');
+    setSearchOption(SearchOptions.BRANDS);
+    setLoading(false);
+    setScrollPosition(0);
+  }
+
   const handleItemSelect = (item, type) => {
     switch (type) {
       case Screens.BRANDS:
@@ -80,6 +91,7 @@ export const ProductsProvider = ({ children }) => {
   const handleSearchOptionChange = (value) => {
     setSearchTerm('');
     setSearchOption(value);
+    resetState();
     if (value === SearchOptions.BRANDS) {
       setCurrentScreen(Screens.BRANDS);
     } else if (value === SearchOptions.MODELS) {

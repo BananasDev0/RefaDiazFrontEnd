@@ -3,36 +3,26 @@ import { Box, Breadcrumbs, Link, Typography } from '@mui/material';
 
 const NavigationManager = ({ initialComponent, initialTitle }) => {
   const [navigationStack, setNavigationStack] = useState([
-    { component: initialComponent, title: initialTitle, onBack: null }
+    { component: initialComponent, title: initialTitle }
   ]);
 
-  const navigate = useCallback((component, title, onBack = null) => {
-    setNavigationStack(prevStack => [...prevStack, { component, title, onBack }]);
-    window.history.pushState(null, '', window.location.pathname);
+  const navigate = useCallback((component, title) => {
+    setNavigationStack(prevStack => {
+      const existingIndex = prevStack.findIndex(item => item.title === title);
+      if (existingIndex !== -1) {
+        // Cut the stack to the existing item
+        return prevStack.slice(0, existingIndex + 1);
+      }
+      return [...prevStack, { component, title }];
+    });
   }, []);
 
   const navigateBack = useCallback(() => {
-    setNavigationStack(prevStack => {
-      if (prevStack.length > 1) {
-        const currentView = prevStack[prevStack.length - 1];
-        if (currentView.onBack) {
-          currentView.onBack();
-        }
-        return prevStack.slice(0, -1);
-      }
-      return prevStack;
-    });
+    setNavigationStack(prevStack => prevStack.slice(0, -1));
   }, []);
 
   const resetNavigation = useCallback(() => {
-    setNavigationStack(prevStack => {
-      prevStack.slice(1).forEach(view => {
-        if (view.onBack) {
-          view.onBack();
-        }
-      });
-      return [prevStack[0]];
-    });
+    setNavigationStack(prevStack => [prevStack[0]]);
   }, []);
 
   useEffect(() => {
@@ -42,6 +32,7 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
     };
 
     window.addEventListener('popstate', handlePopState);
+
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
@@ -62,11 +53,6 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              navigationStack.slice(index + 1).forEach(view => {
-                if (view.onBack) {
-                  view.onBack();
-                }
-              });
               setNavigationStack(prevStack => prevStack.slice(0, index + 1));
             }}
           >
@@ -79,8 +65,9 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
 
   return (
     <div>
-      {<Box sx={{ marginBottom: '15px' }}>
-        {renderBreadcrumbs()}</Box>}
+      <Box sx={{ marginBottom: '15px' }}>
+        {renderBreadcrumbs()}
+      </Box>
       {React.cloneElement(currentView.component, { navigate, navigateBack, resetNavigation })}
     </div>
   );

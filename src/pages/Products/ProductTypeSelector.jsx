@@ -29,7 +29,7 @@ const ProductTypeSelector = ({navigate}) => {
 
   const handleOnProductTypeClick = (type) => {
     handleChangeProductType(type);
-    navigate(<BrandContainer/>, 'Marcas');
+    navigate(<BrandContainer />, 'Marcas');
   }
 
   return (

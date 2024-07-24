@@ -1,24 +1,18 @@
 import { Select, MenuItem } from '@mui/material';
 import CustomInput from "./CustomInput";
 import { useProductsContext } from '../pages/Products/ProductsContext';
-import { ProductTypes, SearchOptions } from '../pages/Products/ProductsConstants';
+import { SearchOptions } from '../pages/Products/ProductsConstants';
+import BrandContainer from '../pages/Products/BrandViewer/BrandContainer';
+import CarModelListContainer from '../pages/Products/ModelViewer/CarModelContainer';
+import ProductContainer from '../pages/Products/ProductViewer/ProductContainer';
+import { getProductVerbiage } from '../util/generalUtils';
 
-const CustomSearchBar = () => {
+const CustomSearchBar = ({ navigate }) => {
   const { searchOption, searchTerm, handleSearchOptionChange, setSearchTerm, productType } = useProductsContext();
 
-  const handleSearchChange = (e) => {
-    const newSearchTerm = e.target.value;
-    setSearchTerm(newSearchTerm);
-  }
 
   let placeholder = '';
-  let productVerbiage = 'Radiadores';
-
-  if (productType === ProductTypes.CAP) {
-    productVerbiage = 'Tapas';
-  } else if (productType === ProductTypes.FAN) {
-    productVerbiage = 'Abanicos';
-  }
+  let productVerbiage = getProductVerbiage(productType);
 
   if (searchOption === SearchOptions.BRANDS) {
     placeholder = 'Buscar marcas...';
@@ -28,12 +22,34 @@ const CustomSearchBar = () => {
     placeholder = `Buscar ${productVerbiage}...`;
   }
 
+  const handleSearchChange = (e) => {
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+  }
+
+  const handleOptionChange = (option) => {
+    handleSearchOptionChange(option);
+
+    switch (option) {
+      case SearchOptions.BRANDS:
+        navigate(<BrandContainer />, 'Marcas');
+        break;
+      case SearchOptions.MODELS:
+        navigate(<CarModelListContainer />, 'Modelos');
+        break;
+      case SearchOptions.PRODUCTS:
+        navigate(<ProductContainer />, productVerbiage);
+        break;
+      default:
+        break;
+    }
+  }
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', marginBottom: '10px' }}>
       <Select
         value={searchOption}
-        onChange={(event) => handleSearchOptionChange(event.target.value)}
+        onChange={(event) => handleOptionChange(event.target.value)}
         displayEmpty
         inputProps={{ 'aria-label': 'Buscar por' }}
         sx={{ height: '35px', marginRight: '5px' }}

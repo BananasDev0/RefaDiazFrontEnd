@@ -4,12 +4,12 @@ import CustomSearchBar from '../../components/CustomSearchBar';
 import { useProductsContext } from './ProductsContext';
 import ProductDialog from './ProductDialog/ProductDialog';
 
-const ListContainer = ({ children }) => {
+const ListContainer = ({ children, navigate }) => {
   const { loading, handleOpenDialog } = useProductsContext();
 
   return (
     <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
-      <CustomSearchBar />
+      <CustomSearchBar navigate={navigate}/>
       
       <Box sx={{ flexGrow: 1, overflow: 'auto', mt: 2 }}>
         {loading ? (
