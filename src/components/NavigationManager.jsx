@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Breadcrumbs, Link, Typography } from '@mui/material';
 
 const NavigationManager = ({ initialComponent, initialTitle }) => {
@@ -7,14 +7,16 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
   ]);
 
   const navigate = useCallback((component, title, onBack = null) => {
-    console.log('Navigating to:', onBack);
     setNavigationStack(prevStack => [...prevStack, { component, title, onBack }]);
+    window.history.pushState(null, '', window.location.pathname);
   }, []);
 
   const navigateBack = useCallback(() => {
     setNavigationStack(prevStack => {
       if (prevStack.length > 1) {
+        console.log('navegando hacia atrás', prevStack);
         const currentView = prevStack[prevStack.length - 1];
+        console.log('currentView', currentView);
         if (currentView.onBack) {
           currentView.onBack();
         }
@@ -26,7 +28,6 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
 
   const resetNavigation = useCallback(() => {
     setNavigationStack(prevStack => {
-      // Execute onBack for all views except the first one
       prevStack.slice(1).forEach(view => {
         if (view.onBack) {
           view.onBack();
@@ -35,6 +36,18 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
       return [prevStack[0]];
     });
   }, []);
+
+  useEffect(() => {
+    const handlePopState = (event) => {
+      event.preventDefault();
+      navigateBack();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [navigateBack]);
 
   const currentView = navigationStack[navigationStack.length - 1];
 
@@ -51,7 +64,6 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
             href="#"
             onClick={(e) => {
               e.preventDefault();
-              // Execute onBack for all views that will be removed
               navigationStack.slice(index + 1).forEach(view => {
                 if (view.onBack) {
                   view.onBack();

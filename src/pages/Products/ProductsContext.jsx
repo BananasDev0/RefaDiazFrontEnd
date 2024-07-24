@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import { Screens, SearchOptions } from './ProductsConstants';
 
 const ProductsContext = createContext();
@@ -28,7 +28,6 @@ export const ProductsProvider = ({ children }) => {
       setOpenDialog(false);
       return;
     }
-
     switch (currentScreen) {
       case Screens.PRODUCTS:
         setCurrentScreen(Screens.MODELS);
@@ -40,36 +39,12 @@ export const ProductsProvider = ({ children }) => {
         setSearchOption(SearchOptions.BRANDS);
         setSelectedBrand(null);
         break;
-      case Screens.BRANDS:
-        // Comportamiento predeterminado: salir de la aplicación
-        if (window.history.length > 1) {
-          window.history.back();
-        }
-        break;
       default:
         break;
     }
   }, [currentScreen, openDialog]);
 
-  useEffect(() => {
-    const handlePopState = (event) => {
-      event.preventDefault();
-      navigateBack();
-    };
-
-    window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [navigateBack]);
-
-  const pushState = useCallback(() => {
-    window.history.pushState(null, '', window.location.pathname);
-  }, []);
-
   const handleItemSelect = (item, type) => {
-    pushState();
     switch (type) {
       case Screens.BRANDS:
         setSelectedBrand(item);
@@ -91,12 +66,11 @@ export const ProductsProvider = ({ children }) => {
   };
 
   const handleOpenDialog = () => {
-    pushState();
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
-    navigateBack();
+    setOpenDialog(false);
   };
 
   const handleChangeProductType = (newValue) => {
@@ -106,7 +80,6 @@ export const ProductsProvider = ({ children }) => {
   const handleSearchOptionChange = (value) => {
     setSearchTerm('');
     setSearchOption(value);
-    
     if (value === SearchOptions.BRANDS) {
       setCurrentScreen(Screens.BRANDS);
     } else if (value === SearchOptions.MODELS) {
@@ -142,8 +115,7 @@ export const ProductsProvider = ({ children }) => {
     handleCloseDialog,
     handleChangeProductType,
     handleSearchOptionChange,
-    navigateBack,
-    pushState
+    navigateBack
   };
 
   return (
