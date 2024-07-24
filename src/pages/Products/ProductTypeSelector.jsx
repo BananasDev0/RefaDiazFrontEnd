@@ -2,25 +2,28 @@ import { Grid, Card, CardContent, CardMedia, Typography, CardActionArea } from '
 import { ProductTypes } from './ProductsConstants';
 import { useProductsContext } from './ProductsContext';
 import BrandContainer from './BrandViewer/BrandContainer';
+import RadiatorImg from '/src/assets/radiator.jpeg';
+import CapsImg from '/src/assets/caps.jpeg';
+import FansImg from '/src/assets/fans.jpeg';
 
 const productTypeData = [
   {
     type: ProductTypes.RADIATOR,
     title: "Radiadores",
     description: "Para todo tipo de vehículos",
-    image: "/src/assets/radiator.jpeg"
+    image: RadiatorImg
   },
   {
     type: ProductTypes.CAP,
     title: "Tapas",
     description: "De radiador y depósito",
-    image: "/src/assets/caps.jpeg"
+    image: CapsImg
   },
   {
     type: ProductTypes.FAN,
     title: "Abanicos",
     description: "Sistemas de enfriamiento",
-    image: "/src/assets/fans.jpeg"
+    image: FansImg
   }
 ];
 
