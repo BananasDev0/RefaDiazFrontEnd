@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Breadcrumbs, Link, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Link, Typography } from '@mui/material';
 
 const NavigationManager = ({ initialComponent, initialTitle }) => {
   const [navigationStack, setNavigationStack] = useState([
@@ -14,9 +14,7 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
   const navigateBack = useCallback(() => {
     setNavigationStack(prevStack => {
       if (prevStack.length > 1) {
-        console.log('navegando hacia atrás', prevStack);
         const currentView = prevStack[prevStack.length - 1];
-        console.log('currentView', currentView);
         if (currentView.onBack) {
           currentView.onBack();
         }
@@ -81,7 +79,8 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
 
   return (
     <div>
-      {renderBreadcrumbs()}
+      {<Box sx={{ marginBottom: '15px' }}>
+        {renderBreadcrumbs()}</Box>}
       {React.cloneElement(currentView.component, { navigate, navigateBack, resetNavigation })}
     </div>
   );
