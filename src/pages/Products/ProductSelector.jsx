@@ -7,27 +7,42 @@ import { useProductsContext } from './ProductsContext';
 import { Screens } from './ProductsConstants';
 import ProductContainer from './ProductViewer/ProductContainer';
 import CarModelListContainer from './ModelViewer/CarModelContainer';
+import ProductTypeSelector from './ProductTypeSelector';
 
 const ProductSelector = () => {
-    const { currentScreen, loading } = useProductsContext();
+    const { currentScreen, loading, productType } = useProductsContext();
+
+    if (!productType) {
+        return <ProductTypeSelector />;
+    }
+
+    const renderContent = () => {
+        switch (currentScreen) {
+            case Screens.BRANDS:
+                return <BrandContainer />;
+            case Screens.MODELS:
+                return <CarModelListContainer />;
+            case Screens.PRODUCTS:
+                return <ProductContainer />;
+            default:
+                return null;
+        }
+    };
 
     return (
-        <>
+        <Box>
             <ProductSelectorNav />
             <CustomSearchBar />
 
             <Box sx={{ height: 'calc(100vh - 320px)', overflowY: 'auto' }}>
-                {currentScreen === Screens.BRANDS && <BrandContainer />}
-                {currentScreen === Screens.MODELS && <CarModelListContainer />}
-                {currentScreen === Screens.PRODUCTS && <ProductContainer />}
-
+                {renderContent()}
                 {loading && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
                         <CircularProgress size={40} />
-                    </div>
+                    </Box>
                 )}
             </Box>
-        </>
+        </Box>
     );
 };
 

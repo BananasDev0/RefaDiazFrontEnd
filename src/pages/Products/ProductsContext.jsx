@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { ProductTypes, Screens, SearchOptions } from './ProductsConstants';
+import { Screens, SearchOptions } from './ProductsConstants';
 
 const ProductsContext = createContext();
 
@@ -12,7 +12,7 @@ export const useProductsContext = () => {
 };
 
 export const ProductsProvider = ({ children }) => {
-  const [productType, setProductType] = useState(ProductTypes.RADIATOR);
+  const [productType, setProductType] = useState(null);
   const [currentScreen, setCurrentScreen] = useState(Screens.BRANDS);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
