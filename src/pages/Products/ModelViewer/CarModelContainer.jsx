@@ -5,14 +5,19 @@ import CarModelList from './CarModelList';
 import { deleteCarModel, getCarModels } from '../../../services/CarModelService';
 import { useProductsContext } from '../ProductsContext';
 import { Screens } from '../ProductsConstants';
+import ProductContainer from '../ProductViewer/ProductContainer';
+import ListContainer from '../ListContainer';
+import { getProductVerbiage } from '../../../util/generalUtils';
 
-const CarModelListContainer = () => {
+const CarModelListContainer = ({ navigate }) => {
     const [carModels, setCarModels] = useState([]);
     const { openSnackbar } = useSnackbar();
-    const { selectedBrand, handleItemSelect, setLoading, searchTerm } = useProductsContext();
+    const { selectedBrand, handleItemSelect, setLoading, searchTerm, navigateBack, productType } = useProductsContext();
 
     const onCarModelSelect = (e, carModel) => {
+        let productVerbiage = getProductVerbiage(productType);
         handleItemSelect(carModel, Screens.MODELS);
+        navigate(<ProductContainer />, productVerbiage, navigateBack);
     }
 
     const handleOnDelete = async (carModel) => {
@@ -35,7 +40,7 @@ const CarModelListContainer = () => {
             try {
                 setLoading(true);
                 let models = [];
-                if (selectedBrand && selectedBrand.id ) {
+                if (selectedBrand && selectedBrand.id) {
                     models = await getCarModelsByBrandId(selectedBrand.id);
                 } else {
                     models = await getCarModels(searchTerm);
@@ -52,7 +57,9 @@ const CarModelListContainer = () => {
     }, [selectedBrand, searchTerm]);
 
     return (
-        <CarModelList carModels={carModels} onCarModelSelect={onCarModelSelect} handleOnDelete={handleOnDelete}/>
+        <ListContainer navigate={navigate}>
+            <CarModelList carModels={carModels} onCarModelSelect={onCarModelSelect} handleOnDelete={handleOnDelete} />
+        </ListContainer>
     );
 };
 

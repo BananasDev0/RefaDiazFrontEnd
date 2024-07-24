@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { ProductTypes, Screens, SearchOptions } from './ProductsConstants';
+import { createContext, useContext, useState, useCallback } from 'react';
+import { Screens, SearchOptions } from './ProductsConstants';
 
 const ProductsContext = createContext();
 
@@ -12,7 +12,7 @@ export const useProductsContext = () => {
 };
 
 export const ProductsProvider = ({ children }) => {
-  const [productType, setProductType] = useState(ProductTypes.RADIATOR);
+  const [productType, setProductType] = useState(null);
   const [currentScreen, setCurrentScreen] = useState(Screens.BRANDS);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -28,46 +28,34 @@ export const ProductsProvider = ({ children }) => {
       setOpenDialog(false);
       return;
     }
-
     switch (currentScreen) {
       case Screens.PRODUCTS:
         setCurrentScreen(Screens.MODELS);
         setSelectedCarModel(null);
+        setSearchOption(SearchOptions.MODELS);
         break;
       case Screens.MODELS:
         setCurrentScreen(Screens.BRANDS);
+        setSearchOption(SearchOptions.BRANDS);
         setSelectedBrand(null);
-        break;
-      case Screens.BRANDS:
-        // Comportamiento predeterminado: salir de la aplicación
-        if (window.history.length > 1) {
-          window.history.back();
-        }
         break;
       default:
         break;
     }
   }, [currentScreen, openDialog]);
 
-  useEffect(() => {
-    const handlePopState = (event) => {
-      event.preventDefault();
-      navigateBack();
-    };
-
-    window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [navigateBack]);
-
-  const pushState = useCallback(() => {
-    window.history.pushState(null, '', window.location.pathname);
-  }, []);
+  const resetState = () => {
+    setCurrentScreen(Screens.BRANDS);
+    setOpenDialog(false);
+    setSelectedBrand(null);
+    setSelectedCarModel(null);
+    setSearchTerm('');
+    setSearchOption(SearchOptions.BRANDS);
+    setLoading(false);
+    setScrollPosition(0);
+  }
 
   const handleItemSelect = (item, type) => {
-    pushState();
     switch (type) {
       case Screens.BRANDS:
         setSelectedBrand(item);
@@ -89,12 +77,11 @@ export const ProductsProvider = ({ children }) => {
   };
 
   const handleOpenDialog = () => {
-    pushState();
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
-    navigateBack();
+    setOpenDialog(false);
   };
 
   const handleChangeProductType = (newValue) => {
@@ -104,7 +91,7 @@ export const ProductsProvider = ({ children }) => {
   const handleSearchOptionChange = (value) => {
     setSearchTerm('');
     setSearchOption(value);
-    
+    resetState();
     if (value === SearchOptions.BRANDS) {
       setCurrentScreen(Screens.BRANDS);
     } else if (value === SearchOptions.MODELS) {
@@ -140,8 +127,7 @@ export const ProductsProvider = ({ children }) => {
     handleCloseDialog,
     handleChangeProductType,
     handleSearchOptionChange,
-    navigateBack,
-    pushState
+    navigateBack
   };
 
   return (

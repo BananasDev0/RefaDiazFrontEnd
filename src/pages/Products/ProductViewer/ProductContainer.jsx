@@ -9,8 +9,9 @@ import { Screens } from '../ProductsConstants';
 import ProductList from './ProductList';
 import { ProductCarModel } from '../../../models/ProductCarModel';
 import { deleteProduct } from '../../../services/ProductService';
+import ListContainer from '../ListContainer';
 
-const ProductContainer = () => {
+const ProductContainer = ({navigate}) => {
   const [productCarModels, setProductCarModels] = useState([]);
   const { openSnackbar } = useSnackbar();
   const { handleItemSelect, searchTerm, setLoading, selectedCarModel, productType } = useProductsContext();
@@ -83,7 +84,8 @@ const ProductContainer = () => {
 
 
   return (
-    <CSSTransition
+    <ListContainer navigate={navigate}>
+      <CSSTransition
       in={productCarModels.length > 0} // Establece la condición para mostrar la animación
       timeout={300}
       classNames="fade"
@@ -93,6 +95,7 @@ const ProductContainer = () => {
         <ProductList products={productCarModels} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete}/>
       </div>
     </CSSTransition>
+    </ListContainer>
   );
 };
 

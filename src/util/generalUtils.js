@@ -1,3 +1,5 @@
+import { ProductTypes } from "../pages/Products/ProductsConstants";
+
 export function modifyAndClone(obj, path, value) {
   // Realiza una clonación profunda del objeto original
   const clone = JSON.parse(JSON.stringify(obj));
@@ -61,4 +63,14 @@ export const base64ToBlob = (base64) => {
   // Crea el Blob a partir del array de bytes
   const blob = new Blob(byteArrays, { type: mimeType });
   return blob;
+}
+
+export const getProductVerbiage = (productType) => {
+  let productVerbiage = 'Radiadores';
+  if (productType === ProductTypes.CAP) {
+    productVerbiage = 'Tapas';
+  } else if (productType === ProductTypes.FAN) {
+    productVerbiage = 'Abanicos';
+  }
+  return productVerbiage;
 }
