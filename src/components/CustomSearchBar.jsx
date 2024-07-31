@@ -9,7 +9,7 @@ import { getProductVerbiage } from '../util/generalUtils';
 
 const CustomSearchBar = ({ navigate }) => {
   const { searchOption, searchTerm, handleSearchOptionChange, setSearchTerm, productType } = useProductsContext();
-
+  console.log('searchOption:', searchOption);
 
   let placeholder = '';
   let productVerbiage = getProductVerbiage(productType);

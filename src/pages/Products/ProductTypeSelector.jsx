@@ -5,6 +5,7 @@ import BrandContainer from './BrandViewer/BrandContainer';
 import RadiatorImg from '/src/assets/radiator.jpeg';
 import CapsImg from '/src/assets/caps.jpeg';
 import FansImg from '/src/assets/fans.jpeg';
+import { useEffect } from 'react';
 
 const productTypeData = [
   {
@@ -27,11 +28,17 @@ const productTypeData = [
   }
 ];
 
-const ProductTypeSelector = ({navigate}) => {
+const ProductTypeSelector = ({ navigate, updateCurrentTitle }) => {
   const { handleChangeProductType } = useProductsContext();
 
-  const handleOnProductTypeClick = (type) => {
+  useEffect(() => {
+    updateCurrentTitle('Productos');
+  }
+    , [updateCurrentTitle]);
+
+  const handleOnProductTypeClick = (type, title) => {
     handleChangeProductType(type);
+    updateCurrentTitle(`Productos (${title})`);
     navigate(<BrandContainer />, 'Marcas');
   }
 
@@ -40,13 +47,13 @@ const ProductTypeSelector = ({navigate}) => {
       {productTypeData.map((item) => (
         <Grid item xs={12} sm={6} md={4} key={item.type}>
           <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <CardActionArea onClick={() => handleOnProductTypeClick(item.type)} sx={{ flexGrow: 1 }}>
+            <CardActionArea onClick={() => handleOnProductTypeClick(item.type, item.title)} sx={{ flexGrow: 1 }}>
               <CardMedia
                 component="img"
-                height="250"  // Aumentado para mostrar más de la imagen
+                height="250"
                 image={item.image}
                 alt={item.title}
-                sx={{ objectFit: 'cover' }}  // Asegura que la imagen cubra todo el espacio
+                sx={{ objectFit: 'cover' }}
               />
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">

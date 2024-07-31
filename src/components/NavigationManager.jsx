@@ -10,7 +10,6 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
     setNavigationStack(prevStack => {
       const existingIndex = prevStack.findIndex(item => item.title === title);
       if (existingIndex !== -1) {
-        // Cut the stack to the existing item
         return prevStack.slice(0, existingIndex + 1);
       }
       return [...prevStack, { component, title }];
@@ -25,6 +24,18 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
     setNavigationStack(prevStack => [prevStack[0]]);
   }, []);
 
+  // Nueva función para actualizar el título del breadcrumb actual
+  const updateCurrentTitle = useCallback((newTitle) => {
+    setNavigationStack(prevStack => {
+      const newStack = [...prevStack];
+      newStack[newStack.length - 1] = {
+        ...newStack[newStack.length - 1],
+        title: newTitle
+      };
+      return newStack;
+    });
+  }, []);
+
   useEffect(() => {
     const handlePopState = (event) => {
       event.preventDefault();
@@ -32,7 +43,6 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
     };
 
     window.addEventListener('popstate', handlePopState);
-
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
@@ -68,7 +78,12 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
       <Box sx={{ marginBottom: '15px' }}>
         {renderBreadcrumbs()}
       </Box>
-      {React.cloneElement(currentView.component, { navigate, navigateBack, resetNavigation })}
+      {React.cloneElement(currentView.component, { 
+        navigate, 
+        navigateBack, 
+        resetNavigation, 
+        updateCurrentTitle  // Pasamos la nueva función al componente actual
+      })}
     </div>
   );
 };

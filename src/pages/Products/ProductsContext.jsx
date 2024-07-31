@@ -45,12 +45,10 @@ export const ProductsProvider = ({ children }) => {
   }, [currentScreen, openDialog]);
 
   const resetState = () => {
-    setCurrentScreen(Screens.BRANDS);
     setOpenDialog(false);
     setSelectedBrand(null);
     setSelectedCarModel(null);
     setSearchTerm('');
-    setSearchOption(SearchOptions.BRANDS);
     setLoading(false);
     setScrollPosition(0);
   }
