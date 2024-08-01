@@ -11,15 +11,16 @@ import CarModelListContainer from '../ModelViewer/CarModelContainer';
 import ListContainer from '../ListContainer';
 import { Tabs, Tab, Box } from '@mui/material';
 
-const BrandContainer = ({navigate}) => {
+const BrandContainer = ({ navigate, updateCurrentTitle }) => {
   const [brands, setBrands] = useState([]);
   const [tabValue, setTabValue] = useState(0);
   const { openSnackbar } = useSnackbar();
-  const { handleItemSelect, searchTerm, setLoading, navigateBack} = useProductsContext();
+  const { handleItemSelect, searchTerm, setLoading, navigateBack } = useProductsContext();
 
   const onBrandSelect = (e, brand) => {
     handleItemSelect(brand, Screens.BRANDS);
-    navigate(<CarModelListContainer/>, 'Modelos', navigateBack);
+    updateCurrentTitle(`Marcas (${brand.name})`);
+    navigate(<CarModelListContainer />, 'Modelos', navigateBack);
   }
 
   useEffect(() => {
@@ -49,13 +50,19 @@ const BrandContainer = ({navigate}) => {
     fetchBrands();
   }, [setLoading]);
 
+  useEffect(() => {
+    updateCurrentTitle('Marcas');
+  }
+    , [updateCurrentTitle]);
+
+
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
   const filteredBrands = (brandTypeId) => {
-    return brands.filter(brand => 
-      brand.brandTypeId === brandTypeId && 
+    return brands.filter(brand =>
+      brand.brandTypeId === brandTypeId &&
       brand.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };

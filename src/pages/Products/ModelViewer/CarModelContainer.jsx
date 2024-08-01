@@ -9,7 +9,7 @@ import ProductContainer from '../ProductViewer/ProductContainer';
 import ListContainer from '../ListContainer';
 import { getProductVerbiage } from '../../../util/generalUtils';
 
-const CarModelListContainer = ({ navigate }) => {
+const CarModelListContainer = ({ navigate, updateCurrentTitle }) => {
     const [carModels, setCarModels] = useState([]);
     const { openSnackbar } = useSnackbar();
     const { selectedBrand, handleItemSelect, setLoading, searchTerm, navigateBack, productType } = useProductsContext();
@@ -17,9 +17,14 @@ const CarModelListContainer = ({ navigate }) => {
     const onCarModelSelect = (e, carModel) => {
         let productVerbiage = getProductVerbiage(productType);
         handleItemSelect(carModel, Screens.MODELS);
+        updateCurrentTitle(`Modelos (${carModel.name})`);
         navigate(<ProductContainer />, productVerbiage, navigateBack);
     }
 
+    useEffect(() => {
+        updateCurrentTitle('Modelos');
+    }, [updateCurrentTitle]);
+    
     const handleOnDelete = async (carModel) => {
         try {
             const isDeleted = await deleteCarModel(carModel.id);

@@ -74,3 +74,8 @@ export const getProductVerbiage = (productType) => {
   }
   return productVerbiage;
 }
+
+export const extractMainTitle = (title) => {
+  const match = title.match(/^[^()]+/);
+  return match ? match[0].trim() : title;
+};

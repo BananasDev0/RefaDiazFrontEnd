@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Box, Breadcrumbs, Link, Typography } from '@mui/material';
+import { extractMainTitle } from '../util/generalUtils';
 
 const NavigationManager = ({ initialComponent, initialTitle }) => {
   const [navigationStack, setNavigationStack] = useState([
@@ -8,7 +9,7 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
 
   const navigate = useCallback((component, title) => {
     setNavigationStack(prevStack => {
-      const existingIndex = prevStack.findIndex(item => item.title === title);
+      const existingIndex = prevStack.findIndex(item => extractMainTitle(item.title) === extractMainTitle(title));
       if (existingIndex !== -1) {
         return prevStack.slice(0, existingIndex + 1);
       }
