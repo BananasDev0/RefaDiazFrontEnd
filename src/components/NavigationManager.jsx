@@ -11,16 +11,21 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
     setNavigationStack(updater);
   }, []);
 
-  const navigate = useCallback((component, title) => {
-    updateStack(prevStack => {
-      const existingIndex = prevStack.findIndex(item => extractMainTitle(item.title) === extractMainTitle(title));
-      return existingIndex !== -1 ? prevStack.slice(0, existingIndex + 1) : [...prevStack, { component, title }];
-    });
-  }, [updateStack]);
-
   const navigateBack = useCallback((stepsBack = 1) => {
     updateStack(prevStack => prevStack.slice(0, -stepsBack));
   }, [updateStack]);
+
+  const navigate = useCallback((component, title) => {
+    const existingIndex = navigationStack.findIndex(item => extractMainTitle(item.title) === extractMainTitle(title));
+    if (existingIndex !== -1) {
+      const stepsBack = navigationStack.length - 1 - existingIndex;
+      if (stepsBack > 0) {
+        navigateBack(stepsBack);
+      }
+    } else {
+      updateStack(prevStack => [...prevStack, { component, title }]);
+    }
+  }, [navigationStack, navigateBack]);
 
   const resetNavigation = useCallback(() => {
     updateStack(prevStack => [prevStack[0]]);
