@@ -53,6 +53,22 @@ export const ProductsProvider = ({ children }) => {
     setScrollPosition(0);
   }
 
+  const setSearchOptionBasedOnScreen = () => {
+    switch (currentScreen) {
+      case Screens.BRANDS:
+        setSearchOption(SearchOptions.BRANDS);
+        break;
+      case Screens.MODELS:
+        setSearchOption(SearchOptions.MODELS);
+        break;
+      case Screens.PRODUCTS:
+        setSearchOption(SearchOptions.PRODUCTS);
+        break;
+      default:
+        setSearchOption(SearchOptions.BRANDS);
+    }
+  }
+
   const handleItemSelect = (item, type) => {
     switch (type) {
       case Screens.BRANDS:
@@ -125,7 +141,8 @@ export const ProductsProvider = ({ children }) => {
     handleCloseDialog,
     handleChangeProductType,
     handleSearchOptionChange,
-    navigateBack
+    navigateBack,
+    setSearchOptionBasedOnScreen
   };
 
   return (

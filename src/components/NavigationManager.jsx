@@ -7,49 +7,47 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
     { component: initialComponent, title: initialTitle }
   ]);
 
-  const navigate = useCallback((component, title) => {
-    setNavigationStack(prevStack => {
-      const existingIndex = prevStack.findIndex(item => extractMainTitle(item.title) === extractMainTitle(title));
-      if (existingIndex !== -1) {
-        return prevStack.slice(0, existingIndex + 1);
-      }
-      return [...prevStack, { component, title }];
-    });
+  const updateStack = useCallback((updater) => {
+    setNavigationStack(updater);
   }, []);
 
-  const navigateBack = useCallback(() => {
-    setNavigationStack(prevStack => prevStack.slice(0, -1));
-  }, []);
+  const navigate = useCallback((component, title) => {
+    updateStack(prevStack => {
+      const existingIndex = prevStack.findIndex(item => extractMainTitle(item.title) === extractMainTitle(title));
+      return existingIndex !== -1 ? prevStack.slice(0, existingIndex + 1) : [...prevStack, { component, title }];
+    });
+  }, [updateStack]);
+
+  const navigateBack = useCallback((stepsBack = 1) => {
+    updateStack(prevStack => prevStack.slice(0, -stepsBack));
+  }, [updateStack]);
 
   const resetNavigation = useCallback(() => {
-    setNavigationStack(prevStack => [prevStack[0]]);
-  }, []);
+    updateStack(prevStack => [prevStack[0]]);
+  }, [updateStack]);
 
-  // Nueva función para actualizar el título del breadcrumb actual
   const updateCurrentTitle = useCallback((newTitle) => {
-    setNavigationStack(prevStack => {
+    updateStack(prevStack => {
       const newStack = [...prevStack];
-      newStack[newStack.length - 1] = {
-        ...newStack[newStack.length - 1],
-        title: newTitle
-      };
+      newStack[newStack.length - 1] = { ...newStack[newStack.length - 1], title: newTitle };
       return newStack;
     });
-  }, []);
+  }, [updateStack]);
 
   useEffect(() => {
     const handlePopState = (event) => {
       event.preventDefault();
       navigateBack();
     };
-
     window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
+    return () => window.removeEventListener('popstate', handlePopState);
   }, [navigateBack]);
 
-  const currentView = navigationStack[navigationStack.length - 1];
+  const breadcrumbHandler = (index) => (e) => {
+    e.preventDefault();
+    const stepsBack = navigationStack.length - 1 - index;
+    navigateBack(stepsBack);
+  };
 
   const renderBreadcrumbs = () => (
     <Breadcrumbs aria-label="breadcrumb">
@@ -58,21 +56,15 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
         return isLast ? (
           <Typography key={index} color="text.primary">{item.title}</Typography>
         ) : (
-          <Link
-            key={index}
-            color="inherit"
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setNavigationStack(prevStack => prevStack.slice(0, index + 1));
-            }}
-          >
+          <Link key={index} color="inherit" href="#" onClick={breadcrumbHandler(index)}>
             {item.title}
           </Link>
         );
       })}
     </Breadcrumbs>
   );
+
+  const currentView = navigationStack[navigationStack.length - 1];
 
   return (
     <div>
@@ -83,7 +75,7 @@ const NavigationManager = ({ initialComponent, initialTitle }) => {
         navigate, 
         navigateBack, 
         resetNavigation, 
-        updateCurrentTitle  // Pasamos la nueva función al componente actual
+        updateCurrentTitle
       })}
     </div>
   );

@@ -29,7 +29,7 @@ const productTypeData = [
 ];
 
 const ProductTypeSelector = ({ navigate, updateCurrentTitle }) => {
-  const { handleChangeProductType } = useProductsContext();
+  const { handleChangeProductType, setSearchOptionBasedOnScreen} = useProductsContext();
 
   useEffect(() => {
     updateCurrentTitle('Productos');
@@ -39,7 +39,7 @@ const ProductTypeSelector = ({ navigate, updateCurrentTitle }) => {
   const handleOnProductTypeClick = (type, title) => {
     handleChangeProductType(type);
     updateCurrentTitle(`Productos (${title})`);
-    navigate(<BrandContainer />, 'Marcas');
+    navigate(<BrandContainer />, 'Marcas', setSearchOptionBasedOnScreen);
   }
 
   return (
