@@ -3,32 +3,36 @@ import ProductCard from './ProductCard'; // Asegúrate de que la ruta sea correc
 import RadiatorImg from '/src/assets/radiator.jpeg';
 import CapsImg from '/src/assets/caps.jpeg';
 import FansImg from '/src/assets/fans.jpeg';
+import { ProductTypes } from '../ProductsConstants';
 
 const ProductTypeSelector = () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={4}>
         <ProductCard
-          title="Marcas"
-          description="Selecciona una marca para ver los modelos disponibles."
+          title="Radiadores"
+          description="Para todo tipo de vehículos."
           path="/home/products/search/brands"
           image={RadiatorImg}
+          productType={ProductTypes.RADIATOR}
         />
       </Grid>
       <Grid item xs={12} sm={4}>
         <ProductCard
-          title="Modelos"
-          description="Selecciona un modelo para ver los radiadores disponibles."
-          path="/home/products/models"
+          title="Tapas"
+          description="De radiador y deposito"
+          path="/home/products/search/brands"
           image={CapsImg}
+          productType={ProductTypes.CAP}
         />
       </Grid>
       <Grid item xs={12} sm={4}>
         <ProductCard
-          title="Radiadores"
-          description="Selecciona un radiador para ver los detalles."
-          path="/home/products/radiators"
+          title="Abanicos"
+          description="Sistema de enfriamiento"
+          path="/home/products/search/brands"
           image={FansImg}
+          productType={ProductTypes.FAN}
         />
       </Grid>
     </Grid>

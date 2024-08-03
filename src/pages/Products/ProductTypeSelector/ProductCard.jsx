@@ -1,10 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardActionArea, CardMedia, Typography } from '@mui/material';
+import { useProductsContext } from '../ProductsContext';
 
-const ProductCard = ({ title, description, path, image }) => {
+const ProductCard = ({ title, description, path, image, productType}) => {
   const navigate = useNavigate();
+  const  {handleChangeProductType} = useProductsContext();
 
   const handleCardClick = () => {
+    handleChangeProductType(productType);
     navigate(path);
   };
 
