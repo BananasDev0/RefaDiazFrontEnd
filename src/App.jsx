@@ -1,4 +1,4 @@
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Navigate } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -16,10 +16,9 @@ export default function App() {
       <SnackbarProvider>
         <BrowserRouter>
           <Routes>
-            <Route exact path='/' element={<AuthGuard><Home /></AuthGuard>} />
-            <Route exact path="/home" element={<AuthGuard><Home /></AuthGuard>} />
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home/*" element={<AuthGuard><Home /></AuthGuard>} />
             <Route exact path="/login" element={<Login />} />
-            <Route exact path='/user' element={<UserPage />} />
           </Routes>
         </BrowserRouter>
       </SnackbarProvider>

@@ -14,7 +14,7 @@ export default function ElementList({ setComponent, open, menuItems }) {
           text={item.text}
           icon={item.icon}
           roles={item.roles}
-          handleClick={() => handleItemClick(item.component)}
+          handleClick={() => handleItemClick(item.path)}
           open={open}
         />
       ))}
