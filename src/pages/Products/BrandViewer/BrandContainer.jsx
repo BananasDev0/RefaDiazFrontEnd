@@ -7,13 +7,17 @@ import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import { useProductsContext } from '../ProductsContext';
 import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useNavigationContext } from '../../../components/NavigationContext';
 
 const BrandContainer = () => {
   const [brands, setBrands] = useState([]);
   const [tabValue, setTabValue] = useState(0);
-  const [loading, setLoading] = useState(true); // Manejando el estado de carga localmente
+  const [loading, setLoading] = useState(true);
   const { openSnackbar } = useSnackbar();
-  const { searchTerm } = useProductsContext();
+  const { searchTerm, setSelectedBrand } = useProductsContext();
+  const { updateTitle, resetTitle } = useNavigationContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -38,11 +42,15 @@ const BrandContainer = () => {
       } catch (error) {
         console.error('Error al obtener las marcas:', error);
         openSnackbar(error.errorMessage, 'error');
-        setLoading(false);  // Asegurarse de desactivar el loading también en caso de error
+        setLoading(false);
       }
     };
     fetchBrands();
   }, [openSnackbar, searchTerm]);
+
+  useEffect(() => {
+    resetTitle('/home/products/brands');
+  }, []);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -52,6 +60,15 @@ const BrandContainer = () => {
     return brands.filter(
       (brand) => brand.brandTypeId === brandTypeId && brand.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+  };
+
+  const handleOnBrandSelect = (e, brand) => {
+    setSelectedBrand(brand);
+    const goToPath = '/home/products/brands/models';
+    const currentPath = '/home/products/brands';
+    const title = `Marcas (${brand.name})`;
+    updateTitle(currentPath, title);
+    navigate(goToPath);
   };
 
   if (loading) {
@@ -73,10 +90,10 @@ const BrandContainer = () => {
             </Tabs>
           </Box>
           <TabPanel value={tabValue} index={0}>
-            <BrandList brands={filteredBrands(1)} />
+            <BrandList brands={filteredBrands(1)} onBrandSelect={handleOnBrandSelect} />
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
-            <BrandList brands={filteredBrands(2)} />
+            <BrandList brands={filteredBrands(2)} onBrandSelect={handleOnBrandSelect} />
           </TabPanel>
         </div>
       </CSSTransition>

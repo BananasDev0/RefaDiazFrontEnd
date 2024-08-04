@@ -1,25 +1,51 @@
+import { useState, useEffect } from 'react';
 import { Select, MenuItem } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import CustomInput from "./CustomInput";
 import { useProductsContext } from '../pages/Products/ProductsContext';
-import { SearchOptions } from '../pages/Products/ProductsConstants';
-import BrandContainer from '../pages/Products/BrandViewer/BrandContainer';
-import CarModelListContainer from '../pages/Products/ModelViewer/CarModelContainer';
-import ProductContainer from '../pages/Products/ProductViewer/ProductContainer';
-import { getProductVerbiage } from '../util/generalUtils';
+import { ProductTypesNamesEsp, SearchOptions } from '../pages/Products/ProductsConstants';
 
-const CustomSearchBar = ({ navigate }) => {
-  const { searchOption, searchTerm, handleSearchOptionChange, setSearchTerm, productType } = useProductsContext();
-  
-  let placeholder = '';
-  let productVerbiage = getProductVerbiage(productType);
+const CustomSearchBar = () => {
+  const navigate = useNavigate();
+  const { searchOption, searchTerm, handleSearchOptionChange, setSearchTerm, productType, setSearchOption } = useProductsContext();
+  const [placeholder, setPlaceholder] = useState('');
 
-  if (searchOption === SearchOptions.BRANDS) {
-    placeholder = 'Buscar marcas...';
-  } else if (searchOption === SearchOptions.MODELS) {
-    placeholder = 'Buscar modelos...';
-  } else {
-    placeholder = `Buscar ${productVerbiage}...`;
-  }
+  useEffect(() => {
+    const productVerbiage = ProductTypesNamesEsp[productType];
+    switch (searchOption) {
+      case SearchOptions.BRANDS:
+        setPlaceholder('Buscar marcas...');
+        break;
+      case SearchOptions.MODELS:
+        setPlaceholder('Buscar modelos...');
+        break;
+      default:
+        setPlaceholder(`Buscar ${productVerbiage}...`);
+    }
+  }, [searchOption, productType]);
+
+  useEffect(() => {
+    const updateSearchOptionFromRoute = (pathname) => {
+      let newSearchOption;
+      if (pathname.includes('/brands')) {
+        newSearchOption = SearchOptions.BRANDS;
+      }
+
+      if (pathname.includes('/models')) {
+        newSearchOption = SearchOptions.MODELS;
+      }
+
+      if (pathname.includes('/radiators') || pathname.includes('/caps') || pathname.includes('/fans')) {
+        newSearchOption = SearchOptions.PRODUCTS;
+      }
+
+      if (newSearchOption) {
+        setSearchOption(newSearchOption);
+      }
+    };
+
+    updateSearchOptionFromRoute(location.pathname);
+  }, [location.pathname, setSearchOption]);
 
   const handleSearchChange = (e) => {
     const newSearchTerm = e.target.value;
@@ -28,20 +54,21 @@ const CustomSearchBar = ({ navigate }) => {
 
   const handleOptionChange = (option) => {
     handleSearchOptionChange(option);
-
+    let path;
     switch (option) {
       case SearchOptions.BRANDS:
-        navigate(<BrandContainer />, 'Marcas');
+        path = '/home/products/brands';
         break;
       case SearchOptions.MODELS:
-        navigate(<CarModelListContainer />, 'Modelos');
+        path = '/home/products/brands/models';
         break;
       case SearchOptions.PRODUCTS:
-        navigate(<ProductContainer />, productVerbiage);
+        path = '/home/products/brands/models/radiators';
         break;
       default:
-        break;
+        return;
     }
+    navigate(path);
   }
 
   return (
@@ -55,7 +82,7 @@ const CustomSearchBar = ({ navigate }) => {
       >
         <MenuItem value={SearchOptions.BRANDS}>Marcas</MenuItem>
         <MenuItem value={SearchOptions.MODELS}>Modelos</MenuItem>
-        <MenuItem value={SearchOptions.PRODUCTS}>{productVerbiage}</MenuItem>
+        <MenuItem value={SearchOptions.PRODUCTS}>{ProductTypesNamesEsp[productType]}</MenuItem>
       </Select>
       <div style={{ flex: 1 }}>
         <CustomInput

@@ -12,7 +12,7 @@ const ProductTypeSelector = () => {
         <ProductCard
           title="Radiadores"
           description="Para todo tipo de vehículos."
-          path="/home/products/search/brands"
+          path="/home/products/brands"
           image={RadiatorImg}
           productType={ProductTypes.RADIATOR}
         />
@@ -21,7 +21,7 @@ const ProductTypeSelector = () => {
         <ProductCard
           title="Tapas"
           description="De radiador y deposito"
-          path="/home/products/search/brands"
+          path="/home/products/brands"
           image={CapsImg}
           productType={ProductTypes.CAP}
         />
@@ -30,7 +30,7 @@ const ProductTypeSelector = () => {
         <ProductCard
           title="Abanicos"
           description="Sistema de enfriamiento"
-          path="/home/products/search/brands"
+          path="/home/products/brands"
           image={FansImg}
           productType={ProductTypes.FAN}
         />
