@@ -1,30 +1,27 @@
-import { BrowserRouter } from 'react-router-dom';
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import UserPage from './pages/Users/UserPage';
 import { AuthGuard } from './components/AuthGuard';
 import { MobileProvider } from './components/MobileProvider';
 import { SnackbarProvider } from './components/SnackbarContext';
-
-
+import { NavigationProvider } from './components/NavigationContext';
 
 export default function App() {
-
   return (
     <MobileProvider>
       <SnackbarProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route exact path='/' element={<AuthGuard><Home /></AuthGuard>} />
-            <Route exact path="/home" element={<AuthGuard><Home /></AuthGuard>} />
-            <Route exact path="/login" element={<Login />} />
-            <Route exact path='/user' element={<UserPage />} />
-          </Routes>
-        </BrowserRouter>
+        <NavigationProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Navigate to="/home" />} />
+              <Route path="/home/*" element={<AuthGuard><Home /></AuthGuard>} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/user" element={<UserPage />} />
+            </Routes>
+          </BrowserRouter>
+        </NavigationProvider>
       </SnackbarProvider>
     </MobileProvider>
   );
 }
-
-

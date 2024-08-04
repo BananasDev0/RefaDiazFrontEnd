@@ -21,3 +21,15 @@ export const FileTypes = {
     PRODUCT_IMAGE: 2,
     BRAND_IMAGE: 1,
 };
+
+export const ProductTypesNamesEsp = {
+    1: 'Radiadores',
+    2: 'Tapas',
+    3: 'Abanicos'
+};
+
+export const ProductTypesNamesEng = {
+    1: 'radiators',
+    2: 'caps',
+    3: 'fans'
+};

@@ -13,6 +13,7 @@ import { getAll, deleteProvider, createProvider, updateProvider } from '../../se
 import TablePagination from '@mui/material/TablePagination';
 
 import { useSnackbar } from '../../components/SnackbarContext';
+import NavigationBar from '../../components/NavigationBar';
 
 const CustomSearchBar = ({ searchTerm, handleSearchChange }) => {
     return (
@@ -134,6 +135,7 @@ export default function ProvidersPage() {
 
     return (
         <Box sx={{ width: '100%', '& > *:not(style)': { mb: 3 } }}>
+            <NavigationBar />
             <CustomSearchBar searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
             <Box sx={{ height: 'calc(100% - 56px)', overflow: 'auto' }}>
                 <TableContainer component={Paper}>

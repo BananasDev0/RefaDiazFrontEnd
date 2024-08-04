@@ -5,26 +5,30 @@ import CarModelList from './CarModelList';
 import { deleteCarModel, getCarModels } from '../../../services/CarModelService';
 import { useProductsContext } from '../ProductsContext';
 import { Screens } from '../ProductsConstants';
-import ProductContainer from '../ProductViewer/ProductContainer';
-import ListContainer from '../ListContainer';
-import { getProductVerbiage } from '../../../util/generalUtils';
+import { Box, CircularProgress } from '@mui/material';
+import { useNavigationContext } from '../../../components/NavigationContext';
+import { useNavigate } from 'react-router-dom';
 
-const CarModelListContainer = ({ navigate, updateCurrentTitle }) => {
+const CarModelListContainer = () => {
     const [carModels, setCarModels] = useState([]);
+    const [loading, setLoading] = useState(false); // Add loading state
     const { openSnackbar } = useSnackbar();
-    const { selectedBrand, handleItemSelect, setLoading, searchTerm, navigateBack, productType } = useProductsContext();
+    const { selectedBrand, handleItemSelect, searchTerm } = useProductsContext();
+    const navigate = useNavigate();
+    const { updateTitle, resetTitle } = useNavigationContext();
 
     const onCarModelSelect = (e, carModel) => {
-        let productVerbiage = getProductVerbiage(productType);
+        let currentPath = `/home/products/brands/models`;
+        let goToPath = `/home/products/brands/models/radiators`;
         handleItemSelect(carModel, Screens.MODELS);
-        updateCurrentTitle(`Modelos (${carModel.name})`);
-        navigate(<ProductContainer />, productVerbiage, navigateBack);
+        updateTitle(currentPath, `Modelos (${carModel.name})`);
+        navigate(goToPath);
     }
 
     useEffect(() => {
-        updateCurrentTitle('Modelos');
-    }, [updateCurrentTitle]);
-    
+        resetTitle('/home/products/brands/models');
+    }, []);
+
     const handleOnDelete = async (carModel) => {
         try {
             const isDeleted = await deleteCarModel(carModel.id);
@@ -43,7 +47,7 @@ const CarModelListContainer = ({ navigate, updateCurrentTitle }) => {
     useEffect(() => {
         const fetchCarModels = async () => {
             try {
-                setLoading(true);
+                setLoading(true); // Set loading to true before fetching data
                 let models = [];
                 if (selectedBrand && selectedBrand.id) {
                     models = await getCarModelsByBrandId(selectedBrand.id);
@@ -51,9 +55,9 @@ const CarModelListContainer = ({ navigate, updateCurrentTitle }) => {
                     models = await getCarModels(searchTerm);
                 }
                 setCarModels(models);
-                setLoading(false);
+                setLoading(false); // Set loading to false after fetching data
             } catch (error) {
-                setLoading(false);
+                setLoading(false); // Set loading to false in case of error
                 openSnackbar(`Error al obtener los modelos de vehículos: ${error.errorMessage}`, 'error');
             }
         };
@@ -61,11 +65,15 @@ const CarModelListContainer = ({ navigate, updateCurrentTitle }) => {
         fetchCarModels();
     }, [selectedBrand, searchTerm]);
 
-    return (
-        <ListContainer navigate={navigate}>
-            <CarModelList carModels={carModels} onCarModelSelect={onCarModelSelect} handleOnDelete={handleOnDelete} />
-        </ListContainer>
-    );
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+                <CircularProgress size={40} />
+            </Box>
+        );
+    }
+
+    return (<CarModelList carModels={carModels} onCarModelSelect={onCarModelSelect} handleOnDelete={handleOnDelete} />);
 };
 
 export default CarModelListContainer;

@@ -9,9 +9,8 @@ import { Screens } from '../ProductsConstants';
 import ProductList from './ProductList';
 import { ProductCarModel } from '../../../models/ProductCarModel';
 import { deleteProduct } from '../../../services/ProductService';
-import ListContainer from '../ListContainer';
 
-const ProductContainer = ({navigate}) => {
+const ProductContainer = () => {
   const [productCarModels, setProductCarModels] = useState([]);
   const { openSnackbar } = useSnackbar();
   const { handleItemSelect, searchTerm, setLoading, selectedCarModel, productType } = useProductsContext();
@@ -50,7 +49,7 @@ const ProductContainer = ({navigate}) => {
           response = await getCarModelProducts(selectedCarModel.id, productType, searchTerm);
           productCarModelsData = response.data;
         } else {
-          response = await getAllCarModelsProducts(productType,searchTerm);
+          response = await getAllCarModelsProducts(productType, searchTerm);
           productCarModelsData = response.data;
         }
 
@@ -84,18 +83,16 @@ const ProductContainer = ({navigate}) => {
 
 
   return (
-    <ListContainer navigate={navigate}>
-      <CSSTransition
+    <CSSTransition
       in={productCarModels.length > 0} // Establece la condición para mostrar la animación
       timeout={300}
       classNames="fade"
       unmountOnExit
     >
       <div>
-        <ProductList products={productCarModels} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete}/>
+        <ProductList products={productCarModels} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete} />
       </div>
     </CSSTransition>
-    </ListContainer>
   );
 };
 
