@@ -4,8 +4,16 @@ import RadiatorImg from '/src/assets/radiator.jpeg';
 import CapsImg from '/src/assets/caps.jpeg';
 import FansImg from '/src/assets/fans.jpeg';
 import { ProductTypes } from '../ProductsConstants';
+import { useNavigationContext } from '../../../components/NavigationContext';
+import { useEffect } from 'react';
 
 const ProductTypeSelector = () => {
+  const { resetTitle } = useNavigationContext();
+
+  useEffect(() => {
+    resetTitle('/home/products');
+  }, []);
+  
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={4}>
