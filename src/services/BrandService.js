@@ -7,8 +7,8 @@ const getAllBrands = async (name = '') => {
   return Array.isArray(result.response) ? result.response.map(brand => new Brand(brand)) : [];
 };
 
-const getCarModelsByBrandId = async (brandId) => {
-  const result = await axios.get(`/brand/${brandId}/models`);
+const getCarModelsByBrandId = async (brandId, name) => {
+  const result = await axios.get(`/brand/${brandId}/models?name=${name}`);
   return Array.isArray(result.response) ? result.response.map(model => new CarModel(model)) : [];
 };
 

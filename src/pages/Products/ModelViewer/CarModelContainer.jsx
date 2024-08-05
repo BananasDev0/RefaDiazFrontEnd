@@ -50,7 +50,7 @@ const CarModelListContainer = () => {
                 setLoading(true); // Set loading to true before fetching data
                 let models = [];
                 if (selectedBrand && selectedBrand.id) {
-                    models = await getCarModelsByBrandId(selectedBrand.id);
+                    models = await getCarModelsByBrandId(selectedBrand.id, searchTerm);
                 } else {
                     models = await getCarModels(searchTerm);
                 }
