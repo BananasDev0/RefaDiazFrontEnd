@@ -54,6 +54,7 @@ const ProviderDetailModal = ({ open, onClose, provider }) => (
 const ProviderManagerDisplay = ({
   product,
   providers,
+  setProviders,
   selectedProvider,
   price,
   handleProviderChange,
@@ -77,6 +78,7 @@ const ProviderManagerDisplay = ({
               label="Proveedor"
               selectedItem={selectedProvider}
               setSelectedItem={handleProviderChange}
+              setElements={setProviders}
               onItemAdded={handleOnProviderAdded}
               dialogFields={[
                 { name: 'name', label: 'Nombre del Proveedor', type: 'text', required: true },
@@ -212,6 +214,7 @@ const ProviderManager = ({ editable = true }) => {
         providers={providers}
         selectedProvider={selectedProvider}
         price={price}
+        setProviders={setProviders}
         handleProviderChange={handleProviderChange}
         handlePriceChange={handlePriceChange}
         handleAddProvider={handleAddProvider}
