@@ -57,8 +57,10 @@ const ProviderManagerDisplay = ({
   setProviders,
   selectedProvider,
   price,
+  numSeries,
   handleProviderChange,
   handlePriceChange,
+  handleNumSeriesChange,
   handleAddProvider,
   handleDeleteProvider,
   handleOnProviderAdded,
@@ -72,7 +74,7 @@ const ProviderManagerDisplay = ({
     {editable && (
       <>
         <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <CustomSelectWithAdd
               elements={providers}
               label="Proveedor"
@@ -88,7 +90,7 @@ const ProviderManagerDisplay = ({
               ]}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={4}>
             <TextField
               label="Precio de Compra"
               type="number"
@@ -97,8 +99,16 @@ const ProviderManagerDisplay = ({
               fullWidth
             />
           </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Número de Series"
+              value={numSeries}
+              onChange={handleNumSeriesChange}
+              fullWidth
+            />
+          </Grid>
         </Grid>
-        <Button onClick={handleAddProvider} variant="contained" sx={{ mt: 2 }} disabled={!selectedProvider || !price}>
+        <Button onClick={handleAddProvider} variant="contained" sx={{ mt: 2 }} disabled={!selectedProvider || !price || !numSeries}>
           Agregar Proveedor
         </Button>
       </>
@@ -108,6 +118,7 @@ const ProviderManagerDisplay = ({
         <TableRow>
           <TableCell>Proveedor</TableCell>
           <TableCell align="right">Precio de Compra</TableCell>
+          <TableCell align="right">Número de Series</TableCell>
           {editable && <TableCell align="right">Acciones</TableCell>}
         </TableRow>
       </TableHead>
@@ -120,6 +131,7 @@ const ProviderManagerDisplay = ({
           >
             <TableCell>{providerProduct.provider.name}</TableCell>
             <TableCell align="right">{providerProduct.price.cost}</TableCell>
+            <TableCell align="right">{providerProduct.numSeries}</TableCell>
             {editable && (
               <TableCell align="right">
                 <IconButton 
@@ -144,6 +156,7 @@ const ProviderManager = ({ editable = true }) => {
   const [providers, setProviders] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [price, setPrice] = useState('');
+  const [numSeries, setNumSeries] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedModalProvider, setSelectedModalProvider] = useState(null);
   const { openSnackbar } = useSnackbar();
@@ -171,19 +184,25 @@ const ProviderManager = ({ editable = true }) => {
     setPrice(event.target.value);
   };
 
+  const handleNumSeriesChange = (event) => {
+    setNumSeries(event.target.value);
+  };
+
   const handleAddProvider = () => {
-    if (selectedProvider && price) {
+    if (selectedProvider && price && numSeries) {
       const newProviderProduct = {
         providerId: selectedProvider.id,
         provider: selectedProvider,
         price: {
           cost: parseFloat(price),
           description: `Precio de compra de ${selectedProvider.name}`
-        }
+        },
+        numSeries: numSeries
       };
       handleSetProduct(modifyAndClone(product, 'providers', [...(product.providers || []), newProviderProduct]));
       setSelectedProvider(null);
       setPrice('');
+      setNumSeries('');
     }
   };
 
@@ -214,9 +233,11 @@ const ProviderManager = ({ editable = true }) => {
         providers={providers}
         selectedProvider={selectedProvider}
         price={price}
+        numSeries={numSeries}
         setProviders={setProviders}
         handleProviderChange={handleProviderChange}
         handlePriceChange={handlePriceChange}
+        handleNumSeriesChange={handleNumSeriesChange}
         handleAddProvider={handleAddProvider}
         handleDeleteProvider={handleDeleteProvider}
         handleOnProviderAdded={handleOnProviderAdded}
