@@ -58,7 +58,8 @@ const CarModelListContainer = () => {
                 setLoading(false); // Set loading to false after fetching data
             } catch (error) {
                 setLoading(false); // Set loading to false in case of error
-                openSnackbar(`Error al obtener los modelos de vehículos: ${error.errorMessage}`, 'error');
+                const severity = error.statusCode >= 400 && error.statusCode < 500 ? 'warning' : 'error';
+                openSnackbar(`Error al obtener los modelos de vehículos: ${error.errorMessage}`, severity);
             }
         };
 

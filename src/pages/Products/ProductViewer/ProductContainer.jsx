@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
-import { CSSTransition } from 'react-transition-group'; // Importa CSSTransition
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import { getAllCarModelsProducts, getCarModelProducts } from '../../../services/CarModelService';
@@ -9,11 +8,12 @@ import { Screens } from '../ProductsConstants';
 import ProductList from './ProductList';
 import { ProductCarModel } from '../../../models/ProductCarModel';
 import { deleteProduct } from '../../../services/ProductService';
+import { Box, CircularProgress } from '@mui/material';
 
 const ProductContainer = () => {
   const [productCarModels, setProductCarModels] = useState([]);
   const { openSnackbar } = useSnackbar();
-  const { handleItemSelect, searchTerm, setLoading, selectedCarModel, productType } = useProductsContext();
+  const { handleItemSelect, searchTerm, setLoading, selectedCarModel, productType, loading } = useProductsContext();
 
   const handleProductSelect = (e, item) => {
     const productCarModel = productCarModels.find(productCarModel => productCarModel.product.id === item.id);
@@ -22,7 +22,6 @@ const ProductContainer = () => {
 
   const handleOnDelete = async (productCarModel) => {
     try {
-      console.log(productCarModel)
       let result = await deleteProduct(productCarModel.id);
       if (result) {
         const products = productCarModels.filter(pcm => pcm.product.id !== productCarModel.id);
@@ -81,18 +80,16 @@ const ProductContainer = () => {
     fetchProducts();
   }, [searchTerm, setLoading]);
 
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+        <CircularProgress size={40} />
+      </Box>
+    );
+  }
 
   return (
-    <CSSTransition
-      in={productCarModels.length > 0} // Establece la condición para mostrar la animación
-      timeout={300}
-      classNames="fade"
-      unmountOnExit
-    >
-      <div>
-        <ProductList products={productCarModels} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete} />
-      </div>
-    </CSSTransition>
+    <ProductList products={productCarModels} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete} />
   );
 };
 

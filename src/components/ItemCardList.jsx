@@ -1,7 +1,18 @@
 import Grid from '@mui/material/Grid';
-import {ItemCard} from './ItemCard'; // Assuming ItemCard is in the same directory
+import { ItemCard } from './ItemCard';
+import { Typography, Box } from '@mui/material';
 
-const ItemsCardList = ({ rows, columns, itemCardProps}) => {
+const ItemsCardList = ({ rows, columns, itemCardProps }) => {
+    if (rows.length === 0) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                <Typography variant="h6" color="text.secondary">
+                    No hay elementos disponibles en este momento.
+                </Typography>
+            </Box>
+        );
+    }
+
     return (
         <Grid container spacing={2}>
             {rows.map((row) => (
