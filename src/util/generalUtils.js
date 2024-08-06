@@ -67,3 +67,14 @@ export const extractMainTitle = (title) => {
   const match = title.match(/^[^()]+/);
   return match ? match[0].trim() : title;
 };
+
+export const getBase64ImageDimensions = (base64String) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({ width: img.width, height: img.height });
+    };
+    img.onerror = reject;
+    img.src = base64String;
+  });
+};
