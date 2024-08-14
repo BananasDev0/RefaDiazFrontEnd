@@ -8,6 +8,8 @@ const staticTitles = {
     "/products/brands/models": "Modelos",
     "/products/brands/models/radiators": "Radiadores",
     "/providers": "Proveedores",
+    "/users": "Gestion de usuarios",
+    "/users/add-user": "Agregar usuario",
 };
 
 const NavigationBar = () => {
