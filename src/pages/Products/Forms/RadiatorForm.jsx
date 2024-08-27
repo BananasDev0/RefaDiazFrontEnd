@@ -3,29 +3,19 @@ import { Box, TextField } from "@mui/material";
 import { useProductDialogContext } from "../ProductDialog/ProductDialogContext";
 import { modifyAndClone } from "../../../util/generalUtils";
 
-
-const RadiatorForm = ({ setIsFormValid }) => {
-    const { product, setProduct } = useProductDialogContext();
-    useEffect(() => {
-        // Actualizar el nombre del producto y validar el formulario
-
-        setIsFormValid(product.dpi && product.product.stockCount);
-    }, [product.dpi, product.product.stockCount, setProduct, setIsFormValid]);
-
-    const handleChange = (field) => (event) => {
-        setProduct(modifyAndClone(product, field, event.target.value));
-    };
-
+const RadiatorFormDisplay = ({ product, handleChange, readOnly }) => {
     return (
         <Box>
-
             <TextField
                 fullWidth
                 label="DPI"
                 variant="outlined"
                 sx={{ mt: 4 }}
                 value={product.dpi || ''}
-                onChange={handleChange('dpi')}
+                onChange={(e) => {
+                    handleChange(e,'dpi')
+                }}
+                InputProps={{ readOnly }}
             />
 
             <TextField
@@ -34,8 +24,11 @@ const RadiatorForm = ({ setIsFormValid }) => {
                 variant="outlined"
                 type="number"
                 sx={{ mt: 4 }}
-                value={product.product.stockCount || ''}
-                onChange={handleChange('product.stockCount')}
+                value={product.stockCount || ''}
+                onChange={(e) => {
+                    handleChange(e,'stockCount')
+                }}
+                InputProps={{ readOnly }}
             />
 
             <TextField
@@ -45,11 +38,33 @@ const RadiatorForm = ({ setIsFormValid }) => {
                 multiline
                 rows={4}
                 sx={{ mt: 4 }}
-                value={product.product.comments || ''}
-                onChange={handleChange('product.comments')}
+                value={product.comments || ''}
+                onChange={(e) => {
+                    handleChange(e,'comments')
+                }}
+                InputProps={{ readOnly }}
             />
         </Box>
     );
 };
 
-export default RadiatorForm;
+
+const RadiatorFormContainer = ({ setIsFormValid }) => {
+    const { product, handleSetProduct } = useProductDialogContext();
+
+    useEffect(() => {
+        setIsFormValid(product.stockCount);
+    }, [product.dpi, product.stockCount, setIsFormValid]);
+
+    const handleChange = (event, field) => {
+        handleSetProduct(modifyAndClone(product, field, event.target.value));
+    };
+
+    return <RadiatorFormDisplay 
+              product={product} 
+              handleChange={handleChange} 
+              readOnly={false} // o true, dependiendo del caso de uso
+            />;
+};
+
+export { RadiatorFormContainer as default, RadiatorFormDisplay}

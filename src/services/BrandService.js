@@ -1,15 +1,15 @@
 import axios from './axiosConfig';
 import Brand from "../models/Brand";
-import VehicleModel from "../models/VehicleModel";
+import CarModel from '../models/CarModel';
 
-const getAllBrands = async () => {
-  const result = await axios.get(`/brands`);
+const getAllBrands = async (name = '') => {
+  const result = await axios.get(`/brands?name=${name}`);
   return Array.isArray(result.response) ? result.response.map(brand => new Brand(brand)) : [];
 };
 
-const getVehicleModelsByBrandId = async (brandId) => {
-  const result = await axios.get(`/brand/${brandId}/models`);
-  return Array.isArray(result.response) ? result.response.map(model => new VehicleModel(model)) : [];
+const getCarModelsByBrandId = async (brandId, name='') => {
+  const result = await axios.get(`/brand/${brandId}/models?name=${name}`);
+  return Array.isArray(result.response) ? result.response.map(model => new CarModel(model)) : [];
 };
 
-export { getAllBrands, getVehicleModelsByBrandId };
+export { getAllBrands, getCarModelsByBrandId };

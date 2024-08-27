@@ -1,36 +1,39 @@
-name: DEV Despliegue en EC2
+name: Build and Deploy
 
 on:
   push:
     branches:
-      - dev # Cambia 'dev' por la rama que desees
+      - dev  # Cambia esto a la rama que deseas monitorear
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    environment: DEV
 
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Copiar archivos al servidor
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.DEV_EC2_HOST }}
-          username: ${{ secrets.DEV_EC2_USER }}
-          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
-          port: 22
-          source: "."
-          target: "projects/RefaDiazFrontEnd"
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'  # Asegúrate de que esta versión es compatible con tu proyecto
 
-      - name: Ejecutar comandos remotos
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.DEV_EC2_HOST }}
-          username: ${{ secrets.DEV_EC2_USER }}
-          key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            cd projects/RefaDiazFrontEnd
-            npm install
-            pm2 restart RefaDiazApp
+    - name: Install dependencies
+      run: npm install
+
+    - name: Set environment variables
+      run: echo "${{ secrets.ENV_CONFIG }}" > .env.development
+
+    - name: Build the application
+      run: npm run build -- --mode development
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2  # Cambia esto a tu región de AWS
+
+    - name: Deploy to S3
+      run: aws s3 sync ./dist s3://refadiazapp --delete
