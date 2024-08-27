@@ -4,6 +4,7 @@ import { ModelManagerDisplay } from "./ProductDialog/ModelManager";
 import { PriceManagerDisplay } from "./ProductDialog/PriceManager";
 import ImageUpload from './ProductDialog/ImageUpload';
 import { ProductTypes } from './ProductsConstants';
+import ProviderManager from './ProductDialog/ProviderManager';
 
 const ProductSummary = ({ productType, product }) => {
     let images = product.files.map(file => file.fileData);
@@ -43,6 +44,9 @@ const ProductSummary = ({ productType, product }) => {
                     </Grid>
                     <Grid item xs={12}>
                         <PriceManagerDisplay product={product} readOnly={true} />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <ProviderManager product={product} editable={false} />
                     </Grid>
                 </Grid>
             </Box>

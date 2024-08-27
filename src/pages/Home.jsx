@@ -7,6 +7,9 @@ import CustomToolBar from '../components/CustomToolBar';
 import ProductsPage from './Products/ProductsPage';
 import ResponsiveDrawer from '../components/ResponsiveDrawer/ResponsiveDrawer';
 import { MobileProvider } from '../components/MobileProvider';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import ProvidersPage from './Providers/ProviderPage';
+import UserPage from './Users/UserPage';
 
 
 const drawerWidth = 240;
@@ -37,8 +40,7 @@ const AppBar = styled(MuiAppBar, {
 export default function Home() {
 
   const [open, setOpen] = React.useState(false);
-  
-  const [selectedComponent, setSelectedComponent] = React.useState(<ProductsPage />); 
+  const navigate = useNavigate();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -48,28 +50,29 @@ export default function Home() {
     setOpen(false);
   };
 
-  const handleComponentChange = (component) => {
-    setSelectedComponent(component); // Actualiza el componente seleccionado
-  };
-
   return (
     <MobileProvider>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         <AppBar position="fixed" open={open} >
-        
+
           <CustomToolBar handleDrawerOpen={handleDrawerOpen} open={open} />
-          
+
         </AppBar>
         {/* nuevo componente */}
-        <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} setComponent={handleComponentChange} style={{ width: drawerWidth }} />
+        <ResponsiveDrawer open={open} handleDrawerClose={handleDrawerClose} navigate={navigate} style={{ width: drawerWidth }} />
 
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <ContentHeader />
           {/* aca va la page*/}
 
-          {selectedComponent}
-          
+          <Routes>
+            <Route path="/" element={<Navigate to="/home/products" />} />
+            <Route path="products/*" element={<ProductsPage />} />
+            <Route path='providers/*' element={<ProvidersPage />} />
+            <Route path='users/*' element={<UserPage/>} />
+          </Routes>
+
         </Box>
       </Box>
     </MobileProvider>

@@ -1,113 +1,153 @@
-import { createContext, useContext, useState } from 'react';
-import { ProductTypes, Screens, SearchOptions } from './ProductsConstants';
+import { createContext, useContext, useState, useCallback } from 'react';
+import { Screens, SearchOptions } from './ProductsConstants';
 
 const ProductsContext = createContext();
 
-export const useProductsContext = () => useContext(ProductsContext);
+export const useProductsContext = () => {
+  const context = useContext(ProductsContext);
+  if (context === undefined) {
+    throw new Error('useProductsContext must be used within a ProductsProvider');
+  }
+  return context;
+};
 
 export const ProductsProvider = ({ children }) => {
-    const [productType, setProductType] = useState(ProductTypes.RADIATOR);
-    const [currentScreen, setCurrentScreen] = useState(Screens.BRANDS);
-    const [openDialog, setOpenDialog] = useState(false);
+  const [productType, setProductType] = useState(null);
+  const [currentScreen, setCurrentScreen] = useState(Screens.BRANDS);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedCarModel, setSelectedCarModel] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchOption, setSearchOption] = useState(SearchOptions.BRANDS);
+  const [loading, setLoading] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [selectedBrand, setSelectedBrand] = useState(null);
-    const [selectedCarModel, setSelectedCarModel] = useState(null);
-
-    const [searchTerm, setSearchTerm] = useState('');
-    const [searchOption, setSearchOption] = useState(SearchOptions.BRANDS);
-
-    const [loading, setLoading] = useState(false);
-
-    const handleItemSelect = (item, type) => {
-        setSearchTerm('');
-
-        switch (type) {
-            case Screens.BRANDS:
-                setSelectedBrand(item);
-                setSearchOption(SearchOptions.MODELS);
-                setCurrentScreen(Screens.MODELS);
-                setSelectedBrand(item);
-                break;
-            case Screens.MODELS:
-                setSelectedCarModel(item);
-                setSearchOption(SearchOptions.PRODUCTS);
-                setCurrentScreen(Screens.PRODUCTS);
-                break;
-            case Screens.PRODUCTS:
-                setSelectedProduct(item);
-                break;
-            default:
-                console.log('Tipo de selección no reconocido:', type);
-        }
-    };
-
-
-    const handleChangeProductType = (newValue) => {
-        setProductType(newValue);
-    };
-
-    const handleOpenDialog = () => {
-        setOpenDialog(true);
-    };
-
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
-    };
-
-    const handleBack = (screen) => {
-        if (screen === Screens.BRANDS) {
-            setCurrentScreen(Screens.BRANDS);
-            setSearchOption(SearchOptions.BRANDS);
-            setSelectedBrand(null);
-            setSelectedCarModel(null);
-        } else if (screen === Screens.MODELS) {
-            setCurrentScreen(Screens.MODELS);
-            setSearchOption(SearchOptions.MODELS);
-            setSelectedCarModel(null);
-        }
-    };
-
-    const handleSearchOptionChange = (value) => {
-        setSearchTerm('');
-        setSelectedBrand(null);
+  const navigateBack = useCallback(() => {
+    if (openDialog) {
+      setOpenDialog(false);
+      return;
+    }
+    switch (currentScreen) {
+      case Screens.PRODUCTS:
+        setCurrentScreen(Screens.MODELS);
         setSelectedCarModel(null);
-        setSelectedProduct(null);
-        setSearchOption(value);
-        
-        if (value === SearchOptions.BRANDS) {
-            setCurrentScreen(Screens.BRANDS);
-        } else if (value === SearchOptions.MODELS) {
-            setCurrentScreen(Screens.MODELS);
-        } else {
-            setCurrentScreen(Screens.PRODUCTS);
-        }
-    };
+        setSearchOption(SearchOptions.MODELS);
+        break;
+      case Screens.MODELS:
+        setCurrentScreen(Screens.BRANDS);
+        setSearchOption(SearchOptions.BRANDS);
+        setSelectedBrand(null);
+        break;
+      default:
+        break;
+    }
+  }, [currentScreen, openDialog]);
 
+  const resetState = () => {
+    setOpenDialog(false);
+    setSelectedBrand(null);
+    setSelectedCarModel(null);
+    setSearchTerm('');
+    setLoading(false);
+    setScrollPosition(0);
+  }
 
-    return (
-        <ProductsContext.Provider value={{
-            handleBack,
-            handleChangeProductType,
-            handleCloseDialog,
-            handleItemSelect,
-            handleOpenDialog,
-            handleSearchOptionChange,
-            setLoading,
-            setSearchTerm,
-            setSelectedProduct,
+  const setSearchOptionBasedOnScreen = () => {
+    switch (currentScreen) {
+      case Screens.BRANDS:
+        setSearchOption(SearchOptions.BRANDS);
+        break;
+      case Screens.MODELS:
+        setSearchOption(SearchOptions.MODELS);
+        break;
+      case Screens.PRODUCTS:
+        setSearchOption(SearchOptions.PRODUCTS);
+        break;
+      default:
+        setSearchOption(SearchOptions.BRANDS);
+    }
+  }
 
-            currentScreen,
-            loading,
-            openDialog,
-            productType,
-            searchOption,
-            searchTerm,
-            selectedBrand,
-            selectedCarModel,
-            selectedProduct
-        }}>
-            {children}
-        </ProductsContext.Provider>
-    );
+  const handleItemSelect = (item, type) => {
+    switch (type) {
+      case Screens.BRANDS:
+        setSelectedBrand(item);
+        setSearchOption(SearchOptions.MODELS);
+        setCurrentScreen(Screens.MODELS);
+        break;
+      case Screens.MODELS:
+        setSelectedCarModel(item);
+        setSearchOption(SearchOptions.PRODUCTS);
+        setCurrentScreen(Screens.PRODUCTS);
+        break;
+      case Screens.PRODUCTS:
+        setSelectedProduct(item);
+        setScrollPosition(window.pageYOffset);
+        break;
+      default:
+        console.log('Tipo de selección no reconocido:', type);
+    }
+  };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleChangeProductType = (newValue) => {
+    setProductType(newValue);
+  };
+
+  const handleSearchOptionChange = (value) => {
+    setSearchTerm('');
+    setSearchOption(value);
+    resetState();
+    if (value === SearchOptions.BRANDS) {
+      setCurrentScreen(Screens.BRANDS);
+    } else if (value === SearchOptions.MODELS) {
+      setCurrentScreen(Screens.MODELS);
+    } else {
+      setCurrentScreen(Screens.PRODUCTS);
+    }
+  };
+
+  const value = {
+    productType,
+    currentScreen,
+    openDialog,
+    selectedProduct,
+    selectedBrand,
+    selectedCarModel,
+    searchTerm,
+    searchOption,
+    loading,
+    scrollPosition,
+    setProductType,
+    setCurrentScreen,
+    setOpenDialog,
+    setSelectedProduct,
+    setSelectedBrand,
+    setSelectedCarModel,
+    setSearchTerm,
+    setSearchOption,
+    setLoading,
+    setScrollPosition,
+    handleItemSelect,
+    handleOpenDialog,
+    handleCloseDialog,
+    handleChangeProductType,
+    handleSearchOptionChange,
+    navigateBack,
+    setSearchOptionBasedOnScreen
+  };
+
+  return (
+    <ProductsContext.Provider value={value}>
+      {children}
+    </ProductsContext.Provider>
+  );
 };

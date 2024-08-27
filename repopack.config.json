@@ -1,0 +1,12 @@
+{
+    "output": {
+      "filePath": "repopack-refadiazfrontend-output.txt",
+      "headerText": "Custom header information for the packed file.",
+      "removeComments": true,
+      "topFilesLength": 5
+    },
+    "ignore": {
+      "useDefaultPatterns": true,
+      "customPatterns": ["*.log"]
+    }
+  }

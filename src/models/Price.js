@@ -1,5 +1,6 @@
 export default class Price {
-    constructor({description, cost}) {
+    constructor({id, description, cost}) {
+        this.id = id;
         this.description = description;
         this.cost = cost;
     }

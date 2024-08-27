@@ -14,6 +14,7 @@ const PriceManagerDisplay = ({
   setPrice,
   handleDeletePrice,
   handleAddPrice,
+  isAddButtonDisabled,
   readOnly = false
 }) => {
   return (
@@ -45,7 +46,12 @@ const PriceManagerDisplay = ({
             }}
             fullWidth
           />
-          <Button onClick={handleAddPrice} variant="contained" sx={{ mt: 2 }}>
+          <Button 
+            onClick={handleAddPrice} 
+            variant="contained" 
+            sx={{ mt: 2 }}
+            disabled={isAddButtonDisabled}
+          >
             Agregar Precio
           </Button>
         </Box>
@@ -91,6 +97,8 @@ const PriceManagerContainer = () => {
     handleSetProduct({ ...product, prices: updatedPrices });
   };
 
+  const isAddButtonDisabled = !price.description || !price.cost;
+
   return (
     <PriceManagerDisplay
       product={product}
@@ -98,6 +106,7 @@ const PriceManagerContainer = () => {
       setPrice={setPrice}
       handleDeletePrice={handleDeletePrice}
       handleAddPrice={handleAddPrice}
+      isAddButtonDisabled={isAddButtonDisabled}
     />
   );
 };

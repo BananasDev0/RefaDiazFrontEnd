@@ -30,5 +30,11 @@ const getAllCarModelsProducts = async (productTypeId, searchTerm) => {
   return result.response;
 }
 
+const deleteCarModel = async (id) => {
+  const result = await axios.delete(`/model/${id}`);
+  return result.statusCode === 204;
+}
 
-export { createCarModel, getCarModels, getVehicleModelRadiators, getCarModelProducts, getAllCarModelsProducts};
+
+export { createCarModel, getCarModels, getVehicleModelRadiators, 
+  getCarModelProducts, getAllCarModelsProducts, deleteCarModel};

@@ -3,7 +3,7 @@ import { useProductsContext } from '../ProductsContext';
 import { getBase64ImgFromURL, getImageURLFromStorage, uploadImageToStorage } from '../../../services/Firebase/storage';
 import { base64ToBlob, getMimeType, modifyAndClone } from '../../../util/generalUtils';
 import File from '../../../models/File';
-import { createProduct, getProductById } from '../../../services/ProductService';
+import { createProduct, getProductById, updateProduct } from '../../../services/ProductService';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import Product from '../../../models/Product';
 import { FileTypes, ProductTypes } from '../ProductsConstants';
@@ -47,9 +47,9 @@ export const ProductDialogProvider = ({ children }) => {
     }, [selectedProduct]);
 
     const resetState = () => {
-        setActiveStep(0);
         setSelectedProduct(null);
         setIsEditable(false);
+        setActiveStep(0);
         setProduct(new Product({}));
     };
 
@@ -100,22 +100,37 @@ export const ProductDialogProvider = ({ children }) => {
         try {
             setIsLoading(true);
 
-            const productToCreate = {
-                ...product,
-                productTypeId: productType,
-                files: product.files.map(file => ({ ...file, fileData: null }))
-            };
+            if (product.id) {
+                console.log(product)
+                const productToUpdate = {
+                    ...product,
+                    productTypeId: productType,
+                    files: product.files.map(file => ({ ...file, fileData: null }))
+                };
+                product.files.forEach((file) => {
+                    if (!file.id) {
+                        uploadImageToStorage(base64ToBlob(file.fileData), file.storagePath);
+                    }
+                });
+                await updateProduct(productToUpdate.id, productToUpdate);
+            } else {
+                const productToCreate = {
+                    ...product,
+                    productTypeId: productType,
+                    files: product.files.map(file => ({ ...file, fileData: null }))
+                };
 
-            await createProduct(productToCreate);
+                await createProduct(productToCreate);
 
-            product.files.forEach((file) => {
-                uploadImageToStorage(base64ToBlob(file.fileData), file.storagePath);
-            });
+                product.files.forEach((file) => {
+                    uploadImageToStorage(base64ToBlob(file.fileData), file.storagePath);
+                });
+            }
 
             setIsLoading(false);
             handleCloseDialog();
             resetState();
-            openSnackbar('Producto creado exitosamente', 'success');
+            openSnackbar('Producto procesado correctamente', 'success');
         } catch (error) {
             setIsLoading(false);
             console.log(error)

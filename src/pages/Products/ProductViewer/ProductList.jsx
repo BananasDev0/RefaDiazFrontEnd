@@ -5,7 +5,7 @@ const columns = [
   { field: 'name', headerName: 'Nombre', showLabel: false, valueStyle: { fontSize: '16px' } }
 ];
 
-const ProductList = ({ products, onProductSelect }) => {
+const ProductList = ({ products, onProductSelect, handleOnDelete }) => {
   return (
     <div>
       <ItemsCardList rows={products.map(productCarModel => ({
@@ -13,7 +13,12 @@ const ProductList = ({ products, onProductSelect }) => {
         dpi: productCarModel.productdpi,
         name: productCarModel.product.name,
         imageUrl: productCarModel.imageUrl // Se muestra la imagen
-      }))} columns={columns} itemCardProps={{onClick: onProductSelect}} />
+      }))} columns={columns} itemCardProps={{onClick: onProductSelect, menuOptions: [
+        {
+          label: 'Eliminar',
+          onClick: handleOnDelete
+        }
+      ]}} />
     </div>
   );
 };
