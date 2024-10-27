@@ -3,10 +3,9 @@ import { ProductCarModel } from '../models/ProductCarModel';
 import CarModel from '../models/CarModel';
 
 
-const createCarModel = async(carModelData) => {
-  const result = await axios.post('/model', carModelData);
-
-  return result.statusCode === 201 ? new CarModel(result.response) : false;
+const createCarModel = async(carModelData, forceCreate) => {
+  const result = await axios.post(`/model?force=${forceCreate}`, carModelData);
+  return result.statusCode === 201 ? new CarModel(result.response.data) : false;
 }
 
 const getCarModels = async(name = '') => {

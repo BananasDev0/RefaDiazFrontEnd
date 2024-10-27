@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Button, Table, TableBody, TableCell, TableHead, TableRow, TextField, IconButton, Typography, Grid, FormControl, InputLabel, Select, MenuItem
+  Button, Table, TableBody, TableCell, TableHead, TableRow, TextField, IconButton, Typography, Grid, FormControl, InputLabel, Select, MenuItem,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandableCard from '../../../components/ExpandableCard';
@@ -152,13 +153,18 @@ const ModelManager = () => {
   const { openSnackbar } = useSnackbar();
   const { product, handleSetProduct } = useProductDialogContext();
 
+  // Estados para manejar el modal de conflicto
+  const [conflictModel, setConflictModel] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pendingCarModel, setPendingCarModel] = useState(null);
+
   useEffect(() => {
     const fetchBrands = async () => {
       try {
         const brandsData = await getAllBrands();
         setBrands(brandsData);
       } catch (error) {
-        openSnackbar(`Error al obtener las marcas: ${error.message}`, 'error');
+        openSnackbar(`Error al obtener las marcas: ${error.errorMessage}`, 'error');
       }
     };
     fetchBrands();
@@ -192,47 +198,102 @@ const ModelManager = () => {
 
   const handleStartYearChange = (year) => {
     setProductModel({ ...productModel, initialYear: year });
-  }
+  };
 
   const handleLastYearChange = (year) => {
     setProductModel({ ...productModel, lastYear: year });
-  }
+  };
 
+  // Función para manejar la confirmación de forzar la creación
+  const handleConfirmForceCreate = async () => {
+    if (pendingCarModel && conflictModel) {
+      try {
+        const createdVehicleModel = await createCarModel(pendingCarModel, true);
+        handleSetProduct(modifyAndClone(product, 'carModels', [...product.carModels, createdVehicleModel]));
+        setIsModalOpen(false);
+        setConflictModel(null);
+        setPendingCarModel(null);
+        openSnackbar('Modelo creado forzadamente con éxito', 'success');
+      } catch (error) {
+        openSnackbar(`Error al forzar la creación del modelo: ${error.errorMessage}`, 'error');
+      }
+    }
+  };
+
+  // Función para manejar la cancelación de forzar la creación
+  const handleCancelForceCreate = () => {
+    setIsModalOpen(false);
+    setConflictModel(null);
+    setPendingCarModel(null);
+  };
+
+  // Función para manejar la adición de un nuevo modelo
   const handleOnItemAdded = async (elements, newItem) => {
     const newVehicleModel = new CarModel({
       brandId: selectedBrand.id,
       ...newItem
     });
-    const createdVehicleModel = await createCarModel(newVehicleModel);
-    return createdVehicleModel.id;
-  }
+    try {
+      const createdVehicleModel = await createCarModel(newVehicleModel);
+      handleSetProduct(modifyAndClone(product, 'carModels', [...product.carModels, createdVehicleModel]));
+      return createdVehicleModel.id;
+    } catch (error) {
+      if (error.statusCode === 409) {
+        setConflictModel(error.response.similarModel);
+        setPendingCarModel(newVehicleModel);
+        setIsModalOpen(true);
+        return null; // Puedes manejar esto según tus necesidades
+      } else {
+        openSnackbar(`Error al crear el modelo: ${error.errorMessage}`, 'error');
+        return null;
+      }
+    }
+  };
 
   const handleCarModelAdded = () => {
     handleSetProduct(modifyAndClone(product, 'carModels', [...product.carModels, productModel]));
-  }
+  };
 
   const isAddButtonDisabled = !productModel.carModelId || !productModel.initialYear || !productModel.lastYear;
 
   return (
-    <ModelManagerDisplay
-      product={product}
-      carModels={models}
-      setCarModels={setModels}
-      productModel={productModel}
-      brand={selectedBrand}
-      setProductModel={setProductModel}
-      brands={brands}
-      handleBrandChange={handleBrandChange}
-      handleModelChange={handleModelChange}
-      handleDeleteModel={handleDeleteModel}
-      readOnly={false}
-      handleStartYearChange={handleStartYearChange}
-      handleLastYearChange={handleLastYearChange}
-      handleOnItemAdded={handleOnItemAdded}
-      handleCarModelAdded={handleCarModelAdded}
-      isAddButtonDisabled={isAddButtonDisabled}
-    />
+    <>
+      <ModelManagerDisplay
+        product={product}
+        carModels={models}
+        setCarModels={setModels}
+        productModel={productModel}
+        brand={selectedBrand}
+        setProductModel={setProductModel}
+        brands={brands}
+        handleBrandChange={handleBrandChange}
+        handleModelChange={handleModelChange}
+        handleDeleteModel={handleDeleteModel}
+        readOnly={false}
+        handleStartYearChange={handleStartYearChange}
+        handleLastYearChange={handleLastYearChange}
+        handleOnItemAdded={handleOnItemAdded}
+        handleCarModelAdded={handleCarModelAdded}
+        isAddButtonDisabled={isAddButtonDisabled}
+      />
+      
+      {/* Modal de Confirmación de Conflicto */}
+      <Dialog open={isModalOpen} onClose={handleCancelForceCreate}>
+        <DialogTitle>Modelo ya existe</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Ya existe un modelo similar llamado "{conflictModel?.name}". ¿Desea forzar la creación del nuevo modelo?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelForceCreate}>Cancelar</Button>
+          <Button onClick={handleConfirmForceCreate} color="primary" autoFocus>
+            Forzar Creación
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
-export { ModelManager as default, ModelManagerDisplay }
+export { ModelManager as default, ModelManagerDisplay };
