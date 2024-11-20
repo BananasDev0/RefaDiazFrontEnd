@@ -3,7 +3,7 @@ import { Select, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CustomInput from "./CustomInput";
 import { useProductsContext } from '../pages/Products/ProductsContext';
-import { ProductTypesNamesEsp, SearchOptions } from '../pages/Products/ProductsConstants';
+import { ProductTypes, ProductTypesNamesEsp, SearchOptions } from '../pages/Products/ProductsConstants';
 
 const CustomSearchBar = () => {
   const navigate = useNavigate();
@@ -63,7 +63,8 @@ const CustomSearchBar = () => {
         path = '/home/products/brands/models';
         break;
       case SearchOptions.PRODUCTS:
-        path = '/home/products/brands/models/radiators';
+        if (productType === ProductTypes.RADIATOR) path = '/home/products/brands/models/radiators';
+        if (productType === ProductTypes.CAP) path = '/home/products/brands/models/caps';
         break;
       default:
         return;

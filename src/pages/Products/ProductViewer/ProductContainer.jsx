@@ -4,33 +4,34 @@ import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import { getAllCarModelsProducts, getCarModelProducts } from '../../../services/CarModelService';
 import { useProductsContext } from '../ProductsContext';
-import { Screens } from '../ProductsConstants';
+import { ProductTypes, Screens } from '../ProductsConstants';
 import ProductList from './ProductList';
 import { ProductCarModel } from '../../../models/ProductCarModel';
-import { deleteProduct } from '../../../services/ProductService';
+import { deleteProduct, getProductById } from '../../../services/ProductService';
 import { Box, CircularProgress } from '@mui/material';
 
 const ProductContainer = () => {
-  const [productCarModels, setProductCarModels] = useState([]);
+  const [products, setProducts] = useState([]);
   const { openSnackbar } = useSnackbar();
-  const { handleItemSelect, searchTerm, setLoading, selectedCarModel, productType, loading } = useProductsContext();
+  const { handleItemSelect, searchTerm, setLoading, selectedCarModel, productType, loading, selectedProduct } = useProductsContext();
 
   const handleProductSelect = (e, item) => {
-    const productCarModel = productCarModels.find(productCarModel => productCarModel.product.id === item.id);
-    handleItemSelect(productCarModel.product, Screens.PRODUCTS);
+    const product = products.find(product => product.id === item.id);
+    handleItemSelect(product, Screens.PRODUCTS);
   }
 
-  const handleOnDelete = async (productCarModel) => {
+  const handleOnDelete = async (product) => {
     try {
-      let result = await deleteProduct(productCarModel.id);
+      let result = await deleteProduct(product.id);
       if (result) {
-        const products = productCarModels.filter(pcm => pcm.product.id !== productCarModel.id);
-        setProductCarModels(products);
+        const filteredProducts = products.filter(p => p.id !== product.id);
+        setProducts(filteredProducts);
         openSnackbar('Producto eliminado correctamente', 'success');
       } else {
         openSnackbar('Error al eliminar el producto', 'error');
       }
     } catch (error) {
+      console.error("Error al eliminar el producto:", error);
       openSnackbar(`Error al eliminar el producto: ${error.errorMessage}`, 'error');
     }
   }
@@ -38,47 +39,57 @@ const ProductContainer = () => {
   useEffect(() => {
     setLoading(true);
 
-    const fetchProducts = async () => {
+    const fetchProductCarModels = async () => {
       try {
-        setProductCarModels([]);
         let response = null;
-        let productCarModelsData = [];
-
         if (selectedCarModel && selectedCarModel.id) {
           response = await getCarModelProducts(selectedCarModel.id, productType, searchTerm);
-          productCarModelsData = response.data;
         } else {
           response = await getAllCarModelsProducts(productType, searchTerm);
-          productCarModelsData = response.data;
         }
-
-        productCarModelsData = productCarModelsData.map(productCarModel => new ProductCarModel(productCarModel));
-
-        const productsWithImages = await Promise.all(productCarModelsData.map(async (productCarModel) => {
-          let file = productCarModel.product.files.find(file => file.orderId == 1);
-          if (file) {
-            const imageUrl = await getImageURLFromStorage(file.storagePath).catch(error => {
-              console.error("Error al obtener url imagen de storage para producto:", productCarModel.product.name, error);
-              return '';
-            });
-            return { ...productCarModel, imageUrl };
-          } else {
-            return productCarModel;
-          }
-        }));
-
-        setProductCarModels(productsWithImages);
-        setLoading(false);
-
+        return response.data.map(productCarModel => new ProductCarModel(productCarModel));
       } catch (error) {
-        console.error("Error al obtener los radiadores:", error);
-        setLoading(false);
-        openSnackbar(`Error al cargar los radiadores!: ${error.errorMessage}`, 'error')
+        console.error("Error al obtener los productos:", error);
+        throw error;
       }
-    }
+    };
+
+    const fetchProductImages = async (productsData) => {
+      return await Promise.all(productsData.map(async (product) => {
+        let file = product.files.find(file => file.orderId == 1);
+        if (file) {
+          const imageUrl = await getImageURLFromStorage(file.storagePath).catch(error => {
+            console.error("Error al obtener url imagen de storage para producto:", product.name, error);
+            return '';
+          });
+          return { ...product, imageUrl };
+        } else {
+          return product;
+        }
+      }));
+    };
+
+    const fetchProducts = async () => {
+      try {
+        let products = [];
+        setProducts([]);
+        if (productType === ProductTypes.RADIATOR) {
+          const productCarModelsData = await fetchProductCarModels();
+          products = productCarModelsData.map(productCarModel => productCarModel.product);
+        } else if (productType === ProductTypes.CAP) {
+          products = await getProductById(selectedProduct.id);
+        }
+        const productsWithImages = await fetchProductImages(products);
+        setProducts(productsWithImages);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        openSnackbar(`Error al cargar los radiadores!: ${error.errorMessage}`, 'error');
+      }
+    };
 
     fetchProducts();
-  }, [searchTerm, setLoading]);
+  }, [searchTerm, setLoading, selectedCarModel, productType, openSnackbar]);
 
   if (loading) {
     return (
@@ -89,7 +100,7 @@ const ProductContainer = () => {
   }
 
   return (
-    <ProductList products={productCarModels} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete} />
+    <ProductList products={products} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete} />
   );
 };
 

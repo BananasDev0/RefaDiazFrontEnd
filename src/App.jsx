@@ -17,7 +17,6 @@ export default function App() {
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home/*" element={<AuthGuard><Home /></AuthGuard>} />
               <Route path="/login" element={<Login />} />
-              <Route path="/user" element={<UserPage />} />
             </Routes>
           </BrowserRouter>
         </NavigationProvider>

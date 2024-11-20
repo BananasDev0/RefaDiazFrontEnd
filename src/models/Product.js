@@ -5,7 +5,7 @@ import ProductPrice from "./ProductPrice";
 import { ProviderProduct } from "./ProviderProduct";
 
 export default class Product {
-  constructor({ id, name, brand = {}, comments, stockCount, images, files = [], providers = [], prices = [], carModels = [], dpi = ''}) {
+  constructor({ id, name, brand = {}, comments, stockCount, images, files = [], providers = [], prices = [], carModels = [], dpi = '', parentProductId, childProducts }) {
     this.id = id;
     this.name = name;
     this.brand = new Brand(brand);
@@ -17,5 +17,7 @@ export default class Product {
     this.prices = prices.map(price => new ProductPrice(price ?? {}));
     this.carModels = carModels.map(carModel => new ProductCarModel(carModel ?? {}));
     this.dpi = dpi;
+    this.parentProductId = parentProductId;
+    this.childProducts = childProducts;
   }
 }

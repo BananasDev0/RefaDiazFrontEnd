@@ -8,11 +8,11 @@ const columns = [
 const ProductList = ({ products, onProductSelect, handleOnDelete }) => {
   return (
     <div>
-      <ItemsCardList rows={products.map(productCarModel => ({
-        id: productCarModel.product.id,
-        dpi: productCarModel.productdpi,
-        name: productCarModel.product.name,
-        imageUrl: productCarModel.imageUrl // Se muestra la imagen
+      <ItemsCardList rows={products.map( product => ({
+        id: product.id,
+        dpi: product.dpi,
+        name: product.name,
+        imageUrl: product.imageUrl // Se muestra la imagen
       }))} columns={columns} itemCardProps={{onClick: onProductSelect, menuOptions: [
         {
           label: 'Eliminar',

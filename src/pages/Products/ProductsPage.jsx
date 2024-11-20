@@ -3,10 +3,10 @@ import BrandContainer from "./BrandViewer/BrandContainer";
 import CarModelListContainer from "./ModelViewer/CarModelContainer";
 import { ProductsProvider } from "./ProductsContext";
 import { Routes, Route } from 'react-router-dom';
-import ProductContainer from "./ProductViewer/ProductContainer";
 import ProductTypeSelector from "./ProductTypeSelector/ProductTypeSelector";
 import SearchWrapper from "./SearchWrapper";
 import NavigationBar from "../../components/NavigationBar";
+import ProductContainer from "./ProductViewer/ProductContainer";
 
 export default function ProductsPage() {
   return (
