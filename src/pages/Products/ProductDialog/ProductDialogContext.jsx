@@ -36,7 +36,15 @@ export const ProductDialogProvider = ({ children }) => {
                     file.fileData = await getBase64ImgFromURL(url);
                     return file;
                 });
-                await Promise.all(imagePromises);
+
+                let childImagesPromises = productFullInfo.childProducts.flatMap(child => child.files).map(async (file) => {
+                    let url = await getImageURLFromStorage(file.storagePath);
+                    file.fileData = await getBase64ImgFromURL(url);
+                    return file;
+                }
+                );
+
+                await Promise.all([...imagePromises, ...childImagesPromises]);
 
                 setProduct(productFullInfo);
                 setIsLoading(false);
@@ -97,32 +105,72 @@ export const ProductDialogProvider = ({ children }) => {
     };
 
     const handleSubmit = async () => {
+        const createChildProduct = (parentProduct, childProduct) => {
+            let childProductToCreate = {
+                ...childProduct,
+                parentProductId: parentProduct.id,
+                productTypeId: ProductTypes.CAP,
+                files: childProduct.files.map(file => ({ ...file, fileData: null }))
+            };
+            return createProduct(childProductToCreate);
+        };
+
         try {
             setIsLoading(true);
 
             if (product.id) {
-                console.log(product)
                 const productToUpdate = {
                     ...product,
+                    childProducts: product.childProducts.map(child => ({ ...child, files: child.files.map(file => ({ ...file, fileData: null })) })),
                     productTypeId: productType,
                     files: product.files.map(file => ({ ...file, fileData: null }))
                 };
+
+                //Check if we need to create or update the child products
+                //Create
+                product.childProducts.forEach(async (childProduct) => {
+                    if (!childProduct.id) {
+                        await createChildProduct(product, childProduct);
+                    }
+                });
+
+                //Update
+                product.childProducts.forEach(async (childProduct) => {
+                    if (childProduct.id) {
+                        await updateProduct(childProduct.id, childProduct);
+                    }
+                });
+
                 product.files.forEach((file) => {
                     if (!file.id) {
                         uploadImageToStorage(base64ToBlob(file.fileData), file.storagePath);
                     }
                 });
+
+                product.childProducts.forEach((childProduct) => {
+                    childProduct.files.forEach((file) => {
+                        if (!file.id) {
+                            uploadImageToStorage(base64ToBlob(file.fileData), file.storagePath);
+                        }
+                    });
+                });
+
                 await updateProduct(productToUpdate.id, productToUpdate);
             } else {
                 const productToCreate = {
                     ...product,
                     productTypeId: productType,
+                    childProducts: null,
                     files: product.files.map(file => ({ ...file, fileData: null }))
                 };
 
-                await createProduct(productToCreate);
+                let createdProduct = await createProduct(productToCreate);
+                product.childProducts.forEach(async (childProduct) => {
+                    await createChildProduct(createdProduct, childProduct);
+                });
 
-                product.files.forEach((file) => {
+                const allFiles = [...product.files, ...product.childProducts.flatMap(child => child.files)];
+                allFiles.forEach((file) => {
                     uploadImageToStorage(base64ToBlob(file.fileData), file.storagePath);
                 });
             }

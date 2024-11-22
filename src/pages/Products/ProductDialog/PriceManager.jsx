@@ -70,7 +70,7 @@ const PriceManagerDisplay = ({
               <TableCell>{productPrice.price.description}</TableCell>
               <TableCell align="right">{productPrice.price.cost}</TableCell>
               {!readOnly && <TableCell align="right">
-                <IconButton onClick={() => handleDeletePrice(index)} size="large">
+                <IconButton onClick={() => handleDeletePrice(index)} size="large" color='error'>
                   <DeleteIcon />
                 </IconButton>
               </TableCell>}

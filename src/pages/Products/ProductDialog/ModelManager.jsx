@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Button, Table, TableBody, TableCell, TableHead, TableRow, TextField, IconButton, Typography, Grid, FormControl, InputLabel, Select, MenuItem,
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
@@ -132,7 +132,7 @@ const ModelManagerDisplay = ({
                 {!readOnly && (
                   <TableCell align="right">
                     <IconButton onClick={() => handleDeleteModel(index)} aria-label="delete">
-                      <DeleteIcon />
+                      <DeleteIcon color='error'/>
                     </IconButton>
                   </TableCell>
                 )}
@@ -282,7 +282,7 @@ const ModelManager = () => {
         <DialogTitle>Modelo ya existe</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Ya existe un modelo similar llamado "{conflictModel?.name}". ¿Desea forzar la creación del nuevo modelo?
+            Ya existe un modelo similar llamado &quot;{conflictModel?.name}&quot;. ¿Desea forzar la creación del nuevo modelo?
           </DialogContentText>
         </DialogContent>
         <DialogActions>

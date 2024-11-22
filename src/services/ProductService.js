@@ -13,7 +13,7 @@ const createProductPrices = async (productId, productPrices) => {
 
 const createProduct = async (product) => {
     const response = await axiosInstance.post(`/product`, product);
-    return response.data;
+    return response.response;
 }
 
 const getProductPrices = async (productId) => {

@@ -138,7 +138,8 @@ const ProviderManagerDisplay = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteProvider(index);
-                  }} 
+                  }}
+                  color='error'
                   aria-label="delete"
                 >
                   <DeleteIcon />

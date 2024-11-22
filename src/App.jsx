@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import UserPage from './pages/Users/UserPage';
 import { AuthGuard } from './components/AuthGuard';
 import { MobileProvider } from './components/MobileProvider';
 import { SnackbarProvider } from './components/SnackbarContext';
