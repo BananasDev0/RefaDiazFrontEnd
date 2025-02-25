@@ -9,7 +9,7 @@ export const createUser = async(userData) => {
 }
 
 export const getUser = async(id) => {
-  const result = await axios.get(`/user/${id}`);
+  const result = await axios.get(`/users?id=${id}`);
 
   return result.response ? new User(result.response) : [];
 }
