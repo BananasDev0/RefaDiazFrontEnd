@@ -1,10 +1,13 @@
+// src/pages/Products/ProductViewer/ProductContainer.jsx
 import { useEffect, useState } from 'react';
 import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
-import { getAllCarModelsProducts, getCarModelProducts } from '../../../services/CarModelService';
-import { useProductsContext } from '../ProductsContext';
-import { Screens } from '../ProductsConstants';
+import { getAllCarModelsProducts } from '../../../services/CarModelService';
+import { useSelectionContext } from '../SelectionContext';
+import { useSearchContext } from '../SearchContext';
+import { useLoadingContext } from '../LoadingContext';
+import { Screens, SearchOptions } from '../ProductsConstants';
 import ProductList from './ProductList';
 import { ProductCarModel } from '../../../models/ProductCarModel';
 import { deleteProduct } from '../../../services/ProductService';
@@ -13,18 +16,20 @@ import { Box, CircularProgress } from '@mui/material';
 const ProductContainer = () => {
   const [productCarModels, setProductCarModels] = useState([]);
   const { openSnackbar } = useSnackbar();
-  const { handleItemSelect, searchTerm, setLoading, selectedCarModel, productType, loading } = useProductsContext();
+  const { setSelectedProduct } = useSelectionContext();
+  const { searchTerm, searchOption } = useSearchContext();
+  const { setLoading, loading } = useLoadingContext();
 
   const handleProductSelect = (e, item) => {
-    const productCarModel = productCarModels.find(productCarModel => productCarModel.product.id === item.id);
-    handleItemSelect(productCarModel.product, Screens.PRODUCTS);
-  }
+    const productCarModel = productCarModels.find(pcm => pcm.product.id === item.id);
+    setSelectedProduct(productCarModel.product, Screens.PRODUCTS);
+  };
 
   const handleOnDelete = async (productCarModel) => {
     try {
-      let result = await deleteProduct(productCarModel.id);
+      let result = await deleteProduct(productCarModel.product.id);
       if (result) {
-        const products = productCarModels.filter(pcm => pcm.product.id !== productCarModel.id);
+        const products = productCarModels.filter(pcm => pcm.product.id !== productCarModel.product.id);
         setProductCarModels(products);
         openSnackbar('Producto eliminado correctamente', 'success');
       } else {
@@ -33,52 +38,42 @@ const ProductContainer = () => {
     } catch (error) {
       openSnackbar(`Error al eliminar el producto: ${error.errorMessage}`, 'error');
     }
-  }
+  };
 
   useEffect(() => {
     setLoading(true);
-
     const fetchProducts = async () => {
       try {
         setProductCarModels([]);
         let response = null;
         let productCarModelsData = [];
-
-        if (selectedCarModel && selectedCarModel.id) {
-          response = await getCarModelProducts(selectedCarModel.id, productType, searchTerm);
-          productCarModelsData = response.data;
-        } else {
-          response = await getAllCarModelsProducts(productType, searchTerm);
+        // Aquí asumes que searchOption está vinculado al tipo de producto, pero podrías ajustar según tu lógica
+        if (searchOption === SearchOptions.PRODUCTS) {
+          response = await getAllCarModelsProducts(searchOption, searchTerm); // Ajusta según tu API
           productCarModelsData = response.data;
         }
-
         productCarModelsData = productCarModelsData.map(productCarModel => new ProductCarModel(productCarModel));
-
         const productsWithImages = await Promise.all(productCarModelsData.map(async (productCarModel) => {
-          let file = productCarModel.product.files.find(file => file.orderId == 1);
+          let file = productCarModel.product.files.find(file => file.orderId === 1);
           if (file) {
             const imageUrl = await getImageURLFromStorage(file.storagePath).catch(error => {
-              console.error("Error al obtener url imagen de storage para producto:", productCarModel.product.name, error);
+              console.error('Error al obtener url imagen de storage para producto:', productCarModel.product.name, error);
               return '';
             });
             return { ...productCarModel, imageUrl };
-          } else {
-            return productCarModel;
           }
+          return productCarModel;
         }));
-
         setProductCarModels(productsWithImages);
         setLoading(false);
-
       } catch (error) {
-        console.error("Error al obtener los radiadores:", error);
+        console.error('Error al obtener los productos:', error);
         setLoading(false);
-        openSnackbar(`Error al cargar los radiadores!: ${error.errorMessage}`, 'error')
+        openSnackbar(`Error al cargar los productos: ${error.errorMessage}`, 'error');
       }
-    }
-
+    };
     fetchProducts();
-  }, [searchTerm, setLoading]);
+  }, [searchTerm, searchOption, setLoading, openSnackbar]);
 
   if (loading) {
     return (

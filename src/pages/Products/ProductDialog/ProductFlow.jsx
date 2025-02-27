@@ -1,9 +1,9 @@
 import { ProductTypes } from "../ProductsConstants";
-import { useProductsContext } from "../ProductsContext";
+import { useSelectionContext } from "../SelectionContext";
 import RadiatorFlow from "./RadiatorFlow";
 
 const ProductFlow = () => {
-    const { productType } = useProductsContext();
+    const { productType } = useSelectionContext();
 
     return (
         <div>

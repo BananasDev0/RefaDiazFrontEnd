@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useProductsContext } from '../ProductsContext';
+import { useSelectionContext } from '../SelectionContext';
 import { getBase64ImgFromURL, getImageURLFromStorage, uploadImageToStorage } from '../../../services/Firebase/storage';
 import { base64ToBlob, getMimeType, modifyAndClone } from '../../../util/generalUtils';
 import File from '../../../models/File';
@@ -17,7 +17,7 @@ export const ProductDialogProvider = ({ children }) => {
     const [activeStep, setActiveStep] = useState(0);
     const [isNextEnabled, setIsNextEnabled] = useState(false);
     const [product, setProduct] = useState(new Product({}));
-    const { productType, handleCloseDialog, selectedProduct, handleOpenDialog, setSelectedProduct } = useProductsContext();
+    const { productType, handleCloseDialog, selectedProduct, handleOpenDialog, setSelectedProduct } = useSelectionContext();
     const dependencies = [productType, product.carModels,
         product.prices, product.stockCount, product.comments, product.dpi];
     const [isLoading, setIsLoading] = useState(false);

@@ -1,17 +1,47 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Select, MenuItem } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import CustomInput from "./CustomInput";
-import { useProductsContext } from '../pages/Products/ProductsContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import CustomInput from './CustomInput';
+import { useSelectionContext } from '../pages/Products/SelectionContext';
+import { useSearchContext } from '../pages/Products/SearchContext';
 import { ProductTypesNamesEsp, SearchOptions } from '../pages/Products/ProductsConstants';
+import { PATHS } from '../constants/paths';
 
 const CustomSearchBar = () => {
   const navigate = useNavigate();
-  const { searchOption, searchTerm, handleSearchOptionChange, setSearchTerm, productType, setSearchOption } = useProductsContext();
+  const location = useLocation();
+  const { productType, clearSelection } = useSelectionContext();
+  const { searchTerm, setSearchTerm, searchOption, handleSearchOptionChange } = useSearchContext();
   const [placeholder, setPlaceholder] = useState('');
 
+  // Memoizar las funciones para evitar re-renderizados innecesarios
+  const handleSearchChange = useCallback((e) => {
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
+  }, [setSearchTerm]);
+
+  const handleOptionChange = useCallback((option) => {
+    let path;
+    switch (option) {
+      case SearchOptions.BRANDS:
+        path = PATHS.BRANDS;
+        break;
+      case SearchOptions.MODELS:
+        path = PATHS.MODELS;
+        break;
+      case SearchOptions.PRODUCTS:
+        path = PATHS.PRODUCTS_LIST;
+        break;
+      default:
+        return;
+    }
+    clearSelection(path)
+    navigate(path);
+  }, [handleSearchOptionChange, navigate]);
+
+  // Actualizar placeholder basado en searchOption y productType
   useEffect(() => {
-    const productVerbiage = ProductTypesNamesEsp[productType];
+    const productVerbiage = ProductTypesNamesEsp[productType] || 'Productos';
     switch (searchOption) {
       case SearchOptions.BRANDS:
         setPlaceholder('Buscar marcas...');
@@ -20,56 +50,27 @@ const CustomSearchBar = () => {
         setPlaceholder('Buscar modelos...');
         break;
       default:
-        setPlaceholder(`Buscar ${productVerbiage}...`);
+        setPlaceholder(`Buscar ${productVerbiage.toLowerCase()}...`);
     }
   }, [searchOption, productType]);
 
+  // Actualizar searchOption basado en la ruta actual (sin handleSearchOptionChange en dependencias)
   useEffect(() => {
     const updateSearchOptionFromRoute = (pathname) => {
       let newSearchOption;
-      if (pathname.includes('/brands')) {
+      if (pathname == PATHS.BRANDS) {
         newSearchOption = SearchOptions.BRANDS;
-      }
-
-      if (pathname.includes('/models')) {
+      } else if (pathname == PATHS.MODELS) {
         newSearchOption = SearchOptions.MODELS;
-      }
-
-      if (pathname.includes('/radiators') || pathname.includes('/caps') || pathname.includes('/fans')) {
+      } else if (pathname == PATHS.PRODUCTS_LIST) {
         newSearchOption = SearchOptions.PRODUCTS;
       }
-
-      if (newSearchOption) {
-        setSearchOption(newSearchOption);
+      if (newSearchOption && newSearchOption !== searchOption) {
+        handleSearchOptionChange(newSearchOption);
       }
     };
-
     updateSearchOptionFromRoute(location.pathname);
-  }, [location.pathname, setSearchOption]);
-
-  const handleSearchChange = (e) => {
-    const newSearchTerm = e.target.value;
-    setSearchTerm(newSearchTerm);
-  }
-
-  const handleOptionChange = (option) => {
-    handleSearchOptionChange(option);
-    let path;
-    switch (option) {
-      case SearchOptions.BRANDS:
-        path = '/home/products/brands';
-        break;
-      case SearchOptions.MODELS:
-        path = '/home/products/brands/models';
-        break;
-      case SearchOptions.PRODUCTS:
-        path = '/home/products/brands/models/radiators';
-        break;
-      default:
-        return;
-    }
-    navigate(path);
-  }
+  }, [location.pathname]); // Solo location.pathname como dependencia
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', marginBottom: '10px' }}>
@@ -82,7 +83,7 @@ const CustomSearchBar = () => {
       >
         <MenuItem value={SearchOptions.BRANDS}>Marcas</MenuItem>
         <MenuItem value={SearchOptions.MODELS}>Modelos</MenuItem>
-        <MenuItem value={SearchOptions.PRODUCTS}>{ProductTypesNamesEsp[productType]}</MenuItem>
+        <MenuItem value={SearchOptions.PRODUCTS}>{ProductTypesNamesEsp[productType] || 'Productos'}</MenuItem>
       </Select>
       <div style={{ flex: 1 }}>
         <CustomInput
@@ -95,4 +96,4 @@ const CustomSearchBar = () => {
   );
 };
 
-export default CustomSearchBar;
+export default React.memo(CustomSearchBar, () => true);

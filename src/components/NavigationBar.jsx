@@ -1,34 +1,66 @@
+// src/components/NavigationBar.jsx
 import { Breadcrumbs as MuiBreadcrumbs, Link, Typography } from '@mui/material';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
-import { useNavigationContext } from './NavigationContext';
+import { useSelectionContext } from '../pages/Products/SelectionContext';
+import { ProductTypesNamesEsp } from '../pages/Products/ProductsConstants';
+import { PATHS, FILTERED_SEGMENTS } from '../constants/paths';
 
 const staticTitles = {
-    "/products": "Productos",
-    "/products/brands": "Marcas",
-    "/products/brands/models": "Modelos",
-    "/products/brands/models/radiators": "Radiadores",
-    "/providers": "Proveedores",
-    "/users": "Gestion de usuarios",
-    "/users/add-user": "Agregar usuario",
+    [PATHS.PRODUCTS]: "Productos",
+    [PATHS.BRANDS]: "Marcas",
+    [PATHS.MODELS]: "Modelos",
+    [PATHS.PRODUCTS_LIST]: "Productos",
+    [PATHS.PROVIDERS]: "Proveedores",
+    [PATHS.USERS]: "Gestión de usuarios",
+    [PATHS.ADD_USER]: "Agregar usuario",
 };
 
 const NavigationBar = () => {
     const location = useLocation();
-    const { dynamicTitles, defaultTitles, resetTitle } = useNavigationContext();
-    const pathnames = location.pathname.replace('/home', '').split('/').filter((x) => x);
+    const { productType, selectedBrand, selectedCarModel, clearSelection } = useSelectionContext();
+
+    // Obtener pathnames originales (con "home" y "list")
+    const originalPathnames = location.pathname.split('/').filter((segment) => segment);
 
     return (
         <MuiBreadcrumbs aria-label="breadcrumb" sx={{ pt: 1, pb: 1 }}>
-            {pathnames.map((value, index) => {
-                const to = `/home/${pathnames.slice(0, index + 1).join('/')}`;
-                const last = index === pathnames.length - 1;
-                const title = dynamicTitles[to] || defaultTitles[to] || staticTitles[`/${pathnames.slice(0, index + 1).join('/')}`] || value;
+            {originalPathnames.map((value, index) => {
+                // Construir la ruta completa incluyendo todos los segmentos
+                const originalPathSegments = originalPathnames.slice(0, index + 1);
+                const to = `/${originalPathSegments.join('/')}`; // Ruta completa con "home" y "list"
 
+                // Determinar si este segmento debe filtrarse visualmente
+                const isFiltered = FILTERED_SEGMENTS.includes(value.toLowerCase());
+                if (isFiltered) return null; // No mostrar este segmento en las migajas
+
+                // Construir el título con jerarquía y elemento seleccionado
+                let title = staticTitles[to] || value;
+
+                // Añadir el elemento seleccionado (productType) entre paréntesis en "Productos"
+                if (to === PATHS.PRODUCTS && productType) {
+                    const productName = ProductTypesNamesEsp[productType] || 'Productos';
+                    title = `${title} (${productName})`;
+                }
+
+                // Añadir el elemento seleccionado (brand) entre paréntesis en "Marcas"
+                if (to === PATHS.BRANDS && selectedBrand) {
+                    title = `${title} (${selectedBrand.name})`;
+                }
+
+                // Añadir el elemento seleccionado (carModel) entre paréntesis en "Modelos"
+                if (to === PATHS.MODELS && selectedCarModel) {
+                    title = `${title} (${selectedCarModel.name})`;
+                }
+
+                // Determinar si este es el último segmento visible
+                const isLastVisible = index === originalPathnames.length - 1
                 const handleClick = () => {
-                    resetTitle(to);
+                    if (!isLastVisible) {
+                       clearSelection(to);
+                    }
                 };
 
-                return last ? (
+                return isLastVisible ? (
                     <Typography color="text.primary" key={to}>
                         {title}
                     </Typography>

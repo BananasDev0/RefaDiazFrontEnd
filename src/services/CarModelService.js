@@ -30,8 +30,8 @@ const getAllCarModelsProducts = async (productTypeId, searchTerm) => {
 }
 
 const deleteCarModel = async (id) => {
-  const result = await axios.delete(`/model/${id}`);
-  return result.statusCode === 204;
+  const result = await axios.delete(`/models?id=${id}`);
+  return result.statusCode === 200;
 }
 
 

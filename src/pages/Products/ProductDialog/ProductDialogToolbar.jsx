@@ -2,7 +2,7 @@ import { AppBar, Toolbar, IconButton, Typography, Button } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import { useProductDialogContext } from "./ProductDialogContext";
-import { useProductsContext } from "../ProductsContext";
+import { useSelectionContext } from "../SelectionContext";
 
 const ProductDialogToolbar = ({ handleCloseDialog }) => {
     const {
@@ -17,7 +17,7 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
         setIsEditable
     } = useProductDialogContext();
 
-    const { selectedProduct } = useProductsContext();
+    const { selectedProduct } = useSelectionContext();
 
     const renderEditButton = () => (
         <Button

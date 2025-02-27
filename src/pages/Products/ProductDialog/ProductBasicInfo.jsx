@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Box, Grid, FormControl, InputLabel, Select, MenuItem, Typography } from "@mui/material";
 import ImageUpload from "./ImageUpload";
-import { useProductsContext } from "../ProductsContext";
+import { useSelectionContext } from "../SelectionContext";
 import { useProductDialogContext } from "./ProductDialogContext";
 import { ProductTypes } from "../ProductsConstants";
 import RadiatorForm from '../Forms/RadiatorForm';
 
 
 const ProductBasicInfo = ({ ProductForm }) => {
-    const { productType, handleChangeProductType } = useProductsContext();
+    const { productType, handleChangeProductType } = useSelectionContext();
     const { setIsNextEnabled, handleImageUpload, handleImageDelete, product } = useProductDialogContext();
     const [isFormValid, setIsFormValid] = useState(false); // Estado para la validación del formulario
     let images = product.files.map(file => file.fileData);
