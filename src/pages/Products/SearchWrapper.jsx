@@ -7,7 +7,7 @@ import CustomSearchBar from '../../components/CustomSearchBar';
 import { useDialogContext } from './DialogContext';
 
 const SearchWrapper = () => {
-  const { handleOpenDialog } = useDialogContext();
+  const { openDialog } = useDialogContext();
 
   return (
     <Box>
@@ -22,7 +22,7 @@ const SearchWrapper = () => {
           color="primary"
           aria-label="add"
           sx={{ position: 'absolute', bottom: 16, right: 16 }}
-          onClick={handleOpenDialog}
+          onClick={() => openDialog('create')}
         >
           <AddIcon />
         </Fab>

@@ -12,7 +12,6 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
         totalSteps,
         isNextEnabled,
         handleSubmit,
-        resetState,
         isEditable,
         setIsEditable
     } = useProductDialogContext();
@@ -59,7 +58,6 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
                     color="inherit"
                     onClick={() => {
                         handleCloseDialog();
-                        resetState();
                     }}
                     aria-label="close"
                 >

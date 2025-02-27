@@ -2,7 +2,7 @@
 import React from 'react';
 import { Box, CircularProgress, Dialog, Slide } from '@mui/material';
 import ProductDialogToolbar from './ProductDialogToolbar';
-import { DialogProvider, useDialogContext } from '../DialogContext';
+import { useDialogContext } from '../DialogContext';
 import ProductFlow from './ProductFlow';
 import { useSelectionContext } from '../SelectionContext'; // Usamos el nuevo contexto
 import { useLoadingContext } from '../LoadingContext';
@@ -13,13 +13,13 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const ProductDialogContent = () => {
-    const { handleCloseDialog, selectedProduct, product } = useDialogContext();
+    const { closeDialog, selectedProduct, product } = useDialogContext();
     const { productType } = useSelectionContext(); // Obtener el tipo de producto
     const { loading: isLoading } = useLoadingContext(); // Usar el estado de carga
 
     return (
         <>
-            <ProductDialogToolbar handleCloseDialog={handleCloseDialog} />
+            <ProductDialogToolbar handleCloseDialog={closeDialog} />
             {isLoading ? (
                 <Box
                     sx={{
@@ -44,19 +44,18 @@ const ProductDialogContent = () => {
 };
 
 const ProductDialog = () => {
-    const { openDialog, handleCloseDialog } = useDialogContext();
+    const { isOpen, closeDialog } = useDialogContext();
+    console.log(isOpen)
     return (
-        <DialogProvider>
-            <Dialog
-                fullScreen
-                open={openDialog}
-                onClose={handleCloseDialog}
-                aria-labelledby="dialog-title"
-                TransitionComponent={Transition}
-            >
-                <ProductDialogContent />
-            </Dialog>
-        </DialogProvider>
+        <Dialog
+            fullScreen
+            open={isOpen}
+            onClose={closeDialog}
+            aria-labelledby="dialog-title"
+            TransitionComponent={Transition}
+        >
+            <ProductDialogContent />
+        </Dialog>
     );
 };
 

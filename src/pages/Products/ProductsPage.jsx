@@ -10,11 +10,13 @@ import { SelectionProvider } from './SelectionContext';
 import { SearchProvider } from './SearchContext';
 import { DialogProvider } from './DialogContext';
 import { LoadingProvider } from './LoadingContext';
+import { ProductDialogProvider } from './ProductDialog/ProductDialogContext';
 
 export default function ProductsPage() {
   return (
     <SelectionProvider>
       <SearchProvider>
+        <ProductDialogProvider>
         <DialogProvider>
           <LoadingProvider>
             <NavigationBar />
@@ -28,6 +30,7 @@ export default function ProductsPage() {
             </Routes>
           </LoadingProvider>
         </DialogProvider>
+        </ProductDialogProvider>
       </SearchProvider>
     </SelectionProvider>
   );

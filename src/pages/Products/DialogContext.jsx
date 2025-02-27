@@ -1,63 +1,35 @@
 // src/pages/Products/DialogContext.jsx
 import { createContext, useContext, useState } from 'react';
-import Product from '../../models/Product'; // Asegúrate de importar el modelo
 
 const DialogContext = createContext();
 
 export const useDialogContext = () => {
   const context = useContext(DialogContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useDialogContext must be used within a DialogProvider');
   }
   return context;
 };
 
 export const DialogProvider = ({ children }) => {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [product, setProduct] = useState(new Product({})); // Estado para el producto editado
-  const [isEditable, setIsEditable] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [mode, setMode] = useState(null); // 'create', 'edit', 'view'
+  const [productId, setProductId] = useState(null);
 
-  const handleOpenDialog = (productToEdit = null) => {
-    setOpenDialog(true);
-    if (productToEdit) {
-      setSelectedProduct(productToEdit);
-      setProduct(new Product(productToEdit)); // Clonar el producto para edición
-      setIsEditable(true);
-    } else {
-      setSelectedProduct(null);
-      setProduct(new Product({}));
-      setIsEditable(false);
-    }
+  const openDialog = (mode, productId = null) => {
+    setMode(mode);
+    setProductId(productId);
+    setIsOpen(true);
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setSelectedProduct(null);
-    setProduct(new Product({}));
-    setIsEditable(false);
-    setScrollPosition(0);
-  };
-
-  const handleSetProduct = (newProduct) => {
-    setProduct(new Product(newProduct));
-  };
-
-  const value = {
-    openDialog,
-    selectedProduct,
-    product,
-    isEditable,
-    scrollPosition,
-    setProduct: handleSetProduct,
-    handleOpenDialog,
-    handleCloseDialog,
-    setIsEditable,
+  const closeDialog = () => {
+    setIsOpen(false);
+    setMode(null);
+    setProductId(null);
   };
 
   return (
-    <DialogContext.Provider value={value}>
+    <DialogContext.Provider value={{ isOpen, mode, productId, openDialog, closeDialog }}>
       {children}
     </DialogContext.Provider>
   );
