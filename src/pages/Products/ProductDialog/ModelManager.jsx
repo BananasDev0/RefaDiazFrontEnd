@@ -6,7 +6,6 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandableCard from '../../../components/ExpandableCard';
 import CustomSelectWithAdd from '../../../components/CustomSelectWithAdd';
-import { useProductDialogContext } from './ProductDialogContext';
 import { getCarModelsByBrandId, getAllBrands } from '../../../services/BrandService';
 import { createCarModel } from '../../../services/CarModelService';
 import CarModel from '../../../models/CarModel';
@@ -14,6 +13,7 @@ import { useSnackbar } from '../../../components/SnackbarContext';
 import { ProductCarModel } from '../../../models/ProductCarModel';
 import Brand from '../../../models/Brand';
 import { modifyAndClone } from '../../../util/generalUtils';
+import { useProductDialogForm } from './ProductDialogFormContext';
 
 const ModelManagerDisplay = ({
   product,
@@ -151,7 +151,7 @@ const ModelManager = () => {
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
   const { openSnackbar } = useSnackbar();
-  const { product, handleSetProduct } = useProductDialogContext();
+  const { product, setProduct } = useProductDialogForm();
 
   // Estados para manejar el modal de conflicto
   const [conflictModel, setConflictModel] = useState(null);
@@ -193,7 +193,7 @@ const ModelManager = () => {
 
   const handleDeleteModel = (index) => {
     const newProductsCarModels = product.carModels.filter((_, i) => i !== index);
-    handleSetProduct(modifyAndClone(product, 'carModels', newProductsCarModels));
+    setProduct(modifyAndClone(product, 'carModels', newProductsCarModels));
   };
 
   const handleStartYearChange = (year) => {
@@ -209,7 +209,7 @@ const ModelManager = () => {
     if (pendingCarModel && conflictModel) {
       try {
         const createdVehicleModel = await createCarModel(pendingCarModel, true);
-        handleSetProduct(modifyAndClone(product, 'carModels', [...product.carModels, createdVehicleModel]));
+        setProduct(modifyAndClone(product, 'carModels', [...product.carModels, createdVehicleModel]));
         setIsModalOpen(false);
         setConflictModel(null);
         setPendingCarModel(null);
@@ -235,7 +235,7 @@ const ModelManager = () => {
     });
     try {
       const createdVehicleModel = await createCarModel(newVehicleModel);
-      handleSetProduct(modifyAndClone(product, 'carModels', [...product.carModels, createdVehicleModel]));
+      setProduct(modifyAndClone(product, 'carModels', [...product.carModels, createdVehicleModel]));
       return createdVehicleModel.id;
     } catch (error) {
       if (error.statusCode === 409) {
@@ -251,7 +251,7 @@ const ModelManager = () => {
   };
 
   const handleCarModelAdded = () => {
-    handleSetProduct(modifyAndClone(product, 'carModels', [...product.carModels, productModel]));
+    setProduct(modifyAndClone(product, 'carModels', [...product.carModels, productModel]));
   };
 
   const isAddButtonDisabled = !productModel.carModelId || !productModel.initialYear || !productModel.lastYear;

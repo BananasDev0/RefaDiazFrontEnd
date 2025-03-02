@@ -2,16 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Select, MenuItem } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CustomInput from './CustomInput';
-import { useSelectionContext } from '../pages/Products/SelectionContext';
-import { useSearchContext } from '../pages/Products/SearchContext';
+import { useProductSelectionContext } from '../pages/Products/ProductSelectionContext';
+import { useProductSearchContext } from '../pages/Products/ProductSearchContext';
 import { ProductTypesNamesEsp, SearchOptions } from '../pages/Products/ProductsConstants';
 import { PATHS } from '../constants/paths';
 
 const CustomSearchBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { productType, clearSelection } = useSelectionContext();
-  const { searchTerm, setSearchTerm, searchOption, handleSearchOptionChange } = useSearchContext();
+  const { productType, clearSelection } = useProductSelectionContext();
+  const { searchTerm, setSearchTerm, searchOption, handleSearchOptionChange } = useProductSearchContext();
   const [placeholder, setPlaceholder] = useState('');
 
   // Memoizar las funciones para evitar re-renderizados innecesarios

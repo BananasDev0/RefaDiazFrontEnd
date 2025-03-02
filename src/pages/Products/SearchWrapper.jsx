@@ -4,10 +4,10 @@ import { Box, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ProductDialog from './ProductDialog/ProductDialog';
 import CustomSearchBar from '../../components/CustomSearchBar';
-import { useDialogContext } from './DialogContext';
+import { useProductDialogContext } from './ProductDialogContext';
 
 const SearchWrapper = () => {
-  const { openDialog } = useDialogContext();
+  const { openDialog } = useProductDialogContext();
 
   return (
     <Box>

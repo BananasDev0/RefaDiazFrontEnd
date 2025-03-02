@@ -5,9 +5,9 @@ import { CSSTransition } from 'react-transition-group';
 import BrandList from './BrandList';
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
-import { useSelectionContext } from '../SelectionContext';
-import { useSearchContext } from '../SearchContext';
-import { useLoadingContext } from '../LoadingContext';
+import { useProductSelectionContext } from '../ProductSelectionContext';
+import { useProductSearchContext } from '../ProductSearchContext';
+import { useProductLoadingContext } from '../ProductLoadingContext';
 import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from '../../../constants/paths';
@@ -19,9 +19,9 @@ const BrandContainer = () => {
   const [allBrands, setAllBrands] = useState([]); // Todos los datos iniciales
   const [tabValue, setTabValue] = useState(0);
   const { openSnackbar } = useSnackbar();
-  const { searchTerm } = useSearchContext();
-  const { setSelectedBrand } = useSelectionContext();
-  const { setLoading: setGlobalLoading } = useLoadingContext();
+  const { searchTerm } = useProductSearchContext();
+  const { setSelectedBrand } = useProductSelectionContext();
+  const { setLoading: setGlobalLoading } = useProductLoadingContext();
   const navigate = useNavigate();
 
   useEffect(() => {

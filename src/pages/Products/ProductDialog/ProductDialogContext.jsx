@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useSelectionContext } from '../SelectionContext';
+import { useProductSelectionContext } from '../ProductSelectionContext';
 import { getBase64ImgFromURL, getImageURLFromStorage, uploadImageToStorage } from '../../../services/Firebase/storage';
 import { base64ToBlob, getMimeType, modifyAndClone } from '../../../util/generalUtils';
 import File from '../../../models/File';
@@ -8,6 +8,9 @@ import { useSnackbar } from '../../../components/SnackbarContext';
 import Product from '../../../models/Product';
 import { FileTypes, ProductTypes } from '../ProductsConstants';
 import { v4 } from 'uuid';
+import { ProductDialogNavigationProvider } from './ProductDialogNavigationContext';
+import { ProductDialogFormProvider } from './ProductDialogFormContext';
+import { ProductDialogImageProvider } from './ProductDialogImageContext';
 
 const ProductDialogContext = createContext();
 
@@ -17,7 +20,7 @@ export const ProductDialogProvider = ({ children }) => {
     const [activeStep, setActiveStep] = useState(0);
     const [isNextEnabled, setIsNextEnabled] = useState(false);
     const [product, setProduct] = useState(new Product({}));
-    const { productType, handleCloseDialog, selectedProduct, handleOpenDialog, setSelectedProduct } = useSelectionContext();
+    const { productType, handleCloseDialog, selectedProduct, handleOpenDialog, setSelectedProduct } = useProductSelectionContext();
     const dependencies = [productType, product.carModels,
         product.prices, product.stockCount, product.comments, product.dpi];
     const [isLoading, setIsLoading] = useState(false);
@@ -150,27 +153,32 @@ export const ProductDialogProvider = ({ children }) => {
     }
 
     return (
-        <ProductDialogContext.Provider value={{
-            activeStep,
-            isLoading,
-            isNextEnabled,
-            product,
-            totalSteps: 3,
-            isEditable,
+        <ProductDialogNavigationProvider>
+            <ProductDialogFormProvider>
+                <ProductDialogImageProvider>
+                    <ProductDialogContext.Provider value={{
+                        activeStep,
+                        isLoading,
+                        isNextEnabled,
+                        product,
+                        totalSteps: 3,
+                        isEditable,
 
-            handleBack,
-            handleImageDelete,
-            handleImageUpload,
-            handleNext,
-            handleSetProduct,
-            handleSubmit,
-            resetState,
-            setActiveStep,
-            setIsNextEnabled,
-            setIsEditable
-        }}>
-            {children}
-        </ProductDialogContext.Provider>
-
+                        handleBack,
+                        handleImageDelete,
+                        handleImageUpload,
+                        handleNext,
+                        handleSetProduct,
+                        handleSubmit,
+                        resetState,
+                        setActiveStep,
+                        setIsNextEnabled,
+                        setIsEditable
+                    }}>
+                        {children}
+                    </ProductDialogContext.Provider>
+                </ProductDialogImageProvider>
+            </ProductDialogFormProvider>
+        </ProductDialogNavigationProvider>
     );
 };

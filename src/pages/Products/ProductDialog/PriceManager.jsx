@@ -4,9 +4,9 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandableCard from '../../../components/ExpandableCard';
-import { useProductDialogContext } from './ProductDialogContext';
 import Price from '../../../models/Price';
 import ProductPrice from '../../../models/ProductPrice';
+import { useProductDialogForm } from './ProductDialogFormContext';
 
 const PriceManagerDisplay = ({
   product,
@@ -83,18 +83,18 @@ const PriceManagerDisplay = ({
 };
 
 const PriceManagerContainer = () => {
-  const { product, handleSetProduct } = useProductDialogContext();
+  const { product, setProduct } = useProductDialogForm();
   const [price, setPrice] = useState(new Price({}));
 
   const handleAddPrice = () => {
     const updatedPrices = [...product.prices, new ProductPrice({price})];
-    handleSetProduct({ ...product, prices: updatedPrices });
+    setProduct({ ...product, prices: updatedPrices });
     setPrice(new Price({}));
   };
 
   const handleDeletePrice = (index) => {
     const updatedPrices = product.prices.filter((price, i) => i !== index);
-    handleSetProduct({ ...product, prices: updatedPrices });
+    setProduct({ ...product, prices: updatedPrices });
   };
 
   const isAddButtonDisabled = !price.description || !price.cost;

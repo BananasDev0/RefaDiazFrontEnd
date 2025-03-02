@@ -1,7 +1,7 @@
 // src/components/NavigationBar.jsx
 import { Breadcrumbs as MuiBreadcrumbs, Link, Typography } from '@mui/material';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
-import { useSelectionContext } from '../pages/Products/SelectionContext';
+import { useProductSelectionContext } from '../pages/Products/ProductSelectionContext';
 import { ProductTypesNamesEsp } from '../pages/Products/ProductsConstants';
 import { PATHS, FILTERED_SEGMENTS } from '../constants/paths';
 
@@ -17,7 +17,7 @@ const staticTitles = {
 
 const NavigationBar = () => {
     const location = useLocation();
-    const { productType, selectedBrand, selectedCarModel, clearSelection } = useSelectionContext();
+    const { productType, selectedBrand, selectedCarModel, clearSelection } = useProductSelectionContext();
 
     // Obtener pathnames originales (con "home" y "list")
     const originalPathnames = location.pathname.split('/').filter((segment) => segment);

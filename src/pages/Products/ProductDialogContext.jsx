@@ -1,17 +1,17 @@
-// src/pages/Products/DialogContext.jsx
+// src/pages/Products/ProductDialogContext.jsx
 import { createContext, useContext, useState } from 'react';
 
-const DialogContext = createContext();
+const ProductDialogContext = createContext();
 
-export const useDialogContext = () => {
-  const context = useContext(DialogContext);
+export const useProductDialogContext = () => {
+  const context = useContext(ProductDialogContext);
   if (!context) {
-    throw new Error('useDialogContext must be used within a DialogProvider');
+    throw new Error('useProductDialogContext must be used within a ProductDialogProvider');
   }
   return context;
 };
 
-export const DialogProvider = ({ children }) => {
+export const ProductDialogProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState(null); // 'create', 'edit', 'view'
   const [productId, setProductId] = useState(null);
@@ -29,8 +29,8 @@ export const DialogProvider = ({ children }) => {
   };
 
   return (
-    <DialogContext.Provider value={{ isOpen, mode, productId, openDialog, closeDialog }}>
+    <ProductDialogContext.Provider value={{ isOpen, mode, productId, openDialog, closeDialog }}>
       {children}
-    </DialogContext.Provider>
+    </ProductDialogContext.Provider>
   );
 };

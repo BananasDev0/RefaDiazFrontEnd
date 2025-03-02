@@ -6,11 +6,11 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandableCard from '../../../components/ExpandableCard';
 import CustomSelectWithAdd from '../../../components/CustomSelectWithAdd';
-import { useProductDialogContext } from './ProductDialogContext';
 import { getAll, createProvider } from '../../../services/ProviderService';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import { modifyAndClone } from '../../../util/generalUtils';
 import Provider from '../../../models/Provider';
+import { useProductDialogForm } from './ProductDialogFormContext';
 
 const ProviderDetailModal = ({ open, onClose, provider }) => (
   <Modal
@@ -160,7 +160,7 @@ const ProviderManager = ({ editable = true }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedModalProvider, setSelectedModalProvider] = useState(null);
   const { openSnackbar } = useSnackbar();
-  const { product, handleSetProduct } = useProductDialogContext();
+  const { product, setProduct } = useProductDialogForm();
 
   useEffect(() => {
     const fetchProviders = async () => {
@@ -199,7 +199,7 @@ const ProviderManager = ({ editable = true }) => {
         },
         numSeries: numSeries
       };
-      handleSetProduct(modifyAndClone(product, 'providers', [...(product.providers || []), newProviderProduct]));
+      setProduct(modifyAndClone(product, 'providers', [...(product.providers || []), newProviderProduct]));
       setSelectedProvider(null);
       setPrice('');
       setNumSeries('');
@@ -208,7 +208,7 @@ const ProviderManager = ({ editable = true }) => {
 
   const handleDeleteProvider = (index) => {
     const newProviders = product.providers.filter((_, i) => i !== index);
-    handleSetProduct(modifyAndClone(product, 'providers', newProviders));
+    setProduct(modifyAndClone(product, 'providers', newProviders));
   };
 
   const handleOnProviderAdded = async (providers, newProviderData) => {

@@ -1,17 +1,17 @@
 import { createContext, useContext, useState } from 'react';
 import { PATHS } from '../../constants/paths';
 
-const SelectionContext = createContext();
+const ProductSelectionContext = createContext();
 
-export const useSelectionContext = () => {
-  const context = useContext(SelectionContext);
+export const useProductSelectionContext = () => {
+  const context = useContext(ProductSelectionContext);
   if (context === undefined) {
-    throw new Error('useSelectionContext must be used within a SelectionProvider');
+    throw new Error('useProductSelectionContext must be used within a ProductSelectionProvider');
   }
   return context;
 };
 
-export const SelectionProvider = ({ children }) => {
+export const ProductSelectionProvider = ({ children }) => {
   const [productType, setProductType] = useState(null); // Tipo de producto seleccionado
   const [selectedBrand, setSelectedBrand] = useState(null); // Marca seleccionada
   const [selectedCarModel, setSelectedCarModel] = useState(null); // Modelo seleccionado
@@ -46,8 +46,8 @@ export const SelectionProvider = ({ children }) => {
   };
 
   return (
-    <SelectionContext.Provider value={value}>
+    <ProductSelectionContext.Provider value={value}>
       {children}
-    </SelectionContext.Provider>
+    </ProductSelectionContext.Provider>
   );
 };

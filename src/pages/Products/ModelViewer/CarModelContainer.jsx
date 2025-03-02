@@ -4,9 +4,9 @@ import { getCarModelsByBrandId } from '../../../services/BrandService';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import CarModelList from './CarModelList';
 import { deleteCarModel, getCarModels } from '../../../services/CarModelService';
-import { useSelectionContext } from '../SelectionContext';
-import { useSearchContext } from '../SearchContext';
-import { useLoadingContext } from '../LoadingContext';
+import { useProductSelectionContext } from '../ProductSelectionContext';
+import { useProductSearchContext } from '../ProductSearchContext';
+import { useProductLoadingContext } from '../ProductLoadingContext';
 import { Screens } from '../ProductsConstants';
 import { Box, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -16,9 +16,9 @@ const CarModelListContainer = () => {
   const [carModels, setCarModels] = useState([]);
   const [loading] = useState(false);
   const { openSnackbar } = useSnackbar();
-  const { selectedBrand, setSelectedCarModel } = useSelectionContext();
-  const { searchTerm } = useSearchContext();
-  const { setLoading: setGlobalLoading } = useLoadingContext();
+  const { selectedBrand, setSelectedCarModel } = useProductSelectionContext();
+  const { searchTerm } = useProductSearchContext();
+  const { setLoading: setGlobalLoading } = useProductLoadingContext();
   const navigate = useNavigate();
 
   const onCarModelSelect = (e, carModel) => {

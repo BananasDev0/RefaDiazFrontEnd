@@ -2,20 +2,31 @@
 import React from 'react';
 import { Box, CircularProgress, Dialog, Slide } from '@mui/material';
 import ProductDialogToolbar from './ProductDialogToolbar';
-import { useDialogContext } from '../DialogContext';
-import ProductFlow from './ProductFlow';
-import { useSelectionContext } from '../SelectionContext'; // Usamos el nuevo contexto
-import { useLoadingContext } from '../LoadingContext';
+import { useProductDialogContext } from '../ProductDialogContext';
+import { useProductSelectionContext } from '../ProductSelectionContext';
+import { useProductLoadingContext } from '../ProductLoadingContext';
 import ProductSummary from '../ProductSummary';
+import RadiatorFlow from './RadiatorFlow';
+import { ProductTypes } from '../ProductsConstants';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const renderProductFlow = (productType) => {
+    switch (productType) {
+        case ProductTypes.RADIATOR:
+            return <RadiatorFlow />;
+        default:
+            return null;
+    }
+};
+
 const ProductDialogContent = () => {
-    const { closeDialog, selectedProduct, product } = useDialogContext();
-    const { productType } = useSelectionContext(); // Obtener el tipo de producto
-    const { loading: isLoading } = useLoadingContext(); // Usar el estado de carga
+    const { closeDialog, mode, productId } = useProductDialogContext();
+    const { productType } = useProductSelectionContext();
+    const { loading: isLoading } = useProductLoadingContext();
+    console.log(mode)
 
     return (
         <>
@@ -33,10 +44,10 @@ const ProductDialogContent = () => {
                 </Box>
             ) : (
                 <>
-                    {selectedProduct && !product.isEditable && ( // Asumimos que 'isEditable' se maneja en ProductDialogContext
-                        <ProductSummary product={product} productType={productType} />
+                    {mode === 'view' && (
+                        <ProductSummary productId={productId} productType={productType} />
                     )}
-                    {!selectedProduct || (selectedProduct && product.isEditable) ? <ProductFlow /> : null}
+                    {(mode === 'create' || mode === 'edit') && renderProductFlow(productType)}
                 </>
             )}
         </>
@@ -44,8 +55,8 @@ const ProductDialogContent = () => {
 };
 
 const ProductDialog = () => {
-    const { isOpen, closeDialog } = useDialogContext();
-    console.log(isOpen)
+    const { isOpen, closeDialog } = useProductDialogContext();
+    
     return (
         <Dialog
             fullScreen

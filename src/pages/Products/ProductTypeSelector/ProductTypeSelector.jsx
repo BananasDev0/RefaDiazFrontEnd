@@ -5,13 +5,13 @@ import RadiatorImg from '/src/assets/radiator.jpeg';
 import CapsImg from '/src/assets/caps.jpeg';
 import FansImg from '/src/assets/fans.jpeg';
 import { ProductTypes } from '../ProductsConstants';
-import { useSelectionContext } from '../SelectionContext';
+import { useProductSelectionContext } from '../ProductSelectionContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { PATHS } from '../../../constants/paths';
 
 const ProductTypeSelector = () => {
-  const { handleChangeProductType } = useSelectionContext();
+  const { handleChangeProductType } = useProductSelectionContext();
   const navigate = useNavigate();
 
   useEffect(() => {

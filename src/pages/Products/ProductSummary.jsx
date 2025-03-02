@@ -1,5 +1,5 @@
 import { Box, TextField, Grid } from '@mui/material';
-import { RadiatorFormDisplay } from "./Forms/RadiatorForm";
+import { RadiatorForm } from "./Forms/RadiatorBasicForm";
 import { ModelManagerDisplay } from "./ProductDialog/ModelManager";
 import { PriceManagerDisplay } from "./ProductDialog/PriceManager";
 import ImageUpload from './ProductDialog/ImageUpload';
@@ -25,7 +25,7 @@ const ProductSummary = ({ productType, product }) => {
                                 sx={{ marginTop: 2 }}
                             />
                             {productType === ProductTypes.RADIATOR && (
-                                <RadiatorFormDisplay product={product} readOnly={true} />
+                                <RadiatorForm product={product} readOnly={true} />
                             )}
                         </Box>
                     </Grid>

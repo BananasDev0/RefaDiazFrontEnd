@@ -1,8 +1,9 @@
 import { AppBar, Toolbar, IconButton, Typography, Button } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
-import { useProductDialogContext } from "./ProductDialogContext";
-import { useSelectionContext } from "../SelectionContext";
+import { useProductDialogNavigation } from "./ProductDialogNavigationContext";
+import { useProductDialogForm } from "./ProductDialogFormContext";
+import { useProductSelectionContext } from "../ProductSelectionContext";
 
 const ProductDialogToolbar = ({ handleCloseDialog }) => {
     const {
@@ -11,12 +12,15 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
         handleNext,
         totalSteps,
         isNextEnabled,
-        handleSubmit,
+    } = useProductDialogNavigation();
+
+    const {
+        handleSubmit = () => {},
         isEditable,
         setIsEditable
-    } = useProductDialogContext();
+    } = useProductDialogForm();
 
-    const { selectedProduct } = useSelectionContext();
+    const { selectedProduct } = useProductSelectionContext();
 
     const renderEditButton = () => (
         <Button

@@ -4,9 +4,9 @@ import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import { getAllCarModelsProducts } from '../../../services/CarModelService';
-import { useSelectionContext } from '../SelectionContext';
-import { useSearchContext } from '../SearchContext';
-import { useLoadingContext } from '../LoadingContext';
+import { useProductSelectionContext } from '../ProductSelectionContext';
+import { useProductSearchContext } from '../ProductSearchContext';
+import { useProductLoadingContext } from '../ProductLoadingContext';
 import { Screens, SearchOptions } from '../ProductsConstants';
 import ProductList from './ProductList';
 import { ProductCarModel } from '../../../models/ProductCarModel';
@@ -16,9 +16,9 @@ import { Box, CircularProgress } from '@mui/material';
 const ProductContainer = () => {
   const [productCarModels, setProductCarModels] = useState([]);
   const { openSnackbar } = useSnackbar();
-  const { setSelectedProduct } = useSelectionContext();
-  const { searchTerm, searchOption } = useSearchContext();
-  const { setLoading, loading } = useLoadingContext();
+  const { setSelectedProduct } = useProductSelectionContext();
+  const { searchTerm, searchOption } = useProductSearchContext();
+  const { setLoading, loading } = useProductLoadingContext();
 
   const handleProductSelect = (e, item) => {
     const productCarModel = productCarModels.find(pcm => pcm.product.id === item.id);

@@ -1,17 +1,17 @@
 import { createContext, useContext, useState } from 'react';
 import { SearchOptions } from './ProductsConstants';
 
-const SearchContext = createContext();
+const ProductSearchContext = createContext();
 
-export const useSearchContext = () => {
-  const context = useContext(SearchContext);
+export const useProductSearchContext = () => {
+  const context = useContext(ProductSearchContext);
   if (context === undefined) {
-    throw new Error('useSearchContext must be used within a SearchProvider');
+    throw new Error('useProductSearchContext must be used within a ProductSearchProvider');
   }
   return context;
 };
 
-export const SearchProvider = ({ children }) => {
+export const ProductSearchProvider = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchOption, setSearchOption] = useState(SearchOptions.BRANDS);
 
@@ -29,8 +29,8 @@ export const SearchProvider = ({ children }) => {
   };
 
   return (
-    <SearchContext.Provider value={value}>
+    <ProductSearchContext.Provider value={value}>
       {children}
-    </SearchContext.Provider>
+    </ProductSearchContext.Provider>
   );
 };
