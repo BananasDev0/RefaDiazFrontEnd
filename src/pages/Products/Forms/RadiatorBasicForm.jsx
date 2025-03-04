@@ -1,10 +1,10 @@
-import { useEffect } from "react";
 import { Box, TextField, Grid, Typography } from "@mui/material";
 import { modifyAndClone } from "../../../util/generalUtils";
 import ImageUpload from "../ProductDialog/ImageUpload";
 import { useProductDialogNavigation } from "../ProductDialog/ProductDialogNavigationContext";
 import { useProductDialogImage } from "../ProductDialog/ProductDialogImageContext";
 import { useProductDialogForm } from "../ProductDialog/ProductDialogFormContext";
+import { useEffect } from "react";
 
 export const RadiatorForm = ({ product, handleChange, readOnly }) => {
     return (
@@ -62,18 +62,17 @@ const ImageSection = ({ images, onUpload, onDelete }) => (
 );
 
 const RadiatorBasicForm = () => {
-    const { product, handleSetProduct } = useProductDialogForm();
+    const { product, setProduct } = useProductDialogForm();
     const { handleImageUpload, handleImageDelete } = useProductDialogImage();
     const { validateCurrentStep } = useProductDialogNavigation();
 
     useEffect(() => {
         validateCurrentStep();
-    }, [validateCurrentStep]);
+    }, [product, validateCurrentStep]);
 
     const handleChange = (event, field) => {
         const updatedProduct = modifyAndClone(product, field, event.target.value);
-        handleSetProduct(updatedProduct);
-        validateCurrentStep();
+        setProduct(updatedProduct);
     };
 
     return (

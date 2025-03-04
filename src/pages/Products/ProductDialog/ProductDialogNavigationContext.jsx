@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import { STEP_VALIDATORS } from './validators';
-import { useProductDialogContext } from '../ProductDialogContext';
 import { useProductSelectionContext } from '../ProductSelectionContext';
 import { DIALOG_STEPS, DIALOG_STEPS_ORDER } from './DialogSteps';
+import { useProductDialogForm } from './ProductDialogFormContext';
 
 const ProductDialogNavigationContext = createContext();
 
@@ -17,7 +17,7 @@ export const useProductDialogNavigation = () => {
 export const ProductDialogNavigationProvider = ({ children }) => {
     const [currentStep, setCurrentStep] = useState(DIALOG_STEPS.BASIC_INFO);
     const [isNextEnabled, setIsNextEnabled] = useState(false);
-    const { product } = useProductDialogContext();
+    const { product } = useProductDialogForm();
     const { productType } = useProductSelectionContext();
 
     const validateCurrentStep = useCallback(() => {

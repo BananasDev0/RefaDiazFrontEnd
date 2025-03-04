@@ -7,7 +7,6 @@ import { deleteCarModel, getCarModels } from '../../../services/CarModelService'
 import { useProductSelectionContext } from '../ProductSelectionContext';
 import { useProductSearchContext } from '../ProductSearchContext';
 import { useProductLoadingContext } from '../ProductLoadingContext';
-import { Screens } from '../ProductsConstants';
 import { Box, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from '../../../constants/paths';

@@ -4,13 +4,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useProductDialogNavigation } from "./ProductDialogNavigationContext";
 import { useProductDialogForm } from "./ProductDialogFormContext";
 import { useProductSelectionContext } from "../ProductSelectionContext";
+import { DIALOG_STEPS } from './DialogSteps';
 
 const ProductDialogToolbar = ({ handleCloseDialog }) => {
     const {
-        activeStep,
-        handleBack,
-        handleNext,
-        totalSteps,
+        currentStep,
+        previousStep,
+        nextStep,
         isNextEnabled,
     } = useProductDialogNavigation();
 
@@ -37,17 +37,27 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
 
     const renderNavigationButtons = () => (
         <>
-            {activeStep > 0 && (
-                <Button color="inherit" onClick={handleBack}>
+            {currentStep !== DIALOG_STEPS.BASIC_INFO && (
+                <Button color="inherit" onClick={previousStep}>
                     Atrás
                 </Button>
             )}
-            {activeStep < totalSteps - 1 ? (
-                <Button autoFocus color="inherit" onClick={handleNext} disabled={!isNextEnabled}>
+            {currentStep !== DIALOG_STEPS.SUBMIT ? (
+                <Button 
+                    autoFocus 
+                    color="inherit" 
+                    onClick={nextStep} 
+                    disabled={!isNextEnabled}
+                >
                     Siguiente
                 </Button>
             ) : (
-                <Button autoFocus color="inherit" disabled={!isNextEnabled} onClick={handleSubmit}>
+                <Button 
+                    autoFocus 
+                    color="inherit" 
+                    disabled={!isNextEnabled} 
+                    onClick={handleSubmit}
+                >
                     Guardar
                 </Button>
             )}

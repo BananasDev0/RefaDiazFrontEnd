@@ -6,9 +6,7 @@ export const STEP_VALIDATORS = {
         [ProductTypes.RADIATOR]: (product) => {
             return Boolean(
                 product?.dpi &&
-                product?.stockCount &&
-                // Asegurarse que al menos hay una imagen
-                product?.files?.length > 0
+                product?.stockCount
             );
         },
         [ProductTypes.CAP]: () => {
@@ -21,7 +19,7 @@ export const STEP_VALIDATORS = {
         }
     },
     [DIALOG_STEPS.DETAILS]: {
-        [ProductTypes.RADIATOR]: (product) => {
+        [ProductTypes.RADIATOR]: () => {
             return true;
         }
     },

@@ -55,10 +55,6 @@ export const ProductDialogFormProvider = ({ children }) => {
         }
     };
 
-    const handleSetProduct = (newProduct) => {
-        setProduct(new Product(newProduct));
-    };
-
     const resetForm = () => {
         setSelectedProduct(null);
         setIsEditable(false);
@@ -101,7 +97,6 @@ export const ProductDialogFormProvider = ({ children }) => {
             product,
             isLoading,
             isEditable,
-            handleSetProduct,
             handleSubmit,
             resetForm,
             setIsEditable,
