@@ -16,7 +16,7 @@ const ExpandMore = styled((props) => {
 
 const ExpandableCard = ({ title, children }) => {
   const [expanded, setExpanded] = useState(false);
-  const cardRef = useRef(null);  // Crear la referencia
+  const cardRef = useRef(null);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);

@@ -4,8 +4,9 @@ import CarModel from '../models/CarModel';
 
 
 const createCarModel = async(carModelData, forceCreate) => {
-  const result = await axios.post(`/model?force=${forceCreate}`, carModelData);
-  return result.statusCode === 201 ? new CarModel(result.response.data) : false;
+  const url = forceCreate ? `/models?forceCreate=${forceCreate}` : `/models`;
+  const result = await axios.post(url, carModelData);
+  return result.statusCode === 201 ? new CarModel(result.response) : false;
 }
 
 const getCarModels = async(name = '') => {
@@ -24,8 +25,8 @@ const getCarModelProducts = async (id, productTypeId, searchTerm) => {
   return result.response;
 }
 
-const getAllCarModelsProducts = async (productTypeId, searchTerm) => {
-  const result = await axios.get(`/models/products?productTypeId=${productTypeId}&searchTerm=${searchTerm}`);
+const getAllCarModelsProducts = async (productTypeId, modelId = '') => {
+  const result = await axios.get(`/models/products?productTypeId=${productTypeId}${modelId ? `&modelId=${modelId}` : ''}`);
   return result.response;
 }
 

@@ -1,5 +1,5 @@
 // src/pages/Products/ProductDialog/ProductDialog.jsx
-import React from 'react';
+import React, { memo } from 'react';
 import { Box, CircularProgress, Dialog, Slide } from '@mui/material';
 import ProductDialogToolbar from './ProductDialogToolbar';
 import { useProductDialogContext } from '../ProductDialogContext';
@@ -22,7 +22,7 @@ const renderProductFlow = (productType) => {
     }
 };
 
-const ProductDialogContent = () => {
+const ProductDialogContent = memo(() => {
     const { closeDialog, mode, productId } = useProductDialogContext();
     const { productType } = useProductSelectionContext();
     const { loading: isLoading } = useProductLoadingContext();
@@ -52,9 +52,10 @@ const ProductDialogContent = () => {
             )}
         </>
     );
-};
+});
+ProductDialogContent.displayName = 'ProductDialogContent';
 
-const ProductDialog = () => {
+const ProductDialog = memo(() => {
     const { isOpen, closeDialog } = useProductDialogContext();
     
     return (
@@ -68,6 +69,7 @@ const ProductDialog = () => {
             <ProductDialogContent />
         </Dialog>
     );
-};
+});
+ProductDialog.displayName = 'ProductDialog';
 
 export default ProductDialog;

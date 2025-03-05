@@ -1,10 +1,10 @@
 import { Box, TextField, Grid } from '@mui/material';
 import { RadiatorForm } from "./Forms/RadiatorBasicForm";
-import { ModelManagerDisplay } from "./ProductDialog/ModelManager";
-import { PriceManagerDisplay } from "./ProductDialog/PriceManager";
+import { ModelManagerDisplay } from "./ProductDialog/ModelManagerLegacy";
+import { PriceManagerDisplay } from "./ProductDialog/PriceManagerLegacy";
 import ImageUpload from './ProductDialog/ImageUpload';
 import { ProductTypes } from './ProductsConstants';
-import ProviderManager from './ProductDialog/ProviderManager';
+import ProviderManager from './ProductDialog/ProviderManagerLegacy';
 
 const ProductSummary = ({ productType, product }) => {
     let images = product.files.map(file => file.fileData);

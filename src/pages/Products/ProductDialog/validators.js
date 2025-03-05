@@ -8,19 +8,14 @@ export const STEP_VALIDATORS = {
                 product?.dpi &&
                 product?.stockCount
             );
-        },
-        [ProductTypes.CAP]: () => {
-            // TODO: Implementar validación para tapas
-            return true;
-        },
-        [ProductTypes.FAN]: () => {
-            // TODO: Implementar validación para abanicos
-            return true;
         }
     },
     [DIALOG_STEPS.DETAILS]: {
-        [ProductTypes.RADIATOR]: () => {
-            return true;
+        [ProductTypes.RADIATOR]: (product) => {
+            return Boolean(
+                product?.carModels &&
+                product?.carModels.length > 0
+            );
         }
     },
     [DIALOG_STEPS.SUBMIT]: {
