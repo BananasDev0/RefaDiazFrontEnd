@@ -32,7 +32,7 @@ const createProductFiles = async (productId, files) => {
 }
 
 const getProductById = async (productId) => {
-    const result = await axiosInstance.get(`/product/${productId}`);
+    const result = await axiosInstance.get(`/products?id=${productId}`);
     return new Product(result.response);
 }
 

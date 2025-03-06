@@ -4,6 +4,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useProductDialogNavigation } from "./ProductDialogNavigationContext";
 import { useProductDialogForm } from "./ProductDialogFormContext";
 import { useProductSelectionContext } from "../ProductSelectionContext";
+import { useProductDialogContext } from "../ProductDialogContext";
 import { DIALOG_STEPS } from './DialogSteps';
 
 const ProductDialogToolbar = ({ handleCloseDialog }) => {
@@ -21,6 +22,7 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
     } = useProductDialogForm();
 
     const { selectedProduct } = useProductSelectionContext();
+    const { openDialog } = useProductDialogContext();
 
     const renderEditButton = () => (
         <Button
@@ -29,6 +31,7 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
             color="inherit"
             onClick={() => {
                 setIsEditable(true);
+                openDialog('edit', selectedProduct.id);
             }}
         >
             Editar

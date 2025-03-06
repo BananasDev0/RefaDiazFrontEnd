@@ -4,6 +4,7 @@ import { useSnackbar } from '../../../components/SnackbarContext';
 import { createProduct, getProductById, updateProduct } from '../../../services/ProductService';
 import Product from '../../../models/Product';
 import { ProductTypes } from '../ProductsConstants';
+import { useProductDialogContext } from '../ProductDialogContext';
 
 const ProductDialogFormContext = createContext();
 
@@ -14,7 +15,8 @@ export const ProductDialogFormProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
     
-    const { productType, handleCloseDialog, selectedProduct, handleOpenDialog, setSelectedProduct } = useProductSelectionContext();
+    const { productType, handleCloseDialog, selectedProduct, setSelectedProduct } = useProductSelectionContext();
+    const { mode } = useProductDialogContext();
     const { openSnackbar } = useSnackbar();
 
     const dependencies = [
@@ -30,8 +32,8 @@ export const ProductDialogFormProvider = ({ children }) => {
         const fetchData = async () => {
             if (selectedProduct) {
                 setIsLoading(true);
-                handleOpenDialog();
-
+                setIsEditable(mode === 'edit');
+                
                 let productFullInfo = await getProductById(selectedProduct.id);
                 setProduct(productFullInfo);
                 setIsLoading(false);
@@ -39,7 +41,7 @@ export const ProductDialogFormProvider = ({ children }) => {
         };
 
         fetchData();
-    }, [selectedProduct]);
+    }, [selectedProduct, mode]);
 
     useEffect(() => {
         const formattedName = formatProductName(productType, product);

@@ -5,8 +5,11 @@ import { PriceManagerDisplay } from "./ProductDialog/PriceManagerLegacy";
 import ImageUpload from './ProductDialog/ImageUpload';
 import { ProductTypes } from './ProductsConstants';
 import ProviderManager from './ProductDialog/ProviderManagerLegacy';
-
-const ProductSummary = ({ productType, product }) => {
+import { useProductSelectionContext } from './ProductSelectionContext';
+import { useProductDialogForm } from './ProductDialog/ProductDialogFormContext';
+const ProductSummary = () => {
+    const { productType } = useProductSelectionContext();
+    const { product } = useProductDialogForm();
     let images = product.files.map(file => file.fileData);
     return (
         <div>

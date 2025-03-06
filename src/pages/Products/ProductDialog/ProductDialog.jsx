@@ -4,10 +4,10 @@ import { Box, CircularProgress, Dialog, Slide } from '@mui/material';
 import ProductDialogToolbar from './ProductDialogToolbar';
 import { useProductDialogContext } from '../ProductDialogContext';
 import { useProductSelectionContext } from '../ProductSelectionContext';
-import { useProductLoadingContext } from '../ProductLoadingContext';
 import ProductSummary from '../ProductSummary';
 import RadiatorFlow from './RadiatorFlow';
 import { ProductTypes } from '../ProductsConstants';
+import { useProductDialogForm } from './ProductDialogFormContext';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -23,11 +23,11 @@ const renderProductFlow = (productType) => {
 };
 
 const ProductDialogContent = memo(() => {
-    const { closeDialog, mode, productId } = useProductDialogContext();
+    const { closeDialog, mode } = useProductDialogContext();
     const { productType } = useProductSelectionContext();
-    const { loading: isLoading } = useProductLoadingContext();
-    console.log(mode)
-
+    const { isLoading } = useProductDialogForm();
+    const { isEditable } = useProductDialogForm();
+    console.log(isLoading)
     return (
         <>
             <ProductDialogToolbar handleCloseDialog={closeDialog} />
@@ -44,10 +44,10 @@ const ProductDialogContent = memo(() => {
                 </Box>
             ) : (
                 <>
-                    {mode === 'view' && (
-                        <ProductSummary productId={productId} productType={productType} />
+                    {mode === 'view' && !isEditable && (
+                        <ProductSummary />
                     )}
-                    {(mode === 'create' || mode === 'edit') && renderProductFlow(productType)}
+                    {(mode === 'create' || mode === 'edit' || isEditable) && renderProductFlow(productType)}
                 </>
             )}
         </>

@@ -15,6 +15,7 @@ export const ProductSelectionProvider = ({ children }) => {
   const [productType, setProductType] = useState(null); // Tipo de producto seleccionado
   const [selectedBrand, setSelectedBrand] = useState(null); // Marca seleccionada
   const [selectedCarModel, setSelectedCarModel] = useState(null); // Modelo seleccionado
+  const [selectedProduct, setSelectedProduct] = useState(null); // Producto seleccionado
 
   const handleChangeProductType = (newValue) => {
     setProductType(newValue);
@@ -38,9 +39,11 @@ export const ProductSelectionProvider = ({ children }) => {
     productType,
     selectedBrand,
     selectedCarModel,
+    selectedProduct,
     setProductType,
     setSelectedBrand,
     setSelectedCarModel,
+    setSelectedProduct,
     handleChangeProductType,
     clearSelection,
   };

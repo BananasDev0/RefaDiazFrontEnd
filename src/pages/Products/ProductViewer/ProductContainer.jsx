@@ -11,6 +11,7 @@ import ProductList from './ProductList';
 import { ProductCarModel } from '../../../models/ProductCarModel';
 import { deleteProduct } from '../../../services/ProductService';
 import { Box, CircularProgress } from '@mui/material';
+import { useProductDialogContext } from '../ProductDialogContext';
 
 const ProductContainer = () => {
   const [productCarModels, setProductCarModels] = useState([]);
@@ -19,10 +20,12 @@ const ProductContainer = () => {
   const { setSelectedProduct, selectedCarModel, productType } = useProductSelectionContext(); // Obtener el modelId seleccionado
   const { searchTerm, searchOption } = useProductSearchContext();
   const { setLoading, loading } = useProductLoadingContext();
+  const { openDialog } = useProductDialogContext();
 
   const handleProductSelect = (e, item) => {
     const productCarModel = productCarModels.find(pcm => pcm.product.id === item.id);
     setSelectedProduct(productCarModel.product, Screens.PRODUCTS);
+    openDialog('view', productCarModel.product.id);
   };
 
   const handleOnDelete = async (productCarModel) => {
