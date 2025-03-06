@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
-import { getBase64ImgFromURL, getImageURLFromStorage, uploadImageToStorage } from '../../../services/Firebase/storage';
-import { base64ToBlob, getMimeType, modifyAndClone } from '../../../util/generalUtils';
+import { StorageAdapter } from '../../../services/StorageAdapter';
+import { getMimeType, modifyAndClone } from '../../../util/generalUtils';
 import File from '../../../models/File';
 import { FileTypes } from '../ProductsConstants';
 import { v4 } from 'uuid';
@@ -41,8 +41,8 @@ export const ProductDialogImageProvider = ({ children }) => {
 
     const loadProductImages = async (productFiles) => {
         let imagePromises = productFiles.map(async (file) => {
-            let url = await getImageURLFromStorage(file.storagePath);
-            file.fileData = await getBase64ImgFromURL(url);
+            let url = await StorageAdapter.getFileURL(file.storagePath);
+            file.fileData = await StorageAdapter.getBase64FromURL(url);
             return file;
         });
         return Promise.all(imagePromises);
@@ -51,7 +51,7 @@ export const ProductDialogImageProvider = ({ children }) => {
     const uploadProductImages = (files) => {
         files.forEach((file) => {
             if (!file.id) {
-                uploadImageToStorage(base64ToBlob(file.fileData), file.storagePath);
+                StorageAdapter.uploadFile(StorageAdapter.base64ToBlob(file.fileData), file.storagePath);
             }
         });
     };

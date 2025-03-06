@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { getAllBrands } from '../../../services/BrandService';
-import { getImageURLFromStorage } from '../../../services/Firebase/storage';
+import { StorageAdapter } from '../../../services/StorageAdapter';
 import { CSSTransition } from 'react-transition-group';
 import BrandList from './BrandList';
 import '../../../styles/brandContainer.css';
@@ -35,7 +35,7 @@ const BrandContainer = () => {
               const cacheKey = brand.file.storagePath;
               let imageUrl = imageCache.get(cacheKey);
               if (!imageUrl) {
-                imageUrl = await getImageURLFromStorage(brand.file.storagePath).catch((error) => {
+                imageUrl = await StorageAdapter.getFileURL(brand.file.storagePath).catch((error) => {
                   console.error('Error al obtener url imagen de storage para marca:', brand.name, error);
                   return '';
                 });

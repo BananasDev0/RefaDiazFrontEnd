@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { getImageURLFromStorage } from '../../../services/Firebase/storage';
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import { getAllCarModelsProducts } from '../../../services/CarModelService';
@@ -12,6 +11,7 @@ import { ProductCarModel } from '../../../models/ProductCarModel';
 import { deleteProduct } from '../../../services/ProductService';
 import { Box, CircularProgress } from '@mui/material';
 import { useProductDialogContext } from '../ProductDialogContext';
+import { StorageAdapter } from '../../../services/StorageAdapter';
 
 const ProductContainer = () => {
   const [productCarModels, setProductCarModels] = useState([]);
@@ -62,7 +62,7 @@ const ProductContainer = () => {
         const productsWithImages = await Promise.all(productCarModelsData.map(async (productCarModel) => {
           let file = productCarModel.product.files.find(file => file.orderId === 1);
           if (file) {
-            const imageUrl = await getImageURLFromStorage(file.storagePath).catch(error => {
+            const imageUrl = await StorageAdapter.getFileURL(file.storagePath).catch(error => {
               console.error('Error al obtener url imagen de storage para producto:', productCarModel.product.name, error);
               return '';
             });

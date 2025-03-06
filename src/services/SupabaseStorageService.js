@@ -60,7 +60,6 @@ export class SupabaseStorageService {
       const { data } = supabase.storage
         .from(bucket)
         .getPublicUrl(path);
-      
       return data.publicUrl;
     } catch (error) {
       console.error('Error al obtener la URL pública:', error);

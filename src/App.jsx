@@ -4,8 +4,17 @@ import Login from './pages/Login';
 import { AuthGuard } from './components/AuthGuard';
 import { MobileProvider } from './components/MobileProvider';
 import { SnackbarProvider } from './components/SnackbarContext';
+import { StorageAdapter } from './services/StorageAdapter';
+import { useEffect } from 'react';
 
-export default function App() {
+// Configurar StorageAdapter para usar Supabase
+const AppWithStorageConfig = () => {
+  useEffect(() => {
+    // Configurar Supabase como proveedor de almacenamiento
+    StorageAdapter.setProvider(StorageAdapter.PROVIDER.SUPABASE);
+    console.log('StorageAdapter configurado para usar Supabase');
+  }, []);
+
   return (
     <MobileProvider>
       <SnackbarProvider>
@@ -19,4 +28,8 @@ export default function App() {
       </SnackbarProvider>
     </MobileProvider>
   );
+};
+
+export default function App() {
+  return <AppWithStorageConfig />;
 }
