@@ -12,7 +12,7 @@ const createProductPrices = async (productId, productPrices) => {
 }
 
 const createProduct = async (product) => {
-    const response = await axiosInstance.post(`/product`, product);
+    const response = await axiosInstance.post(`/products`, product);
     return response.data;
 }
 
@@ -37,12 +37,12 @@ const getProductById = async (productId) => {
 }
 
 const deleteProduct = async (productId) => {
-    const response = await axiosInstance.delete(`/product/${productId}`);
+    const response = await axiosInstance.delete(`/products?id=${productId}`);
     return response.statusCode === 204;
 }
 
 const updateProduct = async (productId, product) => {
-    const response = await axiosInstance.put(`/product/${productId}`, product);
+    const response = await axiosInstance.put(`/products?id=${productId}`, product);
     return response.data;
 }
 

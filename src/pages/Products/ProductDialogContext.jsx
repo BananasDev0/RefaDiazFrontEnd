@@ -1,5 +1,11 @@
 // src/pages/Products/ProductDialogContext.jsx
 import { createContext, useContext, useState } from 'react';
+import EventBus from '../../services/EventBus';
+
+// Constantes para los eventos
+export const DIALOG_EVENTS = {
+  CLOSE: 'dialog:close'
+};
 
 const ProductDialogContext = createContext();
 
@@ -26,10 +32,13 @@ export const ProductDialogProvider = ({ children }) => {
     setIsOpen(false);
     setMode(null);
     setProductId(null);
+    
+    // Emitir evento de cierre para que otros componentes puedan reaccionar
+    EventBus.emit(DIALOG_EVENTS.CLOSE);
   };
 
   return (
-    <ProductDialogContext.Provider value={{ isOpen, mode, productId, openDialog, closeDialog }}>
+    <ProductDialogContext.Provider value={{ isOpen, mode, productId, openDialog, closeDialog, setMode }}>
       {children}
     </ProductDialogContext.Provider>
   );

@@ -33,7 +33,6 @@ const ExpandableCard = ({ title, children }) => {
       <CardHeader title={title} />
       <CardActions disableSpacing>
         <ExpandMore
-          expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="mostrar más"

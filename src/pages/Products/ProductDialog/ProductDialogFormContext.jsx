@@ -5,6 +5,8 @@ import { createProduct, getProductById, updateProduct } from '../../../services/
 import Product from '../../../models/Product';
 import { ProductTypes } from '../ProductsConstants';
 import { useProductDialogContext } from '../ProductDialogContext';
+import EventBus from '../../../services/EventBus';
+import { DIALOG_EVENTS } from '../ProductDialogContext';
 
 const ProductDialogFormContext = createContext();
 
@@ -13,10 +15,9 @@ export const useProductDialogForm = () => useContext(ProductDialogFormContext);
 export const ProductDialogFormProvider = ({ children }) => {
     const [product, setProduct] = useState(new Product({}));
     const [isLoading, setIsLoading] = useState(false);
-    const [isEditable, setIsEditable] = useState(false);
     
-    const { productType, handleCloseDialog, selectedProduct, setSelectedProduct } = useProductSelectionContext();
-    const { mode } = useProductDialogContext();
+    const { productType, selectedProduct, setSelectedProduct } = useProductSelectionContext();
+    const { mode, closeDialog} = useProductDialogContext();
     const { openSnackbar } = useSnackbar();
 
     const dependencies = [
@@ -28,11 +29,23 @@ export const ProductDialogFormProvider = ({ children }) => {
         product.dpi
     ];
 
+    // Escuchar el evento de cierre del diálogo
+    useEffect(() => {
+        // Suscribirse al evento de cierre
+        const unsubscribe = EventBus.on(DIALOG_EVENTS.CLOSE, () => {
+            resetForm();
+        });
+        
+        // Limpiar la suscripción al desmontar
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+
     useEffect(() => {
         const fetchData = async () => {
             if (selectedProduct) {
                 setIsLoading(true);
-                setIsEditable(mode === 'edit');
                 
                 let productFullInfo = await getProductById(selectedProduct.id);
                 setProduct(productFullInfo);
@@ -59,7 +72,6 @@ export const ProductDialogFormProvider = ({ children }) => {
 
     const resetForm = () => {
         setSelectedProduct(null);
-        setIsEditable(false);
         setProduct(new Product({}));
     };
 
@@ -84,8 +96,7 @@ export const ProductDialogFormProvider = ({ children }) => {
             }
 
             setIsLoading(false);
-            handleCloseDialog();
-            resetForm();
+            closeDialog();
             openSnackbar('Producto procesado correctamente', 'success');
         } catch (error) {
             setIsLoading(false);
@@ -98,10 +109,8 @@ export const ProductDialogFormProvider = ({ children }) => {
         <ProductDialogFormContext.Provider value={{
             product,
             isLoading,
-            isEditable,
             handleSubmit,
             resetForm,
-            setIsEditable,
             setProduct
         }}>
             {children}

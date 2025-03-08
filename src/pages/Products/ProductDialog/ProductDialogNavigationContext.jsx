@@ -1,8 +1,10 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { STEP_VALIDATORS } from './validators';
 import { useProductSelectionContext } from '../ProductSelectionContext';
 import { DIALOG_STEPS, DIALOG_STEPS_ORDER } from './DialogSteps';
 import { useProductDialogForm } from './ProductDialogFormContext';
+import EventBus from '../../../services/EventBus';
+import { DIALOG_EVENTS } from '../ProductDialogContext';
 
 const ProductDialogNavigationContext = createContext();
 
@@ -19,6 +21,17 @@ export const ProductDialogNavigationProvider = ({ children }) => {
     const [isNextEnabled, setIsNextEnabled] = useState(false);
     const { product } = useProductDialogForm();
     const { productType } = useProductSelectionContext();
+
+    // Escuchar el evento de cierre del diálogo
+    useEffect(() => {
+       const unsubscribe = EventBus.on(DIALOG_EVENTS.CLOSE, () => {
+        setCurrentStep(DIALOG_STEPS.BASIC_INFO);
+       });
+
+       return () => {
+        unsubscribe();
+       };   
+    }, []);
 
     const validateCurrentStep = useCallback(() => {
         const stepValidators = STEP_VALIDATORS[currentStep];

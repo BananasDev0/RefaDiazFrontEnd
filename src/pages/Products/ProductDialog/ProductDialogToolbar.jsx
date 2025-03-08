@@ -17,12 +17,10 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
 
     const {
         handleSubmit = () => {},
-        isEditable,
-        setIsEditable
     } = useProductDialogForm();
 
     const { selectedProduct } = useProductSelectionContext();
-    const { openDialog } = useProductDialogContext();
+    const { mode, setMode } = useProductDialogContext();
 
     const renderEditButton = () => (
         <Button
@@ -30,8 +28,7 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
             autoFocus
             color="inherit"
             onClick={() => {
-                setIsEditable(true);
-                openDialog('edit', selectedProduct.id);
+                setMode('edit');
             }}
         >
             Editar
@@ -57,8 +54,7 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
             ) : (
                 <Button 
                     autoFocus 
-                    color="inherit" 
-                    disabled={!isNextEnabled} 
+                    color="inherit"
                     onClick={handleSubmit}
                 >
                     Guardar
@@ -81,10 +77,10 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
                     <CloseIcon />
                 </IconButton>
                 <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                    {selectedProduct ? (isEditable ? "Editar Producto" : "Detalles del Producto") : "Agregar Producto"}
+                    {selectedProduct ? (mode === 'edit' ? "Editar Producto" : "Detalles del Producto") : "Agregar Producto"}
                 </Typography>
                 {!selectedProduct ? renderNavigationButtons() :
-                 (selectedProduct && !isEditable) ? renderEditButton() :
+                 (selectedProduct && mode === 'view') ? renderEditButton() :
                  renderNavigationButtons()}
             </Toolbar>
         </AppBar>

@@ -1,12 +1,12 @@
 import { Box, TextField, Grid } from '@mui/material';
 import { RadiatorForm } from "./Forms/RadiatorBasicForm";
-import { ModelManagerDisplay } from "./ProductDialog/ModelManagerLegacy";
-import { PriceManagerDisplay } from "./ProductDialog/PriceManagerLegacy";
 import ImageUpload from './ProductDialog/ImageUpload';
 import { ProductTypes } from './ProductsConstants';
-import ProviderManager from './ProductDialog/ProviderManagerLegacy';
 import { useProductSelectionContext } from './ProductSelectionContext';
 import { useProductDialogForm } from './ProductDialog/ProductDialogFormContext';
+import ModelManager from './ProductDialog/ModelManager';
+import PriceManager from './ProductDialog/PriceManager';
+import ProviderManager from './ProductDialog/ProviderManager';
 const ProductSummary = () => {
     const { productType } = useProductSelectionContext();
     const { product } = useProductDialogForm();
@@ -43,13 +43,13 @@ const ProductSummary = () => {
                 {/* Display model and price information in read-only mode */}
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <ModelManagerDisplay product={product} readOnly={true} />
+                        <ModelManager readOnly={true} />
                     </Grid>
                     <Grid item xs={12}>
-                        <PriceManagerDisplay product={product} readOnly={true} />
+                        <PriceManager readOnly={true} />
                     </Grid>
                     <Grid item xs={12}>
-                        <ProviderManager product={product} editable={false} />
+                        <ProviderManager editable={false} />
                     </Grid>
                 </Grid>
             </Box>

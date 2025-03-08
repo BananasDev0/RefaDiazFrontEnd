@@ -1,5 +1,5 @@
 // src/pages/Products/ProductDialog/ProductDialog.jsx
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Box, CircularProgress, Dialog, Slide } from '@mui/material';
 import ProductDialogToolbar from './ProductDialogToolbar';
 import { useProductDialogContext } from '../ProductDialogContext';
@@ -26,8 +26,7 @@ const ProductDialogContent = memo(() => {
     const { closeDialog, mode } = useProductDialogContext();
     const { productType } = useProductSelectionContext();
     const { isLoading } = useProductDialogForm();
-    const { isEditable } = useProductDialogForm();
-    console.log(isLoading)
+    
     return (
         <>
             <ProductDialogToolbar handleCloseDialog={closeDialog} />
@@ -44,10 +43,10 @@ const ProductDialogContent = memo(() => {
                 </Box>
             ) : (
                 <>
-                    {mode === 'view' && !isEditable && (
+                    {mode === 'view' && (
                         <ProductSummary />
                     )}
-                    {(mode === 'create' || mode === 'edit' || isEditable) && renderProductFlow(productType)}
+                    {(mode === 'create' || mode === 'edit') && renderProductFlow(productType)}
                 </>
             )}
         </>

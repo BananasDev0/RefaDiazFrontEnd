@@ -5,6 +5,6 @@ export default class Brand {
         this.id = id;
         this.name = name;
         this.brandTypeId = brandTypeId;
-        this.file = new File(file);
+        this.file = new File(file || {});
     }
 }
