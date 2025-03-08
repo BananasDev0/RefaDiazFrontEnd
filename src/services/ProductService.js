@@ -38,7 +38,7 @@ const getProductById = async (productId) => {
 
 const deleteProduct = async (productId) => {
     const response = await axiosInstance.delete(`/products?id=${productId}`);
-    return response.statusCode === 204;
+    return response.statusCode === 200;
 }
 
 const updateProduct = async (productId, product) => {

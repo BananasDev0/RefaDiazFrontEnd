@@ -29,10 +29,11 @@ const ProductContainer = () => {
   };
 
   const handleOnDelete = async (productCarModel) => {
+    console.log('handleOnDelete', productCarModel);
     try {
-      let result = await deleteProduct(productCarModel.product.id);
+      let result = await deleteProduct(productCarModel.productId);
       if (result) {
-        const products = productCarModels.filter(pcm => pcm.product.id !== productCarModel.product.id);
+        const products = productCarModels.filter(pcm => pcm.product.id !== productCarModel.productId);
         setProductCarModels(products);
         setCachedProducts(products); // Actualizar el cache
         openSnackbar('Producto eliminado correctamente', 'success');

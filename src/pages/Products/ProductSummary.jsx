@@ -7,10 +7,12 @@ import { useProductDialogForm } from './ProductDialog/ProductDialogFormContext';
 import ModelManager from './ProductDialog/ModelManager';
 import PriceManager from './ProductDialog/PriceManager';
 import ProviderManager from './ProductDialog/ProviderManager';
+
 const ProductSummary = () => {
     const { productType } = useProductSelectionContext();
     const { product } = useProductDialogForm();
     let images = product.files.map(file => file.fileData);
+
     return (
         <div>
             <Box sx={{ paddingY: 2 }}>
@@ -36,7 +38,6 @@ const ProductSummary = () => {
                         <Box sx={{ display: 'flex', justifyContent: 'center', maxWidth: 450 }}>
                             <ImageUpload uploadedImages={images} readOnly />
                         </Box>
-
                     </Grid>
                 </Grid>
 

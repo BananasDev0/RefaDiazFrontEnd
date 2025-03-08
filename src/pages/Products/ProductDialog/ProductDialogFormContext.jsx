@@ -7,6 +7,8 @@ import { ProductTypes } from '../ProductsConstants';
 import { useProductDialogContext } from '../ProductDialogContext';
 import EventBus from '../../../services/EventBus';
 import { DIALOG_EVENTS } from '../ProductDialogContext';
+import { useProductDialogImage } from './ProductDialogImageContext';
+import { ProductImageService } from '../../../services/ProductImageService';
 
 const ProductDialogFormContext = createContext();
 
@@ -19,6 +21,7 @@ export const ProductDialogFormProvider = ({ children }) => {
     const { productType, selectedProduct, setSelectedProduct } = useProductSelectionContext();
     const { mode, closeDialog} = useProductDialogContext();
     const { openSnackbar } = useSnackbar();
+    const { uploadProductImages } = useProductDialogImage();
 
     const dependencies = [
         productType, 
@@ -48,6 +51,9 @@ export const ProductDialogFormProvider = ({ children }) => {
                 setIsLoading(true);
                 
                 let productFullInfo = await getProductById(selectedProduct.id);
+                if (productFullInfo.files && productFullInfo.files.length > 0) {
+                    productFullInfo.files = await ProductImageService.loadProductImages(productFullInfo.files);
+                }
                 setProduct(productFullInfo);
                 setIsLoading(false);
             }
@@ -79,20 +85,26 @@ export const ProductDialogFormProvider = ({ children }) => {
         try {
             setIsLoading(true);
 
+            // Subir imágenes primero y obtener las URLs actualizadas
+            let updatedFiles = [];
+            if (product.files && product.files.length > 0) {
+                const uploadedFiles = await uploadProductImages(product.files);
+                updatedFiles = uploadedFiles.map(file => ({
+                    ...file,
+                    fileData: null // Removemos el fileData para no enviarlo al servidor
+                }));
+            }
+
+            const productToSave = {
+                ...product,
+                productTypeId: productType,
+                files: updatedFiles
+            };
+
             if (product.id) {
-                const productToUpdate = {
-                    ...product,
-                    productTypeId: productType,
-                    files: product.files.map(file => ({ ...file, fileData: null }))
-                };
-                await updateProduct(productToUpdate.id, productToUpdate);
+                await updateProduct(productToSave.id, productToSave);
             } else {
-                const productToCreate = {
-                    ...product,
-                    productTypeId: productType,
-                    files: product.files.map(file => ({ ...file, fileData: null }))
-                };
-                await createProduct(productToCreate);
+                await createProduct(productToSave);
             }
 
             setIsLoading(false);
@@ -100,8 +112,8 @@ export const ProductDialogFormProvider = ({ children }) => {
             openSnackbar('Producto procesado correctamente', 'success');
         } catch (error) {
             setIsLoading(false);
-            console.log(error);
-            openSnackbar(`Error al procesar el producto: ${error.errorMessage}`, 'error');
+            console.error('Error al procesar el producto:', error);
+            openSnackbar(`Error al procesar el producto: ${error.message || error.errorMessage}`, 'error');
         }
     };
 

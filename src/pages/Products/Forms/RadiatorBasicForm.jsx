@@ -45,15 +45,15 @@ export const RadiatorForm = ({ product, handleChange, readOnly }) => {
     );
 };
 
-const ImageSection = ({ images, onUpload, onDelete }) => (
+const ImageSection = ({ images, onUpload, onDelete, product, setProduct }) => (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography variant="h6" component="h2" sx={{ textAlign: 'center', marginBottom: 2 }}>
             Imagen del Producto
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'center', maxWidth: 450 }}>
             <ImageUpload 
-                onImageDelete={onDelete}
-                onImageUpload={onUpload}
+                onImageDelete={(index) => onDelete(index, product, setProduct)}
+                onImageUpload={(file) => onUpload(file, product, setProduct)}
                 uploadedImages={images.map(file => file.fileData)}
                 key={"ProductImage"}
             />
@@ -89,6 +89,8 @@ const RadiatorBasicForm = () => {
                     images={product.files || []}
                     onUpload={handleImageUpload}
                     onDelete={handleImageDelete}
+                    product={product}
+                    setProduct={setProduct}
                 />
             </Grid>
         </Grid>

@@ -19,8 +19,8 @@ export default function ProductsPage() {
     <ProductSelectionProvider>
       <ProductSearchProvider>
         <ProductDialogProvider>
-          <ProductDialogFormProvider>
-            <ProductDialogImageProvider>
+          <ProductDialogImageProvider>
+            <ProductDialogFormProvider>
               <ProductDialogNavigationProvider>
                 <ProductLoadingProvider>
                   <NavigationBar />
@@ -34,8 +34,8 @@ export default function ProductsPage() {
                   </Routes>
                 </ProductLoadingProvider>
               </ProductDialogNavigationProvider>
-            </ProductDialogImageProvider>
-          </ProductDialogFormProvider>
+            </ProductDialogFormProvider>
+          </ProductDialogImageProvider>
         </ProductDialogProvider>
       </ProductSearchProvider>
     </ProductSelectionProvider>
