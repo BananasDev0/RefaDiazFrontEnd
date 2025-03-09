@@ -5,6 +5,20 @@ const axiosInstance = axios.create({
   // Configuraciones adicionales si es necesario
 });
 
+// Interceptor para agregar el token de autenticación
+axiosInstance.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+
 axiosInstance.interceptors.response.use(
   response => {
     // Manejo exitoso de la respuesta
