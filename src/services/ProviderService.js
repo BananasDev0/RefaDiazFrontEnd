@@ -2,12 +2,12 @@ import axios from './axiosConfig';
 import Provider from '../models/Provider';
 
 const createProvider = async (providerData) => {
-  const result = await axios.post('/provider', providerData);
+  const result = await axios.post('/providers', providerData);
   return result.response ? new Provider(result.response) : [];
 }
 
 const getProvider = async (id) => {
-  const result = await axios.get(`/provider/${id}`);
+  const result = await axios.get(`/providers?id=${id}`);
   return result.response ? new Provider(result.response): []
 }
 
@@ -26,13 +26,13 @@ const getAll = async(page, limit) => {
 }
   
 const deleteProvider = async(id) => {
-  const result = await axios.delete(`/provider/${id}`);
+  const result = await axios.delete(`/providers?id=${id}`);
   
   return result.statusCode === 204 ? true : false;
 }
 
 const updateProvider = async(id, updatedData) => {
-  const result = await axios.put(`/provider/${id}`, updatedData);
+  const result = await axios.put(`/providers?id=${id}`, updatedData);
 
   return result.statusCode === 204 ? true : false;
 }

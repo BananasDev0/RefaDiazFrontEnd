@@ -8,6 +8,7 @@ const ResponsiveDrawer = ({ open, handleDrawerClose, navigate }) => {
   const handleMenuClick = (path) => {
     console.log('navigating to', path)
     navigate(path);
+    handleDrawerClose();
   };
   
   // Renderiza MobileDrawer o CustomDrawer dependiendo de si es móvil o no
