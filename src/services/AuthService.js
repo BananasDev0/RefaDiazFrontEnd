@@ -9,12 +9,13 @@ export const signIn = async (email, password) => {
     });
     if (error) throw error;
 
+    const token = data.session.access_token; // Obtener el token aquí
+    localStorage.setItem('token', token); // Setear el token en localStorage antes de llamar a getUser
+
     const user = await getUser(data.user.id);
     if (user) {
-      const token = data.session.access_token;
       const userDataString = JSON.stringify(user);
       localStorage.setItem('user', userDataString);
-      localStorage.setItem('token', token);
     }
     return user;
   } catch (error) {
