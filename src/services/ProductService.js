@@ -12,7 +12,7 @@ const createProductPrices = async (productId, productPrices) => {
 }
 
 const createProduct = async (product) => {
-    const response = await axiosInstance.post(`/product`, product);
+    const response = await axiosInstance.post(`/products`, product);
     return response.data;
 }
 
@@ -32,17 +32,17 @@ const createProductFiles = async (productId, files) => {
 }
 
 const getProductById = async (productId) => {
-    const result = await axiosInstance.get(`/product/${productId}`);
+    const result = await axiosInstance.get(`/products?id=${productId}`);
     return new Product(result.response);
 }
 
 const deleteProduct = async (productId) => {
-    const response = await axiosInstance.delete(`/product/${productId}`);
-    return response.statusCode === 204;
+    const response = await axiosInstance.delete(`/products?id=${productId}`);
+    return response.statusCode === 200;
 }
 
 const updateProduct = async (productId, product) => {
-    const response = await axiosInstance.put(`/product/${productId}`, product);
+    const response = await axiosInstance.put(`/products?id=${productId}`, product);
     return response.data;
 }
 

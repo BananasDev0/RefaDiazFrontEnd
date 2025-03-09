@@ -1,77 +1,78 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { getAllBrands } from '../../../services/BrandService';
-import { getImageURLFromStorage } from '../../../services/Firebase/storage';
+import { StorageAdapter } from '../../../services/StorageAdapter';
 import { CSSTransition } from 'react-transition-group';
 import BrandList from './BrandList';
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
-import { useProductsContext } from '../ProductsContext';
+import { useProductSelectionContext } from '../ProductSelectionContext';
+import { useProductSearchContext } from '../ProductSearchContext';
+import { useProductLoadingContext } from '../ProductLoadingContext';
 import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useNavigationContext } from '../../../components/NavigationContext';
+import { PATHS } from '../../../constants/paths';
+
+// Caché para almacenar URLs de imágenes
+const imageCache = new Map();
 
 const BrandContainer = () => {
-  const [brands, setBrands] = useState([]);
+  const [allBrands, setAllBrands] = useState([]); // Todos los datos iniciales
   const [tabValue, setTabValue] = useState(0);
-  const [loading, setLoading] = useState(true);
   const { openSnackbar } = useSnackbar();
-  const { searchTerm, setSelectedBrand } = useProductsContext();
-  const { updateTitle, resetTitle } = useNavigationContext();
+  const { searchTerm } = useProductSearchContext();
+  const { setSelectedBrand } = useProductSelectionContext();
+  const { setLoading: setGlobalLoading } = useProductLoadingContext();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBrands = async () => {
-      setLoading(true);
+      setGlobalLoading(true);
       try {
-        const brandsData = await getAllBrands();
+        const brandsData = await getAllBrands(''); // Carga todos los datos sin filtro
         const brandsWithImages = await Promise.all(
           brandsData.map(async (brand) => {
             if (brand.file) {
-              const imageUrl = await getImageURLFromStorage(brand.file.storagePath).catch((error) => {
-                console.error('Error al obtener url imagen de storage para marca:', brand.name, error);
-                return '';
-              });
+              const cacheKey = brand.file.storagePath;
+              let imageUrl = imageCache.get(cacheKey);
+              if (!imageUrl) {
+                imageUrl = await StorageAdapter.getFileURL(brand.file.storagePath).catch((error) => {
+                  console.error('Error al obtener url imagen de storage para marca:', brand.name, error);
+                  return '';
+                });
+                imageCache.set(cacheKey, imageUrl);
+              }
               return { ...brand, imageUrl };
-            } else {
-              return brand;
             }
+            return brand;
           })
         );
-        setBrands(brandsWithImages);
-        setLoading(false);
+        setAllBrands(brandsWithImages);
+        setGlobalLoading(false);
       } catch (error) {
         console.error('Error al obtener las marcas:', error);
         openSnackbar(error.errorMessage, 'error');
-        setLoading(false);
+        setGlobalLoading(false);
       }
     };
     fetchBrands();
-  }, [openSnackbar, searchTerm]);
+  }, [openSnackbar, setGlobalLoading]);
 
-  useEffect(() => {
-    resetTitle('/home/products/brands');
-  }, []);
+  const filteredBrands = useMemo(() => (brandTypeId) => {
+    return allBrands.filter(
+      (brand) => brand.brandTypeId === brandTypeId && brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [allBrands, searchTerm]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
-  const filteredBrands = (brandTypeId) => {
-    return brands.filter(
-      (brand) => brand.brandTypeId === brandTypeId && brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  };
-
   const handleOnBrandSelect = (e, brand) => {
     setSelectedBrand(brand);
-    const goToPath = '/home/products/brands/models';
-    const currentPath = '/home/products/brands';
-    const title = `Marcas (${brand.name})`;
-    updateTitle(currentPath, title);
-    navigate(goToPath);
+    navigate(PATHS.MODELS);
   };
 
-  if (loading) {
+  if (!allBrands.length) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
         <CircularProgress size={40} />
@@ -81,7 +82,7 @@ const BrandContainer = () => {
 
   return (
     <Box>
-      <CSSTransition in={brands.length > 0} timeout={300} classNames="fade" unmountOnExit>
+      <CSSTransition in={allBrands.length > 0} timeout={300} classNames="fade" unmountOnExit>
         <div>
           <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
             <Tabs value={tabValue} onChange={handleTabChange} aria-label="brand type tabs">

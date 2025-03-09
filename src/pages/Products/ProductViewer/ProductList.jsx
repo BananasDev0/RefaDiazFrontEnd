@@ -10,7 +10,8 @@ const ProductList = ({ products, onProductSelect, handleOnDelete }) => {
     <div>
       <ItemsCardList rows={products.map(productCarModel => ({
         id: productCarModel.product.id,
-        dpi: productCarModel.productdpi,
+        dpi: productCarModel.product.dpi,
+        productId: productCarModel.product.id,
         name: productCarModel.product.name,
         imageUrl: productCarModel.imageUrl // Se muestra la imagen
       }))} columns={columns} itemCardProps={{onClick: onProductSelect, menuOptions: [

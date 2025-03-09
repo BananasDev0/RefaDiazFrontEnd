@@ -1,31 +1,29 @@
-import { useProductDialogContext } from './ProductDialogContext';  // Ajusta la ruta de importación según sea necesario
-import RadiatorForm from '../Forms/RadiatorForm';
 import ProductBasicInfo from './ProductBasicInfo';
 import ProductDetails from './ProductDetails';
 import ProductSummary from '../ProductSummary';
 import { ProductTypes } from '../ProductsConstants';
+import { useProductDialogForm } from './ProductDialogFormContext';
+import { useProductDialogNavigation } from './ProductDialogNavigationContext';
+import { DIALOG_STEPS } from './DialogSteps';
 
 const RadiatorFlow = () => {
-    const { activeStep, product } = useProductDialogContext();
-    let ComponentToRender = null;
+    const { product } = useProductDialogForm();
+    const { currentStep } = useProductDialogNavigation();
 
-    // Using switch to determine which component to render based on the active step from context
-    switch (activeStep) {
-        case 0:
-            ComponentToRender = <ProductBasicInfo ProductForm={RadiatorForm}/>;
-            break;
-        // case 1, case 2, etc., can be added here for additional steps
-        case 1:
-            ComponentToRender = <ProductDetails/>;
-            break;
-        default:
-            ComponentToRender = <ProductSummary productType={ProductTypes.RADIATOR} product={product} readOnly/>;
-            break;
-    }
+    // Usando un objeto para mapear los steps a sus componentes
+    const STEP_COMPONENTS = {
+        [DIALOG_STEPS.BASIC_INFO]: <ProductBasicInfo />,
+        [DIALOG_STEPS.DETAILS]: <ProductDetails />,
+        [DIALOG_STEPS.SUBMIT]: <ProductSummary 
+            productType={ProductTypes.RADIATOR} 
+            product={product} 
+            readOnly 
+        />
+    };
 
     return (
         <div>
-            {ComponentToRender}
+            {STEP_COMPONENTS[currentStep] || null}
         </div>
     );
 };

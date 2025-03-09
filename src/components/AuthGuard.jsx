@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
 import { Navigate } from 'react-router-dom';
-import { auth } from '../services/Firebase/firebase';
+import { supabase } from '../services/supabaseClient';
 import { CircularProgress, Box } from '@mui/material';
 
 export const AuthGuard = ({ children }) => {
@@ -9,14 +8,18 @@ export const AuthGuard = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
       }
       setIsLoading(false);
     });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   if (isLoading) {
@@ -33,8 +36,6 @@ export const AuthGuard = ({ children }) => {
       </Box>
     );
   }
-
   if (!isAuthenticated) return <Navigate to="/login" />;
-
   return children;
 };
