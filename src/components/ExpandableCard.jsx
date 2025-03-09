@@ -16,7 +16,7 @@ const ExpandMore = styled((props) => {
 
 const ExpandableCard = ({ title, children }) => {
   const [expanded, setExpanded] = useState(false);
-  const cardRef = useRef(null);  // Crear la referencia
+  const cardRef = useRef(null);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -33,7 +33,6 @@ const ExpandableCard = ({ title, children }) => {
       <CardHeader title={title} />
       <CardActions disableSpacing>
         <ExpandMore
-          expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="mostrar más"

@@ -1,23 +1,26 @@
 import { AppBar, Toolbar, IconButton, Typography, Button } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
-import { useProductDialogContext } from "./ProductDialogContext";
-import { useProductsContext } from "../ProductsContext";
+import { useProductDialogNavigation } from "./ProductDialogNavigationContext";
+import { useProductDialogForm } from "./ProductDialogFormContext";
+import { useProductSelectionContext } from "../ProductSelectionContext";
+import { useProductDialogContext } from "../ProductDialogContext";
+import { DIALOG_STEPS } from './DialogSteps';
 
 const ProductDialogToolbar = ({ handleCloseDialog }) => {
     const {
-        activeStep,
-        handleBack,
-        handleNext,
-        totalSteps,
+        currentStep,
+        previousStep,
+        nextStep,
         isNextEnabled,
-        handleSubmit,
-        resetState,
-        isEditable,
-        setIsEditable
-    } = useProductDialogContext();
+    } = useProductDialogNavigation();
 
-    const { selectedProduct } = useProductsContext();
+    const {
+        handleSubmit = () => {},
+    } = useProductDialogForm();
+
+    const { selectedProduct } = useProductSelectionContext();
+    const { mode, setMode } = useProductDialogContext();
 
     const renderEditButton = () => (
         <Button
@@ -25,7 +28,7 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
             autoFocus
             color="inherit"
             onClick={() => {
-                setIsEditable(true);
+                setMode('edit');
             }}
         >
             Editar
@@ -34,17 +37,26 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
 
     const renderNavigationButtons = () => (
         <>
-            {activeStep > 0 && (
-                <Button color="inherit" onClick={handleBack}>
+            {currentStep !== DIALOG_STEPS.BASIC_INFO && (
+                <Button color="inherit" onClick={previousStep}>
                     Atrás
                 </Button>
             )}
-            {activeStep < totalSteps - 1 ? (
-                <Button autoFocus color="inherit" onClick={handleNext} disabled={!isNextEnabled}>
+            {currentStep !== DIALOG_STEPS.SUBMIT ? (
+                <Button 
+                    autoFocus 
+                    color="inherit" 
+                    onClick={nextStep} 
+                    disabled={!isNextEnabled}
+                >
                     Siguiente
                 </Button>
             ) : (
-                <Button autoFocus color="inherit" disabled={!isNextEnabled} onClick={handleSubmit}>
+                <Button 
+                    autoFocus 
+                    color="inherit"
+                    onClick={handleSubmit}
+                >
                     Guardar
                 </Button>
             )}
@@ -59,17 +71,16 @@ const ProductDialogToolbar = ({ handleCloseDialog }) => {
                     color="inherit"
                     onClick={() => {
                         handleCloseDialog();
-                        resetState();
                     }}
                     aria-label="close"
                 >
                     <CloseIcon />
                 </IconButton>
                 <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                    {selectedProduct ? (isEditable ? "Editar Producto" : "Detalles del Producto") : "Agregar Producto"}
+                    {selectedProduct ? (mode === 'edit' ? "Editar Producto" : "Detalles del Producto") : "Agregar Producto"}
                 </Typography>
                 {!selectedProduct ? renderNavigationButtons() :
-                 (selectedProduct && !isEditable) ? renderEditButton() :
+                 (selectedProduct && mode === 'view') ? renderEditButton() :
                  renderNavigationButtons()}
             </Toolbar>
         </AppBar>

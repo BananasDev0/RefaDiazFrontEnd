@@ -1,13 +1,18 @@
 import { Box, TextField, Grid } from '@mui/material';
-import { RadiatorFormDisplay } from "./Forms/RadiatorForm";
-import { ModelManagerDisplay } from "./ProductDialog/ModelManager";
-import { PriceManagerDisplay } from "./ProductDialog/PriceManager";
+import { RadiatorForm } from "./Forms/RadiatorBasicForm";
 import ImageUpload from './ProductDialog/ImageUpload';
 import { ProductTypes } from './ProductsConstants';
+import { useProductSelectionContext } from './ProductSelectionContext';
+import { useProductDialogForm } from './ProductDialog/ProductDialogFormContext';
+import ModelManager from './ProductDialog/ModelManager';
+import PriceManager from './ProductDialog/PriceManager';
 import ProviderManager from './ProductDialog/ProviderManager';
 
-const ProductSummary = ({ productType, product }) => {
+const ProductSummary = () => {
+    const { productType } = useProductSelectionContext();
+    const { product } = useProductDialogForm();
     let images = product.files.map(file => file.fileData);
+
     return (
         <div>
             <Box sx={{ paddingY: 2 }}>
@@ -25,7 +30,7 @@ const ProductSummary = ({ productType, product }) => {
                                 sx={{ marginTop: 2 }}
                             />
                             {productType === ProductTypes.RADIATOR && (
-                                <RadiatorFormDisplay product={product} readOnly={true} />
+                                <RadiatorForm product={product} readOnly={true} />
                             )}
                         </Box>
                     </Grid>
@@ -33,20 +38,19 @@ const ProductSummary = ({ productType, product }) => {
                         <Box sx={{ display: 'flex', justifyContent: 'center', maxWidth: 450 }}>
                             <ImageUpload uploadedImages={images} readOnly />
                         </Box>
-
                     </Grid>
                 </Grid>
 
                 {/* Display model and price information in read-only mode */}
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <ModelManagerDisplay product={product} readOnly={true} />
+                        <ModelManager readOnly={true} />
                     </Grid>
                     <Grid item xs={12}>
-                        <PriceManagerDisplay product={product} readOnly={true} />
+                        <PriceManager readOnly={true} />
                     </Grid>
                     <Grid item xs={12}>
-                        <ProviderManager product={product} editable={false} />
+                        <ProviderManager editable={false} />
                     </Grid>
                 </Grid>
             </Box>

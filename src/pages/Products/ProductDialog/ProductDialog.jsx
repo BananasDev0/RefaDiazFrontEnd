@@ -1,63 +1,74 @@
-import React from 'react';
-import { Box, CircularProgress, Dialog, Slide } from "@mui/material";
+// src/pages/Products/ProductDialog/ProductDialog.jsx
+import React, { memo, useEffect } from 'react';
+import { Box, CircularProgress, Dialog, Slide } from '@mui/material';
 import ProductDialogToolbar from './ProductDialogToolbar';
-import { ProductDialogProvider, useProductDialogContext } from './ProductDialogContext';
-import ProductFlow from './ProductFlow';
-import { useProductsContext } from '../ProductsContext';
+import { useProductDialogContext } from '../ProductDialogContext';
+import { useProductSelectionContext } from '../ProductSelectionContext';
 import ProductSummary from '../ProductSummary';
+import RadiatorFlow from './RadiatorFlow';
+import { ProductTypes } from '../ProductsConstants';
+import { useProductDialogForm } from './ProductDialogFormContext';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ProductDialogContent = () => {
-    const { handleCloseDialog, selectedProduct, productType } = useProductsContext();
-    const { isLoading, isEditable, product } = useProductDialogContext();
-    return (
-        <>
-            <ProductDialogToolbar handleCloseDialog={handleCloseDialog} />
-            {
-                isLoading ? (
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            height: '100vh',
-                        }}
-                    >
-                        <CircularProgress />
-                    </Box>
-                ) : (
-                    <>
-                        {selectedProduct && !isEditable && (
-                            <ProductSummary product={product} productType={productType} />
-                        )}
-                        {
-                            (!selectedProduct || (selectedProduct && isEditable)) && <ProductFlow />
-                        }
-                    </>
-                )
-            }
-        </>
-    );
+const renderProductFlow = (productType) => {
+    switch (productType) {
+        case ProductTypes.RADIATOR:
+            return <RadiatorFlow />;
+        default:
+            return null;
+    }
 };
 
-const ProductDialog = () => {
-    const { openDialog, handleCloseDialog } = useProductsContext();
+const ProductDialogContent = memo(() => {
+    const { closeDialog, mode } = useProductDialogContext();
+    const { productType } = useProductSelectionContext();
+    const { isLoading } = useProductDialogForm();
+    
     return (
-        <ProductDialogProvider>
-            <Dialog
-                fullScreen
-                open={openDialog}
-                onClose={handleCloseDialog}
-                aria-labelledby="dialog-title"
-                TransitionComponent={Transition}
-            >
-                <ProductDialogContent />
-            </Dialog>
-        </ProductDialogProvider>
+        <>
+            <ProductDialogToolbar handleCloseDialog={closeDialog} />
+            {isLoading ? (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100vh',
+                    }}
+                >
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <>
+                    {mode === 'view' && (
+                        <ProductSummary />
+                    )}
+                    {(mode === 'create' || mode === 'edit') && renderProductFlow(productType)}
+                </>
+            )}
+        </>
     );
-};
+});
+ProductDialogContent.displayName = 'ProductDialogContent';
+
+const ProductDialog = memo(() => {
+    const { isOpen, closeDialog } = useProductDialogContext();
+    
+    return (
+        <Dialog
+            fullScreen
+            open={isOpen}
+            onClose={closeDialog}
+            aria-labelledby="dialog-title"
+            TransitionComponent={Transition}
+        >
+            <ProductDialogContent />
+        </Dialog>
+    );
+});
+ProductDialog.displayName = 'ProductDialog';
 
 export default ProductDialog;
