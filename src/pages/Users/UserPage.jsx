@@ -1,5 +1,5 @@
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import NavigationBar from '../../components/NavigationBar';
+import GenericNavigationBar from '../../components/GenericNavigationBar';
 import UserMenu from './UserMenu';
 import UserCreation from './UserCreation';
 import { PATHS } from '../../constants/paths';
@@ -15,7 +15,7 @@ const UserPage = () => {
 
   return (
     <div>
-      <NavigationBar />
+      <GenericNavigationBar />
       <Routes>
         <Route path="/" element={<UserMenu onOptionSelect={handleOptionSelect} />} />
         <Route path="add-user" element={<UserCreation />} />

@@ -1,6 +1,6 @@
 // src/pages/Products/ProductsPage.jsx
 import { Routes, Route } from 'react-router-dom';
-import NavigationBar from '../../components/NavigationBar';
+import ProductsNavigationBar from '../../components/ProductsNavigationBar';
 import ProductTypeSelector from './ProductTypeSelector/ProductTypeSelector';
 import SearchWrapper from './SearchWrapper';
 import BrandContainer from './BrandViewer/BrandContainer';
@@ -23,7 +23,7 @@ export default function ProductsPage() {
             <ProductDialogFormProvider>
               <ProductDialogNavigationProvider>
                 <ProductLoadingProvider>
-                  <NavigationBar />
+                  <ProductsNavigationBar />
                   <Routes>
                     <Route path="/" element={<ProductTypeSelector />} />
                     <Route path="list/*" element={<SearchWrapper />}>

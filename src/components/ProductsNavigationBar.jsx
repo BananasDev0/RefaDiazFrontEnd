@@ -1,4 +1,3 @@
-// src/components/NavigationBar.jsx
 import { Breadcrumbs as MuiBreadcrumbs, Link, Typography } from '@mui/material';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
 import { useProductSelectionContext } from '../pages/Products/ProductSelectionContext';
@@ -10,12 +9,9 @@ const staticTitles = {
     [PATHS.BRANDS]: "Marcas",
     [PATHS.MODELS]: "Modelos",
     [PATHS.PRODUCTS_LIST]: "Productos",
-    [PATHS.PROVIDERS]: "Proveedores",
-    [PATHS.USERS]: "Gestión de usuarios",
-    [PATHS.ADD_USER]: "Agregar usuario",
 };
 
-const NavigationBar = () => {
+const ProductsNavigationBar = () => {
     const location = useLocation();
     const { productType, selectedBrand, selectedCarModel, clearSelection } = useProductSelectionContext();
 
@@ -74,4 +70,4 @@ const NavigationBar = () => {
     );
 };
 
-export default NavigationBar;
+export default ProductsNavigationBar; 
