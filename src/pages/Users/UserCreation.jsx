@@ -8,8 +8,7 @@ import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../services/Firebase/firebase';
+import { supabase } from '../../services/supabaseClient';
 import validateEmail from '../../util/EmailVerifier';
 import { createUser } from '../../services/UserService';
 import Person from '../../models/Person';
@@ -64,10 +63,24 @@ export default function UserCreation() {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
-      const userId = userCredential.user.uid;
+      // Crear usuario en Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            first_name: userData.firstName,
+            last_name: userData.lastName,
+            role_id: userData.roleId
+          }
+        }
+      });
+
+      if (authError) throw authError;
+
+      // Crear el objeto de usuario para nuestra base de datos
       const user = new User({
-        id: userId,
+        id: authData.user.id,
         person: new Person({
           name: userData.firstName,
           lastName: userData.lastName,
@@ -82,7 +95,7 @@ export default function UserCreation() {
 
       await createUser(user);
 
-      openSnackbar('¡Usuario creado correctamente!', 'success');
+      openSnackbar('¡Usuario creado correctamente! Se ha enviado un email de confirmación.', 'success');
       setUserData({
         firstName: '',
         lastName: '',
@@ -96,7 +109,7 @@ export default function UserCreation() {
         roleId: ''
       });
     } catch (error) {
-      openSnackbar('Error al registrar usuario en Firebase.', 'error');
+      openSnackbar(error.message || 'Error al registrar usuario.', 'error');
     }
   };
 
