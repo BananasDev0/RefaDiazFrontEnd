@@ -3,7 +3,7 @@ import User from '../models/User';
 
 
 export const createUser = async(userData) => {
-  const result = await axios.post('/user', userData);
+  const result = await axios.post('/users', userData);
 
   return result.response ? new User(result.response) : [];
 }
