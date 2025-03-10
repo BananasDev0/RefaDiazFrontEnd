@@ -72,7 +72,8 @@ export default function UserCreation() {
             first_name: userData.firstName,
             last_name: userData.lastName,
             role_id: userData.roleId
-          }
+          },
+          emailRedirectTo: undefined
         }
       });
 
@@ -95,7 +96,7 @@ export default function UserCreation() {
 
       await createUser(user);
 
-      openSnackbar('¡Usuario creado correctamente! Se ha enviado un email de confirmación.', 'success');
+      openSnackbar('¡Usuario creado correctamente!', 'success');
       setUserData({
         firstName: '',
         lastName: '',
