@@ -8,6 +8,17 @@ import {
 } from '@mui/material';
 import CustomSelectWithAdd from '../../../../../components/CustomSelectWithAdd';
 
+const getBrandTypeLabel = (brandTypeId) => {
+  switch (brandTypeId) {
+    case 1:
+      return 'Automotriz';
+    case 2:
+      return 'Carga Pesada';
+    default:
+      return '';
+  }
+};
+
 export const ModelForm = ({
   brand,
   brands,
@@ -20,6 +31,8 @@ export const ModelForm = ({
   onLastYearChange,
   onModelAdded
 }) => {
+  const sortedBrands = [...brands].sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <Grid container spacing={2} sx={{ mb: 2 }}>
       <Grid item xs={6}>
@@ -35,8 +48,10 @@ export const ModelForm = ({
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
-            {brands.map((brand) => (
-              <MenuItem key={brand.id} value={brand.id}>{brand.name}</MenuItem>
+            {sortedBrands.map((brand) => (
+              <MenuItem key={brand.id} value={brand.id}>
+                {brand.name} ({getBrandTypeLabel(brand.brandTypeId)})
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
