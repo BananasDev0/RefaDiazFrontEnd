@@ -67,13 +67,17 @@ const CarModelListContainer = () => {
     setTabValue(newValue);
   };
 
-  const filteredModels = useMemo(() => {
-    return carModels.filter(model => {
-      const matchesSearch = model.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = tabValue === 0 ? model.brand.brandTypeId === 1 : model.brand.brandTypeId === 2;
-      return matchesSearch && matchesType;
-    });
-  }, [carModels, searchTerm, tabValue]);
+  const automotrizModels = useMemo(() => {
+    return carModels
+      .filter(model => model.brand.brandTypeId === 1)
+      .filter(model => model.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [carModels, searchTerm]);
+
+  const cargaPesadaModels = useMemo(() => {
+    return carModels
+      .filter(model => model.brand.brandTypeId === 2)
+      .filter(model => model.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [carModels, searchTerm]);
 
   if (loading) {
     return (
@@ -82,9 +86,6 @@ const CarModelListContainer = () => {
       </Box>
     );
   }
-
-  const automotrizModels = filteredModels.filter(model => model.brand.brandTypeId === 1);
-  const cargaPesadaModels = filteredModels.filter(model => model.brand.brandTypeId === 2);
 
   return (
     <Box>
