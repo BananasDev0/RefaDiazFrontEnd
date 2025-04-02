@@ -35,7 +35,7 @@ export const RadiatorForm = ({ product, handleChange, readOnly }) => {
                 label="Comentarios"
                 variant="outlined"
                 multiline
-                rows={4}
+                rows={8} // Aumentar la altura del campo de comentarios
                 sx={{ mt: 4 }}
                 value={product.comments || ''}
                 onChange={(e) => handleChange(e, 'comments')}

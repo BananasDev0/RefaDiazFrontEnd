@@ -24,8 +24,8 @@ export const ProviderForm = ({
           onItemAdded={onProviderCreation}
           dialogFields={[
             { name: 'name', label: 'Nombre del Proveedor', type: 'text', required: true },
-            { name: 'phoneNumber', label: 'Número de Teléfono', type: 'tel' },
-            { name: 'address', label: 'Dirección', type: 'text' },
+            { name: 'phoneNumber', label: 'Número de Teléfono', type: 'tel', required: true },
+            { name: 'address', label: 'Dirección', type: 'text', required: true },
             { name: 'comments', label: 'Comentarios', type: 'text' },
           ]}
         />

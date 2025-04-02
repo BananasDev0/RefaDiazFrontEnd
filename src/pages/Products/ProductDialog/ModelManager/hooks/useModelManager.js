@@ -43,10 +43,7 @@ export const useModelManager = () => {
 
   const handleCarModelAdded = () => {
     setProduct(modifyAndClone(product, 'carModels', [...product.carModels, productModel]));
-    setProductModel(new ProductCarModel({
-      carModel: productModel.carModel,
-      carModelId: productModel.carModelId
-    }));
+    setProductModel(new ProductCarModel({}));
   };
 
   const handleOnItemAdded = async (elements, newItem) => {

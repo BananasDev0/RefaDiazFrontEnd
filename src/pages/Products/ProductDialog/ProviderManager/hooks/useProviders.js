@@ -25,6 +25,7 @@ export const useProviders = () => {
     try {
       const newProvider = await createProvider(new Provider(newProviderData));
       setProviders([...providers, newProvider]);
+      openSnackbar(`Proveedor creado correctamente`, 'success');
       return newProvider.id;
     } catch (error) {
       openSnackbar(`Error al crear el proveedor: ${error.message}`, 'error');

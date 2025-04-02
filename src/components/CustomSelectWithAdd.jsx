@@ -12,9 +12,14 @@ const CustomSelectWithAdd = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [formValues, setFormValues] = useState({});
+  const [errors, setErrors] = useState({});
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setFormValues({});
+    setErrors({});
+  };
 
   const handleSelectChange = (event) => {
     const selected = elements.find(item => item.id === event.target.value);
@@ -23,7 +28,26 @@ const CustomSelectWithAdd = ({
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    dialogFields.forEach(field => {
+      if (field.required && (!formValues[field.name] || formValues[field.name].trim() === '')) {
+        newErrors[field.name] = 'Este campo es obligatorio';
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleAddNewItem = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     const newItemWithoutId = { ...formValues };
   
     if (onItemAdded) {
@@ -37,15 +61,24 @@ const CustomSelectWithAdd = ({
     }
   
     setFormValues({});
+    setErrors({});
     handleClose();
   };
   
-
   const handleInputChange = (event) => {
+    const { name, value } = event.target;
     setFormValues({
       ...formValues,
-      [event.target.name]: event.target.value
+      [name]: value
     });
+    
+    // Limpiar error cuando el usuario escribe
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null
+      });
+    }
   };
 
   return (
@@ -80,7 +113,7 @@ const CustomSelectWithAdd = ({
           {dialogFields.map((field) => (
             <TextField
               key={field.name}
-              autoFocus
+              autoFocus={field.name === dialogFields[0].name}
               name={field.name}
               margin="dense"
               id={field.name}
@@ -90,6 +123,9 @@ const CustomSelectWithAdd = ({
               variant="standard"
               value={formValues[field.name] || ''}
               onChange={handleInputChange}
+              required={field.required}
+              error={Boolean(errors[field.name])}
+              helperText={errors[field.name]}
             />
           ))}
         </DialogContent>

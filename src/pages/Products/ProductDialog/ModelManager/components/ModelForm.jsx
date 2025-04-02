@@ -81,7 +81,7 @@ export const ModelForm = ({
           label="Año Inicial"
           type="number"
           variant="outlined"
-          value={productModel.initialYear}
+          value={productModel.initialYear || ''}
           onChange={(e) => onStartYearChange(e.target.value)}
           fullWidth
         />
@@ -91,7 +91,7 @@ export const ModelForm = ({
           label="Año Final"
           type="number"
           variant="outlined"
-          value={productModel.lastYear}
+          value={productModel.lastYear || ''}
           onChange={(e) => onLastYearChange(e.target.value)}
           fullWidth
         />
