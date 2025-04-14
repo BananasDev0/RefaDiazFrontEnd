@@ -13,6 +13,7 @@ import { ProductLoadingProvider } from './ProductLoadingContext';
 import { ProductDialogNavigationProvider } from './ProductDialog/ProductDialogNavigationContext';
 import { ProductDialogFormProvider } from './ProductDialog/ProductDialogFormContext';
 import { ProductDialogImageProvider } from './ProductDialog/ProductDialogImageContext';
+import { Box } from '@mui/material';
 
 export default function ProductsPage() {
   return (
@@ -24,6 +25,7 @@ export default function ProductsPage() {
               <ProductDialogNavigationProvider>
                 <ProductLoadingProvider>
                   <ProductsNavigationBar />
+                  <Box mt={2}></Box>
                   <Routes>
                     <Route path="/" element={<ProductTypeSelector />} />
                     <Route path="list/*" element={<SearchWrapper />}>

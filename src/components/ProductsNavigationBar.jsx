@@ -57,11 +57,11 @@ const ProductsNavigationBar = () => {
                 };
 
                 return isLastVisible ? (
-                    <Typography color="text.primary" key={to}>
+                    <Typography color="text.primary" key={to} sx={{ fontSize: '1.1rem' }}>
                         {title}
                     </Typography>
                 ) : (
-                    <Link component={RouterLink} to={to} key={to} onClick={handleClick}>
+                    <Link component={RouterLink} to={to} key={to} onClick={handleClick} sx={{ fontSize: '1.1rem' }}>
                         {title}
                     </Link>
                 );

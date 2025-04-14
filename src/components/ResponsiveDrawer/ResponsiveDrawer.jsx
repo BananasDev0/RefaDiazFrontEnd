@@ -6,7 +6,6 @@ const ResponsiveDrawer = ({ open, handleDrawerClose, navigate }) => {
   const responsive = useMobile(); // 'sm' para dispositivos móviles
 
   const handleMenuClick = (path) => {
-    console.log('navigating to', path)
     navigate(path);
     handleDrawerClose();
   };

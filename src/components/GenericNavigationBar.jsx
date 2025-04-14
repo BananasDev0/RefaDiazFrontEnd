@@ -32,11 +32,11 @@ const GenericNavigationBar = () => {
                 const isLastVisible = index === originalPathnames.length - 1;
 
                 return isLastVisible ? (
-                    <Typography color="text.primary" key={to}>
+                    <Typography color="text.primary" key={to} sx={{ fontSize: '1.1rem' }}>
                         {title}
                     </Typography>
                 ) : (
-                    <Link component={RouterLink} to={to} key={to}>
+                    <Link component={RouterLink} to={to} key={to} sx={{ fontSize: '1.1rem' }}>
                         {title}
                     </Link>
                 );

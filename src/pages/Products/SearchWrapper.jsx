@@ -1,6 +1,6 @@
 // src/pages/Products/SearchWrapper.jsx
 import { Outlet } from 'react-router-dom';
-import { Box, Fab } from '@mui/material';
+import { Box, Fab, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ProductDialog from './ProductDialog/ProductDialog';
 import CustomSearchBar from '../../components/CustomSearchBar';
@@ -18,14 +18,16 @@ const SearchWrapper = () => {
             <Outlet />
           </Box>
         </Box>
-        <Fab
-          color="primary"
-          aria-label="add"
-          sx={{ position: 'absolute', bottom: 16, right: 16 }}
-          onClick={() => openDialog('create')}
-        >
-          <AddIcon />
-        </Fab>
+        <Tooltip title="Agregar nuevo producto">
+          <Fab
+            color="primary"
+            aria-label="add"
+            sx={{ position: 'absolute', bottom: 16, right: 16 }}
+            onClick={() => openDialog('create')}
+          >
+            <AddIcon />
+          </Fab>
+        </Tooltip>
         <ProductDialog />
       </Box>
     </Box>

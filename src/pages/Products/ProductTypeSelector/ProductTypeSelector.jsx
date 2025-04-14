@@ -1,9 +1,9 @@
 // src/pages/Products/ProductTypeSelector/ProductTypeSelector.jsx
 import { Grid } from '@mui/material';
 import ProductCard from './ProductCard';
-import RadiatorImg from '/src/assets/radiator.jpeg';
-import CapsImg from '/src/assets/caps.jpeg';
-import FansImg from '/src/assets/fans.jpeg';
+import RadiatorImg from '/src/assets/radiator.png';
+import CapsImg from '/src/assets/cap.png';
+import FansImg from '/src/assets/fan.png';
 import { ProductTypes } from '../ProductsConstants';
 import { useProductSelectionContext } from '../ProductSelectionContext';
 import { useNavigate } from 'react-router-dom';
