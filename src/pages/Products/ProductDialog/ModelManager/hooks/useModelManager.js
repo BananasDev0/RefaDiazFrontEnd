@@ -46,6 +46,19 @@ export const useModelManager = () => {
     setProductModel(new ProductCarModel({}));
   };
 
+  const handleCopyModel = (modelToCopy) => {
+    const brandOfModel = brands.find(b => b.id === modelToCopy.carModel.brand.id);
+    if (brandOfModel) {
+      handleBrandChange({ target: { value: brandOfModel.id } });
+    }
+    setProductModel(new ProductCarModel({
+      carModelId: modelToCopy.carModelId,
+      carModel: modelToCopy.carModel,
+      initialYear: modelToCopy.initialYear,
+      lastYear: modelToCopy.lastYear
+    }));
+  };
+
   const handleOnItemAdded = async (elements, newItem) => {
     const newVehicleModel = new CarModel({
       brandId: selectedBrand.id,
@@ -110,6 +123,7 @@ export const useModelManager = () => {
       handleStartYearChange,
       handleLastYearChange,
       handleCarModelAdded,
+      handleCopyModel,
       handleOnItemAdded,
       handleConfirmForceCreate,
       resetConflictState,

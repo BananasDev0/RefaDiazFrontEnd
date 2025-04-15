@@ -21,6 +21,7 @@ const ModelManager = ({ readOnly = false }) => {
         {!readOnly && (
           <>
             <ModelForm
+              key={state.selectedBrand ? state.selectedBrand.id : 'no-brand-selected'}
               brand={state.selectedBrand}
               brands={state.brands}
               models={state.models}
@@ -48,6 +49,7 @@ const ModelManager = ({ readOnly = false }) => {
           models={state.product.carModels}
           onDelete={handlers.handleDeleteModel}
           readOnly={readOnly}
+          onCopy={handlers.handleCopyModel}
         />
       </ExpandableCard>
 

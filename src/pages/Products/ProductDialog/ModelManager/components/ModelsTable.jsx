@@ -7,8 +7,9 @@ import {
   IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-export const ModelsTable = ({ models, onDelete, readOnly = false }) => {
+export const ModelsTable = ({ models, onDelete, readOnly = false, onCopy }) => {
   return (
     <Table size="small" sx={{ mt: 4 }}>
       <TableHead>
@@ -31,6 +32,9 @@ export const ModelsTable = ({ models, onDelete, readOnly = false }) => {
               <TableCell align="right" key={`actions-${productCarModel.id}`}>
                 <IconButton onClick={() => onDelete(index)} aria-label="delete">
                   <DeleteIcon />
+                </IconButton>
+                <IconButton onClick={() => onCopy(productCarModel)} aria-label="copy">
+                  <ContentCopyIcon />
                 </IconButton>
               </TableCell>
             )}
