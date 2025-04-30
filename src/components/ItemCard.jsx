@@ -9,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-export const ItemCard = ({ item, columns, onClick, menuOptions = [] }) => {
+export const ItemCard = ({ item, columns, onClick, menuOptions = [], cardContentMinHeight }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -43,7 +43,7 @@ export const ItemCard = ({ item, columns, onClick, menuOptions = [] }) => {
               alt={`Imagen de ${item.name}`}
             />
           )}
-          <CardContent sx={{ width: '100%', minHeight: 150 }}>
+          <CardContent sx={{ width: '100%', minHeight: cardContentMinHeight }}>
             {columns.map((column) => {
               if (column.field === 'name') {
                 return (

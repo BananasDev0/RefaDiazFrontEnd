@@ -14,7 +14,7 @@ const CarModelList = ({ carModels, onCarModelSelect, handleOnDelete }) => {
 
   return (
     <div>
-      <ItemsCardList rows={rows} columns={columns} itemCardProps={{onClick: onCarModelSelect,
+      <ItemsCardList rows={rows} columns={columns} cardContentMinHeight={80} itemCardProps={{ onClick: onCarModelSelect,
         menuOptions: [
           {
             label: 'Eliminar',
