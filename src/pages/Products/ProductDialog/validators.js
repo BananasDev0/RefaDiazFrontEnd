@@ -5,7 +5,6 @@ export const STEP_VALIDATORS = {
     [DIALOG_STEPS.BASIC_INFO]: {
         [ProductTypes.RADIATOR]: (product) => {
             return Boolean(
-                product?.dpi &&
                 product?.stockCount
             );
         }

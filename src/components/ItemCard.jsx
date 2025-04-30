@@ -43,27 +43,20 @@ export const ItemCard = ({ item, columns, onClick, menuOptions = [] }) => {
               alt={`Imagen de ${item.name}`}
             />
           )}
-          <CardContent sx={{ width: '100%' }}>
-            {columns.map((column) => (
-              <Box key={column.field} sx={{ display: 'flex', justifyContent: 'center', marginBottom: 1 }}>
-                {column.showLabel !== false && (
-                  <Typography
-                    sx={{
-                      marginRight: 1,
-                      fontWeight: 'bold',
-                      fontSize: '12px'
-                    }}
-                    color="textSecondary"
-                  >
-                    {column.headerName}:
-                  </Typography>
-                )}
-                <Typography sx={{ fontSize: '12px', ...(column.valueStyle || {}) }}>
-                  {column.field === 'dpi' ? item[column.field] : ''}
-                  {column.field === 'name' ? (item[column.field].length > 20 ? item[column.field].slice(0, 20) + '...' : item[column.field]) : ''}
-                </Typography>
-              </Box>
-            ))}
+          <CardContent sx={{ width: '100%', minHeight: 150 }}>
+            {columns.map((column) => {
+              if (column.field === 'name') {
+                return (
+                  <Box key={column.field} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 1 }}>
+                    <Typography sx={{ fontSize: '12px', textAlign: 'center', ...(column.valueStyle || {}) }}>
+                      {item[column.field]}
+                    </Typography>
+                  </Box>
+                );
+              }
+
+              return null; 
+            })}
           </CardContent>
         </CardActionArea>
       </Tooltip>
