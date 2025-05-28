@@ -9,8 +9,8 @@ const theme = createTheme({
       main: '#D9232D', // rojoPrincipal
     },
     background: {
-      default: '#F4F6F8', // grisClaroFondo
-      paper: '#FFFFFF', // blancoPuro
+      default: '#FFFFFF', // blancoOriginal
+      paper: '#F4F6F8', // blancoPuro
     },
     text: {
       primary: '#333333', // grisTextoPrincipal

@@ -1,48 +1,86 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import {
+  Snackbar,
+  Alert,
+  type AlertColor,
+  type SnackbarCloseReason,
+} from '@mui/material';
 import type { ReactNode } from 'react';
 
+interface SnackbarState {
+  open: boolean;
+  message: string;
+  severity: AlertColor;
+  autoHideDuration?: number;
+}
+
 interface SnackbarContextType {
-  showSnackbar: (message: string, severity: 'success' | 'error' | 'warning' | 'info') => void;
+  showSnackbar: (
+    message: string, 
+    severity: AlertColor, 
+    autoHideDuration?: number
+  ) => void;
+  closeSnackbar: () => void;
 }
 
 const SnackbarContext = createContext<SnackbarContextType | undefined>(undefined);
 
 export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Implementación básica del Snackbar o placeholder
-  // En una implementación real, aquí manejarías el estado y la lógica del Snackbar
-  const [snackbar, setSnackbar] = useState<{ message: string; severity: string; open: boolean } | null>(null);
+  const [snackbarState, setSnackbarState] = useState<SnackbarState>({
+    open: false,
+    message: '',
+    severity: 'info',
+    autoHideDuration: 6000,
+  });
 
-  const showSnackbar = (message: string, severity: 'success' | 'error' | 'warning' | 'info') => {
-    console.log(`Snackbar: ${message}, Severity: ${severity}`);
-    // Lógica para mostrar el snackbar
-    // Por ejemplo, podrías usar un estado para controlar la visibilidad y el mensaje del snackbar
-    setSnackbar({ message, severity, open: true }); 
-    // Aquí podrías tener un setTimeout para ocultarlo después de un tiempo
+  const showSnackbar = useCallback((
+    message: string, 
+    severity: AlertColor = 'info', 
+    autoHideDuration: number = 6000
+  ) => {
+    setSnackbarState({
+      open: true,
+      message,
+      severity,
+      autoHideDuration,
+    });
+  }, []);
+
+  const closeSnackbar = useCallback(() => {
+    setSnackbarState(prev => ({
+      ...prev,
+      open: false,
+    }));
+  }, []);
+
+  const handleClose = (
+    _event?: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason,
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    closeSnackbar();
   };
 
-  // Para cerrar el snackbar (ejemplo)
-  // const closeSnackbar = () => setSnackbar(null);
-
   return (
-    <SnackbarContext.Provider value={{ showSnackbar }}>
+    <SnackbarContext.Provider value={{ showSnackbar, closeSnackbar }}>
       {children}
-      {/* Aquí renderizarías tu componente Snackbar si es visible */}
-      {snackbar && snackbar.open && (
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          padding: '10px 20px',
-          background: snackbar.severity === 'error' ? 'red' : snackbar.severity === 'success' ? 'green' : 'blue',
-          color: 'white',
-          borderRadius: '5px',
-          zIndex: 1000,
-        }}>
-          {snackbar.message}
-          <button onClick={() => setSnackbar(null)} style={{ marginLeft: '10px', color: 'white', background: 'transparent', border: '1px solid white'}}>X</button>
-        </div>
-      )}
+      <Snackbar
+        open={snackbarState.open}
+        autoHideDuration={snackbarState.autoHideDuration}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={snackbarState.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarState.message}
+        </Alert>
+      </Snackbar>
     </SnackbarContext.Provider>
   );
 };
