@@ -2,19 +2,20 @@ import { useEffect, useState } from 'react';
 import '../../../styles/brandContainer.css';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import { getAllCarModelsProducts } from '../../../services/CarModelService';
+import { getProductsByType } from '../../../services/ProductService';
 import { useProductSelectionContext } from '../ProductSelectionContext';
 import { useProductSearchContext } from '../ProductSearchContext';
 import { useProductLoadingContext } from '../ProductLoadingContext';
-import { Screens, SearchOptions } from '../ProductsConstants';
+import { ProductTypes, Screens, SearchOptions } from '../ProductsConstants';
 import ProductList from './ProductList';
-import { ProductCarModel } from '../../../models/ProductCarModel';
+import Product from '../../../models/Product';
 import { deleteProduct } from '../../../services/ProductService';
 import { Box, CircularProgress } from '@mui/material';
 import { useProductDialogContext } from '../ProductDialogContext';
 import { StorageAdapter } from '../../../services/StorageAdapter';
 
 const ProductContainer = () => {
-  const [productCarModels, setProductCarModels] = useState([]);
+  const [products, setProducts] = useState([]);
   const [cachedProducts, setCachedProducts] = useState([]); // Cache para mantener los productos
   const { openSnackbar } = useSnackbar();
   const { setSelectedProduct, selectedCarModel, productType } = useProductSelectionContext(); // Obtener el modelId seleccionado
@@ -23,19 +24,19 @@ const ProductContainer = () => {
   const { openDialog } = useProductDialogContext();
 
   const handleProductSelect = (e, item) => {
-    const productCarModel = productCarModels.find(pcm => pcm.product.id === item.id);
-    setSelectedProduct(productCarModel.product, Screens.PRODUCTS);
-    openDialog('view', productCarModel.product.id);
+    const product = products.find(p => p.id === item.id);
+    setSelectedProduct(product, Screens.PRODUCTS);
+    openDialog('view', product.id);
   };
 
-  const handleOnDelete = async (productCarModel) => {
-    console.log('handleOnDelete', productCarModel);
+  const handleOnDelete = async (product) => {
+    console.log('handleOnDelete', product);
     try {
-      let result = await deleteProduct(productCarModel.productId);
+      let result = await deleteProduct(product.id);
       if (result) {
-        const products = productCarModels.filter(pcm => pcm.product.id !== productCarModel.productId);
-        setProductCarModels(products);
-        setCachedProducts(products); // Actualizar el cache
+        const updatedProducts = products.filter(p => p.id !== product.id);
+        setProducts(updatedProducts);
+        setCachedProducts(updatedProducts); // Actualizar el cache
         openSnackbar('Producto eliminado correctamente', 'success');
       } else {
         openSnackbar('Error al eliminar el producto', 'error');
@@ -49,30 +50,52 @@ const ProductContainer = () => {
     setLoading(true);
     const fetchProducts = async () => {
       try {
-        let productCarModelsData = [];
+        let productData = [];
         
         if (searchOption === SearchOptions.PRODUCTS) {
-          productCarModelsData = await getAllCarModelsProducts(productType, selectedCarModel?.id);
-
-          if (Array.isArray(productCarModelsData) && productCarModelsData.length === 0) {
-            openSnackbar('No hay datos para el modelo seleccionado', 'info');
+          if (selectedCarModel?.id) {
+            // Si hay modelo seleccionado, usar la función existente
+            productData = await getAllCarModelsProducts(productType, selectedCarModel.id);
+            
+            if (Array.isArray(productData) && productData.length === 0) {
+              openSnackbar('No hay datos para el modelo seleccionado', 'info');
+            }
+            
+            // Extraer productos únicos de los ProductCarModels
+            const uniqueProductsMap = new Map();
+            productData.forEach(pcm => {
+              if (!uniqueProductsMap.has(pcm.product.id)) {
+                uniqueProductsMap.set(pcm.product.id, new Product(pcm.product));
+              }
+            });
+            
+            productData = Array.from(uniqueProductsMap.values());
+          } else {
+            // Si no hay modelo seleccionado, traer todos los productos de tipo 1
+            productData = await getProductsByType(ProductTypes.RADIATOR);
+            
+            if (Array.isArray(productData) && productData.length === 0) {
+              openSnackbar('No hay productos disponibles', 'info');
+            }
+            
+            // Convertir directamente a productos
+            productData = productData.map(product => new Product(product));
           }
         }
         
-        productCarModelsData = productCarModelsData.map(productCarModel => new ProductCarModel(productCarModel));
-        const productsWithImages = await Promise.all(productCarModelsData.map(async (productCarModel) => {
-          let file = productCarModel.product.files.find(file => file.orderId === 1);
+        const productsWithImages = await Promise.all(productData.map(async (product) => {
+          let file = product.files.find(file => file.orderId === 1);
           if (file) {
             const imageUrl = await StorageAdapter.getFileURL(file.storagePath).catch(error => {
-              console.error('Error al obtener url imagen de storage para producto:', productCarModel.product.name, error);
+              console.error('Error al obtener url imagen de storage para producto:', product.name, error);
               return '';
             });
-            return { ...productCarModel, imageUrl };
+            return { ...product, imageUrl };
           }
-          return productCarModel;
+          return product;
         }));
         
-        setProductCarModels(productsWithImages);
+        setProducts(productsWithImages);
         setCachedProducts(productsWithImages); // Guardar en cache
         setLoading(false);
       } catch (error) {
@@ -88,11 +111,11 @@ const ProductContainer = () => {
     const filterProducts = () => {
       if (searchTerm) {
         const filteredProducts = cachedProducts.filter(product => 
-          product.product.name.toLowerCase().includes(searchTerm.toLowerCase())
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
-        setProductCarModels(filteredProducts);
+        setProducts(filteredProducts);
       } else {
-        setProductCarModels(cachedProducts); // Restablecer a los productos en cache si no hay término de búsqueda
+        setProducts(cachedProducts); // Restablecer a los productos en cache si no hay término de búsqueda
       }
     };
     filterProducts();
@@ -107,7 +130,7 @@ const ProductContainer = () => {
   }
 
   return (
-    <ProductList products={productCarModels} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete} />
+    <ProductList products={products} onProductSelect={handleProductSelect} handleOnDelete={handleOnDelete} />
   );
 };
 

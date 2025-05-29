@@ -15,11 +15,6 @@ const getCarModels = async(name = '') => {
   return Array.isArray(result.response) ? result.response.map(model => new CarModel(model)) : [];
 }
 
-const getVehicleModelRadiators = async (id) => {
-  const result = await axios.get(`/model/${id}/radiators`);
-  return Array.isArray(result.response) ? result.response.map(element => new ProductCarModel(element)) : [];
-}
-
 const getCarModelProducts = async (id, productTypeId, searchTerm) => {
   const result = await axios.get(`/model/${id}/products?productTypeId=${productTypeId}&searchTerm=${searchTerm}`);
   return result.response;
@@ -35,6 +30,11 @@ const deleteCarModel = async (id) => {
   return result.statusCode === 200;
 }
 
+const updateCarModel = async (id, carModelData) => {
+  const result = await axios.put(`/models?id=${id}`, carModelData);
+  return result.statusCode === 200 ? new CarModel(result.response) : false;
+}
 
-export { createCarModel, getCarModels, getVehicleModelRadiators, 
-  getCarModelProducts, getAllCarModelsProducts, deleteCarModel};
+
+export { createCarModel, getCarModels, 
+  getCarModelProducts, getAllCarModelsProducts, deleteCarModel, updateCarModel};

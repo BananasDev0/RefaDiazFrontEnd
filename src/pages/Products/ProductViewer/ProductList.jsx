@@ -8,12 +8,12 @@ const columns = [
 const ProductList = ({ products, onProductSelect, handleOnDelete }) => {
   return (
     <div>
-      <ItemsCardList rows={products.map(productCarModel => ({
-        id: productCarModel.product.id,
-        dpi: productCarModel.product.dpi,
-        productId: productCarModel.product.id,
-        name: productCarModel.product.name,
-        imageUrl: productCarModel.imageUrl // Se muestra la imagen
+      <ItemsCardList rows={products.map(product => ({
+        id: product.id,
+        dpi: product.dpi,
+        productId: product.id,
+        name: product.name,
+        imageUrl: product.imageUrl // Se muestra la imagen
       }))} columns={columns}
         cardContentMinHeight={150}
         itemCardProps={{

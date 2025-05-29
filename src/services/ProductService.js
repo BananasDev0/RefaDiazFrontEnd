@@ -26,6 +26,11 @@ const getProductVehicleModels = async (productId) => {
     return response.data;
 }
 
+const getProductsByType = async (productTypeId) => {
+    const response = await axiosInstance.get(`/products?productTypeId=${productTypeId}`);
+    return response.response;
+}
+
 const createProductFiles = async (productId, files) => {
     const response = await axiosInstance.post(`/product/${productId}/files`, files);
     return response.data;
@@ -47,4 +52,4 @@ const updateProduct = async (productId, product) => {
 }
 
 export { createProductVehicles, createProductPrices, getProductPrices, updateProduct,
-    getProductVehicleModels, createProductFiles, createProduct, getProductById, deleteProduct }
+    getProductVehicleModels, createProductFiles, createProduct, getProductById, deleteProduct, getProductsByType }

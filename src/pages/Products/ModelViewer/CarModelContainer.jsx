@@ -2,11 +2,11 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { getCarModelsByBrandId } from '../../../services/BrandService';
 import { useSnackbar } from '../../../components/SnackbarContext';
 import CarModelList from './CarModelList';
-import { deleteCarModel, getCarModels } from '../../../services/CarModelService';
+import { deleteCarModel, getCarModels, updateCarModel } from '../../../services/CarModelService';
 import { useProductSelectionContext } from '../ProductSelectionContext';
 import { useProductSearchContext } from '../ProductSearchContext';
 import { useProductLoadingContext } from '../ProductLoadingContext';
-import { Box, CircularProgress, Tabs, Tab } from '@mui/material';
+import { Box, CircularProgress, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from '../../../constants/paths';
 import { CSSTransition } from 'react-transition-group';
@@ -29,6 +29,9 @@ function TabPanel(props) {
 const CarModelListContainer = () => {
   const [carModels, setCarModels] = useState([]);
   const [tabValue, setTabValue] = useState(0);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedModelForEdit, setSelectedModelForEdit] = useState(null);
+  const [editedModelName, setEditedModelName] = useState('');
   const { openSnackbar } = useSnackbar();
   const { selectedBrand, setSelectedCarModel } = useProductSelectionContext();
   const { searchTerm } = useProductSearchContext();
@@ -39,6 +42,49 @@ const CarModelListContainer = () => {
     setSelectedCarModel(carModel);
     navigate(PATHS.PRODUCTS_LIST);
   }, [setSelectedCarModel, navigate]);
+
+  const handleOnEdit = useCallback((carModel) => {
+    setSelectedModelForEdit(carModel);
+    setEditedModelName(carModel.name);
+    setEditModalOpen(true);
+  }, []);
+
+  const handleCloseEditModal = useCallback(() => {
+    setEditModalOpen(false);
+    setSelectedModelForEdit(null);
+    setEditedModelName('');
+  }, []);
+
+  const handleSaveEdit = useCallback(async () => {
+    if (!selectedModelForEdit || !editedModelName.trim()) {
+      openSnackbar('El nombre del modelo no puede estar vacío', 'warning');
+      return;
+    }
+
+    try {
+      const updatedModel = await updateCarModel(selectedModelForEdit.id, {
+        name: editedModelName.trim(),
+        brandId: selectedModelForEdit.brandId
+      });
+
+      if (updatedModel) {
+        setCarModels(prevModels => 
+          prevModels.map(model => 
+            model.id === selectedModelForEdit.id 
+              ? { ...model, name: editedModelName.trim() }
+              : model
+          )
+        );
+        openSnackbar('Modelo actualizado correctamente', 'success');
+        handleCloseEditModal();
+      } else {
+        openSnackbar('Error al actualizar el modelo', 'error');
+      }
+    } catch (error) {
+      console.error("Error updating car model:", error);
+      openSnackbar(`Error al actualizar el modelo: ${error.errorMessage || 'Error desconocido'}`, 'error');
+    }
+  }, [selectedModelForEdit, editedModelName, openSnackbar, handleCloseEditModal]);
 
   const handleOnDelete = useCallback(async (carModel) => {
     try {
@@ -160,12 +206,39 @@ const CarModelListContainer = () => {
                     carModels={models}
                     onCarModelSelect={onCarModelSelect}
                     handleOnDelete={handleOnDelete}
+                    handleOnEdit={handleOnEdit}
                   />
                 </TabPanel>
               );
           })}
         </div>
       </CSSTransition>
+
+      {/* Modal de edición */}
+      <Dialog open={editModalOpen} onClose={handleCloseEditModal} maxWidth="sm" fullWidth>
+        <DialogTitle>Editar Modelo</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Nombre del Modelo"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={editedModelName}
+            onChange={(e) => setEditedModelName(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseEditModal} color="secondary">
+            Cancelar
+          </Button>
+          <Button onClick={handleSaveEdit} variant="contained" color="primary">
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

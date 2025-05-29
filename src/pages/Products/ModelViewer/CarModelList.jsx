@@ -1,7 +1,7 @@
 import ItemsCardList from "../../../components/ItemCardList";
 
 // Componente VehicleModelList
-const CarModelList = ({ carModels, onCarModelSelect, handleOnDelete }) => {
+const CarModelList = ({ carModels, onCarModelSelect, handleOnDelete, handleOnEdit }) => {
   const columns = [
     { field: 'name', headerName: 'Modelo', showLabel: false, valueStyle: { textTransform: 'uppercase', fontWeight: 'bold', fontSize: '18px'} },
   ];
@@ -22,10 +22,7 @@ const CarModelList = ({ carModels, onCarModelSelect, handleOnDelete }) => {
           },
           {
             label: 'Editar',
-            onClick: (item) => {
-              // Lógica para editar el item
-              console.log('Editar', item);
-            }
+            onClick: handleOnEdit
           }
         ]
       }} />
