@@ -1,20 +1,24 @@
 import ProductCardList from "../../../components/ProductCardList";
 
 const ProductList = ({ products, onProductSelect, handleOnDelete }) => {
-  const menuOptions = [
-    {
-      label: 'Eliminar',
-      onClick: handleOnDelete
-    }
-  ];
-
   return (
     <div>
-      <ProductCardList 
-        products={products}
-        onProductSelect={onProductSelect} 
-        menuOptions={menuOptions}
-      />
+      <ItemsCardList rows={products.map(product => ({
+        id: product.id,
+        dpi: product.dpi,
+        productId: product.id,
+        name: product.name,
+        imageUrl: product.imageUrl // Se muestra la imagen
+      }))} columns={columns}
+        cardContentMinHeight={150}
+        itemCardProps={{
+          onClick: onProductSelect, menuOptions: [
+            {
+              label: 'Eliminar',
+              onClick: handleOnDelete
+            }
+          ]
+        }} />
     </div>
   );
 };
