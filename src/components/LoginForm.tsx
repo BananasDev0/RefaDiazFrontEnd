@@ -53,7 +53,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ logoSrc, isMobile }) => {
         src={logoSrc}
         alt="Logo Radiadores Diaz"
         sx={{
-          width: isMobile ? 120 : 150,
+          width: isMobile ? 170 : 200,
           height: 'auto',
           mb: 2,
         }}

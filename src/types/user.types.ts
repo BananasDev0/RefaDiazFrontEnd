@@ -1,69 +1,50 @@
-/**
- * Tipos relacionados con usuarios y autenticación
- */
+// src/types/user.types.ts
 
-// Enum para nombres de roles
-export enum RoleName {
-  ADMIN = 'ADMINISTRADOR',
-  EMPLOYEE = 'EMPLEADO'
-}
+export type RoleName = 'ADMINISTRADOR' | 'EMPLEADO';
 
-// Interfaz para Role
 export interface Role {
   id: number;
-  description: string;
+  description: RoleName;
 }
 
-// Interfaz para Person con campos relevantes del negocio
 export interface Person {
-  id: number;
+  id?: number;
   name: string;
   lastName?: string;
   email: string;
   phoneNumber?: string;
   address?: string;
-  birthDate?: string;
+  birthDate?: string; // ISO 8601 string date
+  isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
 
-// Interfaz para User con UUID de Supabase
 export interface User {
-  id: string; // UUID de Supabase
+  id: string; // UUID from Supabase Auth
   person?: Person;
   role?: Role;
   isActive?: boolean;
-  lastLogin?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
-// Interfaz para formulario de login
-export interface LoginFormInputs {
+export type LoginFormInputs = {
   email: string;
   password: string;
-}
+};
 
-// Tipos adicionales útiles para autenticación
-export interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
-}
-
-export interface RegisterFormInputs {
+export type RegisterFormInputs = {
   name: string;
   lastName?: string;
   email: string;
   password: string;
   confirmPassword: string;
   phone?: string;
-}
+};
 
-// Tipo para respuesta de autenticación
 export interface AuthResponse {
   user: User;
   token?: string;
   refreshToken?: string;
-} 
+}

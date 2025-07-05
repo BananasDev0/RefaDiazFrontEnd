@@ -6,7 +6,7 @@ import {
 import { useMobile } from '../contexts/MobileProvider';
 import { LoginForm } from '../components/LoginForm';
 import { Copyright } from '../components/common/Copyright';
-import Logo from '../assets/Logo_RD.png';
+import Logo from '../assets/LOGO CON CONTORNO BLANCO RD.png';
 
 export const Login: React.FC = () => {
   const { isMobile } = useMobile();
