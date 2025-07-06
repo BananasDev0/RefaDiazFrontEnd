@@ -1,5 +1,5 @@
 // src/components/layout/Header.tsx
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, IconButton, Typography, Box, Menu, MenuItem, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -15,7 +15,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ handleDrawerOpen }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
-  const user = getStoredUser();
+  const user = useMemo(() => getStoredUser(), []);
   const { logout } = useAuth();
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
