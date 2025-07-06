@@ -1,6 +1,11 @@
 // src/types/user.types.ts
 
-export type RoleName = 'ADMINISTRADOR' | 'EMPLEADO';
+export const RoleName = {
+  ADMIN: 'ADMINISTRADOR',
+  EMPLOYEE: 'EMPLEADO',
+} as const;
+
+export type RoleName = typeof RoleName[keyof typeof RoleName];
 
 export interface Role {
   id: number;
