@@ -8,6 +8,7 @@ import { SnackbarProvider } from './contexts/SnackbarContext'
 import { MobileProvider } from './contexts/MobileProvider'
 import { Login } from './pages/Login'
 import { AuthGuard } from './components/AuthGuard'
+import { Dashboard } from './pages/Dashboard'
 
 // Crear instancia de QueryClient
 const queryClient = new QueryClient({
@@ -18,17 +19,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-
-// Componente temporal para rutas
-function HomePage() {
-  return <div>Página Principal</div>
-}
-
-// Componente de Login ya importado desde ./pages/Login
-
-function DashboardPage() {
-  return <div>Dashboard</div>
-}
 
 // Componente principal con todos los proveedores
 function App() {
@@ -44,19 +34,11 @@ function App() {
                   path="/"
                   element={
                     <AuthGuard>
-                      <HomePage />
+                      <Dashboard />
                     </AuthGuard>
                   }
                 />
                 <Route path="/login" element={<Login />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <AuthGuard>
-                      <DashboardPage />
-                    </AuthGuard>
-                  }
-                />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>
