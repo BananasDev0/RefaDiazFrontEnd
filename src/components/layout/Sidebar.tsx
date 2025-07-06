@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { Theme, CSSObject } from '@mui/material';
-import { Drawer as MuiDrawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, styled, IconButton, Tooltip } from '@mui/material';
+import { Drawer as MuiDrawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Toolbar, styled, Theme, CSSObject, IconButton, Tooltip } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { mainNavItems, adminNavItems } from '../../constants/navItems.tsx';
 
@@ -41,14 +40,17 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   flexShrink: 0,
   whiteSpace: 'nowrap',
   boxSizing: 'border-box',
-  ...(open && {
-    ...openedMixin(theme),
-    '& .MuiDrawer-paper': openedMixin(theme),
-  }),
-  ...(!open && {
-    ...closedMixin(theme),
-    '& .MuiDrawer-paper': closedMixin(theme),
-  }),
+  '& .MuiDrawer-paper': {
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: '0 16px 16px 0',
+    boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.05)',
+    ...(open && {
+      ...openedMixin(theme),
+    }),
+    ...(!open && {
+      ...closedMixin(theme),
+    }),
+  },
 }));
 
 interface SidebarProps {
@@ -82,6 +84,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, handleDrawerClose }) => 
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
+                  py: 1.5,
+                  transition: 'background-color 0.2s ease-in-out',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  },
                 }}
                 onClick={() => handleNavigate(item.path)}
               >
@@ -110,6 +117,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, handleDrawerClose }) => 
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',
                   px: 2.5,
+                  py: 1.5,
+                  transition: 'background-color 0.2s ease-in-out',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  },
                 }}
                 onClick={() => handleNavigate(item.path)}
               >
