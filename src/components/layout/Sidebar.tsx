@@ -61,12 +61,6 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ open, handleDrawerClose }) => {
   const navigate = useNavigate();
 
-  const handleNavigate = (path: string) => {
-    if (open) {
-      navigate(path);
-    }
-  };
-
   return (
     <Drawer variant="permanent" open={open}>
       <DrawerHeader>
@@ -90,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, handleDrawerClose }) => 
                     backgroundColor: 'rgba(0, 0, 0, 0.04)',
                   },
                 }}
-                onClick={() => handleNavigate(item.path)}
+                onClick={() => navigate(item.path)}
               >
                 <ListItemIcon
                   sx={{
@@ -123,7 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, handleDrawerClose }) => 
                     backgroundColor: 'rgba(0, 0, 0, 0.04)',
                   },
                 }}
-                onClick={() => handleNavigate(item.path)}
+                onClick={() => navigate(item.path)}
               >
                 <ListItemIcon
                   sx={{

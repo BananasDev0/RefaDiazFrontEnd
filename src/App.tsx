@@ -9,6 +9,7 @@ import { MobileProvider } from './contexts/MobileProvider'
 import { Login } from './pages/Login'
 import { AuthGuard } from './components/AuthGuard'
 import { Dashboard } from './pages/Dashboard'
+import Providers from './pages/Providers'
 
 // Crear instancia de QueryClient
 const queryClient = new QueryClient({
@@ -37,7 +38,9 @@ function App() {
                       <Dashboard />
                     </AuthGuard>
                   }
-                />
+                >
+                  <Route path="providers" element={<Providers />} />
+                </Route>
                 <Route path="/login" element={<Login />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
