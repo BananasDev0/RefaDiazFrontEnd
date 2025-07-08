@@ -10,6 +10,8 @@ import { Login } from './pages/Login'
 import { AuthGuard } from './components/AuthGuard'
 import { Dashboard } from './pages/Dashboard'
 import Providers from './pages/Providers'
+import Products from './pages/Products'
+import Users from './pages/Users'
 
 // Crear instancia de QueryClient
 const queryClient = new QueryClient({
@@ -31,6 +33,7 @@ function App() {
             <CssBaseline />
             <BrowserRouter>
               <Routes>
+                <Route path="/login" element={<Login />} />
                 <Route
                   path="/"
                   element={
@@ -39,9 +42,12 @@ function App() {
                     </AuthGuard>
                   }
                 >
+                  <Route index element={<Navigate to="/products" replace />} />
+
+                  <Route path="products" element={<Products />} />
                   <Route path="providers" element={<Providers />} />
+                  <Route path="users" element={<Users />} />
                 </Route>
-                <Route path="/login" element={<Login />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>
