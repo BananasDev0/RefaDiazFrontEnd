@@ -1,104 +1,77 @@
-import axios, { type AxiosResponse, AxiosError } from 'axios';
+// src/services/axiosConfig.ts
+import axios, { type AxiosResponse, type AxiosError } from 'axios';
 
-// Crear instancia de Axios con baseURL desde variables de entorno
+interface CustomError extends Error {
+  originalError?: unknown;
+  statusCode?: number;
+}
+
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_REFA_BASE_PATH,
-  timeout: 10000, // 10 segundos de timeout
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Interceptor de solicitud para añadir token JWT
+// --- Interceptor de Solicitud (Request) ---
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Obtener token JWT del localStorage
-    const token = localStorage.getItem('authToken');
-    
+    // CORRECCIÓN: Se usa 'token' en lugar de 'authToken' para que coincida con AuthService.ts
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
     return config;
   },
   (error) => {
+    // Esto se dispara si hay un error al construir la solicitud
     return Promise.reject(error);
   }
 );
 
-// Interceptor de respuesta para manejo de errores y datos
+// --- Interceptor de Respuesta (Response) ---
 axiosInstance.interceptors.response.use(
+  // Esta función se dispara para cualquier código de estado en el rango de 2xx
   (response: AxiosResponse) => {
-    // Si la respuesta es exitosa (2xx), devolver response.data
+    // Devuelve directamente la data de la respuesta, simplificando el manejo en los servicios
     return response.data;
   },
+  // Esta función se dispara para cualquier código de estado fuera del rango de 2xx
   (error: AxiosError) => {
-    let mensajeFormateado = 'Error desconocido';
-    let statusCode = 0;
-    
-    if (error.response) {
-      // El servidor respondió con un código de estado fuera del rango 2xx
-      statusCode = error.response.status;
-      const errorData = error.response.data as { message?: string; error?: string };
+    let formattedMessage = 'Ocurrió un error inesperado.';
+    const statusCode = error.response?.status || 0;
+    const errorData = error.response?.data as { message?: string; error?: string };
+
+    if (statusCode === 401) {
+      // CORRECCIÓN: Se usa 'token' en lugar de 'authToken' para limpiar el storage
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       
-      // Manejar específicamente el error 401
-      if (statusCode === 401) {
-        // Limpiar sesión en caso de error 401 (no autorizado)
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
-        
-        // Opcional: redirigir al login
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
-        
-        mensajeFormateado = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
-      } else {
-        // Formatear mensaje de error para otros códigos de estado
-        if (errorData?.message) {
-          mensajeFormateado = errorData.message;
-        } else if (errorData?.error) {
-          mensajeFormateado = errorData.error;
-        } else {
-          switch (statusCode) {
-            case 400:
-              mensajeFormateado = 'Solicitud incorrecta. Verifica los datos enviados.';
-              break;
-            case 403:
-              mensajeFormateado = 'No tienes permisos para realizar esta acción.';
-              break;
-            case 404:
-              mensajeFormateado = 'Recurso no encontrado.';
-              break;
-            case 422:
-              mensajeFormateado = 'Datos de entrada inválidos.';
-              break;
-            case 500:
-              mensajeFormateado = 'Error interno del servidor. Intenta más tarde.';
-              break;
-            default:
-              mensajeFormateado = `Error del servidor (${statusCode})`;
-          }
-        }
+      // Redirige a la página de login si no estamos ya en ella
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.href = '/login';
       }
+      formattedMessage = 'Tu sesión ha expirado. Por favor, inicia sesión de nuevo.';
+
+    } else if (errorData?.message) {
+      formattedMessage = errorData.message;
+    } else if (errorData?.error) {
+      formattedMessage = errorData.error;
     } else if (error.request) {
-      // La solicitud fue hecha pero no se recibió respuesta
-      mensajeFormateado = 'No se pudo conectar con el servidor. Verifica tu conexión a internet.';
-    } else {
-      // Algo pasó al configurar la solicitud
-      mensajeFormateado = error.message || 'Error al procesar la solicitud';
+      formattedMessage = 'No se pudo conectar con el servidor. Verifica tu conexión a internet.';
+    } else if (error.message) {
+      formattedMessage = error.message;
     }
-    
-    // Crear nuevo error con información adicional
-    const customError = new Error(mensajeFormateado) as Error & {
-      statusCode: number;
-      originalError: AxiosError;
-    };
-    customError.statusCode = statusCode;
+
+    // Creamos un nuevo objeto de error con el mensaje formateado para ser usado en la UI
+    const customError = new Error(formattedMessage) as CustomError;
+    // Podemos adjuntar información extra si es necesario
     customError.originalError = error;
+    customError.statusCode = statusCode;
     
     return Promise.reject(customError);
   }
 );
 
-export default axiosInstance; 
+export default axiosInstance;
