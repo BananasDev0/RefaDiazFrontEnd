@@ -20,7 +20,7 @@ export interface Person {
   phoneNumber?: string;
   address?: string;
   birthDate?: string; // ISO 8601 string date
-  isActive?: boolean;
+  active?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -29,7 +29,7 @@ export interface User {
   id: string; // UUID from Supabase Auth
   person?: Person;
   role?: Role;
-  isActive?: boolean;
+  active?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
