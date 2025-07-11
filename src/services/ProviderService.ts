@@ -37,12 +37,12 @@ export const createProvider = async (providerData: Omit<Provider, 'id'>): Promis
  * Actualiza un proveedor existente.
  */
 export const updateProvider = async (id: number, providerData: Partial<Provider>): Promise<Provider> => {
-  return axiosInstance.put(`/providers/${id}`, providerData);
+  return axiosInstance.put(`/providers?id=${id}`, providerData);
 };
 
 /**
  * Elimina un proveedor por su ID.
  */
 export const deleteProvider = async (id: number): Promise<void> => {
-  return axiosInstance.delete(`/providers/${id}`);
+  return axiosInstance.delete(`/providers?id=${id}`);
 };

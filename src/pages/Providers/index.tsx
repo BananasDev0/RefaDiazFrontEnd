@@ -1,25 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useProviders } from '../../hooks/useProviders';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import type { Provider } from '../../types/provider.types';
 import ProvidersHeader from './ProvidersHeader';
 import { ProvidersToolbar } from './ProvidersToolbar';
 import { ProvidersTable } from './ProvidersTable';
-
-// --- Mock Dialog (as per the plan, this is the last remaining mock) ---
-const MockProviderDialog = ({ open, onClose, provider }: { open: boolean, onClose: () => void, provider: Provider | null }) => {
-    if (!open) return null;
-    return (
-        <Box sx={{ mt: 2, p: 2, border: '1px dashed grey', backgroundColor: 'background.paper' }}>
-            <Typography variant="h6">Diálogo de Proveedor (Mock)</Typography>
-            <Typography sx={{ my: 1 }}>{provider ? `Editando: ${provider.name}` : 'Creando nuevo proveedor'}</Typography>
-            <Button onClick={onClose}>Cerrar</Button>
-        </Box>
-    )
-};
-
-
-// --- Main Assembled Component ---
+import { ProviderDialog } from './ProviderDialog';
+import type { ProviderFormData } from './ProviderForm';
 
 const Providers: React.FC = () => {
   const {
@@ -27,19 +14,32 @@ const Providers: React.FC = () => {
     isLoading,
     isError,
     error,
+    createProvider,
+    updateProvider,
     deleteProvider,
+    isCreating,
+    isUpdating,
   } = useProviders();
 
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [providerToEdit, setProviderToEdit] = useState<Provider | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState(false);
 
   const handleAddProvider = () => {
+    setViewMode(false);
     setProviderToEdit(null);
     setDialogOpen(true);
   };
 
   const handleEditProvider = (provider: Provider) => {
+    setViewMode(false);
+    setProviderToEdit(provider);
+    setDialogOpen(true);
+  };
+
+  const handleViewProvider = (provider: Provider) => {
+    setViewMode(true);
     setProviderToEdit(provider);
     setDialogOpen(true);
   };
@@ -51,8 +51,24 @@ const Providers: React.FC = () => {
   };
 
   const handleCloseDialog = () => {
+    if (isCreating || isUpdating) return; // Prevent closing while submitting
     setDialogOpen(false);
     setProviderToEdit(null);
+    setViewMode(false);
+  };
+
+  const handleFormSubmit = (data: ProviderFormData, providerId?: number) => {
+    if (providerId) {
+      // Update existing provider
+      updateProvider({ id: providerId, data }, {
+        onSuccess: () => handleCloseDialog(),
+      });
+    } else {
+      // Create new provider
+      createProvider(data, {
+        onSuccess: () => handleCloseDialog(),
+      });
+    }
   };
 
   const filteredProviders = useMemo(() => {
@@ -77,13 +93,17 @@ const Providers: React.FC = () => {
       <ProvidersTable
         providers={filteredProviders}
         isLoading={isLoading}
+        onView={handleViewProvider}
         onEdit={handleEditProvider}
         onDelete={handleDeleteProvider}
       />
-      <MockProviderDialog
+      <ProviderDialog
         open={isDialogOpen}
         onClose={handleCloseDialog}
-        provider={providerToEdit}
+        onSubmit={handleFormSubmit}
+        providerToEdit={providerToEdit}
+        isSubmitting={isCreating || isUpdating}
+        viewMode={viewMode}
       />
     </Box>
   );

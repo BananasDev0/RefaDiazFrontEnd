@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, IconButton, Menu, MenuItem, CircularProgress, Typography } from '@mui/material';
+import { Box, IconButton, Menu, MenuItem, CircularProgress, Divider } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import type { Provider } from '../../types/provider.types';
@@ -7,11 +7,12 @@ import type { Provider } from '../../types/provider.types';
 interface ProvidersTableProps {
   providers: Provider[];
   isLoading: boolean;
+  onView: (provider: Provider) => void; // New prop
   onEdit: (provider: Provider) => void;
   onDelete: (provider: Provider) => void;
 }
 
-export const ProvidersTable: React.FC<ProvidersTableProps> = ({ providers, isLoading, onEdit, onDelete }) => {
+export const ProvidersTable: React.FC<ProvidersTableProps> = ({ providers, isLoading, onView, onEdit, onDelete }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedProvider, setSelectedProvider] = useState<null | Provider>(null);
 
@@ -23,6 +24,11 @@ export const ProvidersTable: React.FC<ProvidersTableProps> = ({ providers, isLoa
   const handleMenuClose = () => {
     setAnchorEl(null);
     setSelectedProvider(null);
+  };
+
+  const handleView = () => {
+    if (selectedProvider) onView(selectedProvider);
+    handleMenuClose();
   };
 
   const handleEdit = () => {
@@ -75,7 +81,9 @@ export const ProvidersTable: React.FC<ProvidersTableProps> = ({ providers, isLoa
         disableRowSelectionOnClick
       />
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <MenuItem onClick={handleView}>Ver Detalles</MenuItem>
         <MenuItem onClick={handleEdit}>Editar</MenuItem>
+        <Divider sx={{ my: 0.5 }} />
         <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>Eliminar</MenuItem>
       </Menu>
     </Box>
