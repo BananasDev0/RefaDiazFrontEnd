@@ -1,25 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useProviders } from '../../hooks/useProviders';
-import { Box, CircularProgress, Typography, Button } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import type { Provider } from '../../types/provider.types';
-import ProvidersHeader from './ProvidersHeader'; // Import the real component
+import ProvidersHeader from './ProvidersHeader';
+import { ProvidersToolbar } from './ProvidersToolbar';
+import { ProvidersTable } from './ProvidersTable';
 
-// --- Mock Components (as per the plan) ---
-
-const MockProvidersTable = ({ providers, onEdit, onDelete }: { providers: Provider[], onEdit: (provider: Provider) => void, onDelete: (id: number) => void }) => (
-  <Box sx={{ p: 2, border: '1px dashed grey' }}>
-    <Typography variant="h6">Tabla de Proveedores (Mock)</Typography>
-    <Typography sx={{ my: 1 }}>Mostrando {providers.length} proveedores.</Typography>
-    {providers.map(provider => (
-      <Box key={provider.id} sx={{ display: 'flex', gap: 2, my: 1 }}>
-        <Typography>{provider.name}</Typography>
-        <Button size="small" variant="outlined" onClick={() => onEdit(provider)}>Editar</Button>
-        <Button size="small" variant="outlined" color="error" onClick={() => onDelete(provider.id)}>Eliminar</Button>
-      </Box>
-    ))}
-  </Box>
-);
-
+// --- Mock Dialog (as per the plan, this is the last remaining mock) ---
 const MockProviderDialog = ({ open, onClose, provider }: { open: boolean, onClose: () => void, provider: Provider | null }) => {
     if (!open) return null;
     return (
@@ -32,7 +19,7 @@ const MockProviderDialog = ({ open, onClose, provider }: { open: boolean, onClos
 };
 
 
-// --- Main Component (Phase 1) ---
+// --- Main Assembled Component ---
 
 const Providers: React.FC = () => {
   const {
@@ -45,6 +32,7 @@ const Providers: React.FC = () => {
 
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [providerToEdit, setProviderToEdit] = useState<Provider | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleAddProvider = () => {
     setProviderToEdit(null);
@@ -56,10 +44,9 @@ const Providers: React.FC = () => {
     setDialogOpen(true);
   };
 
-  const handleDeleteProvider = (id: number) => {
-    // NOTE: In a real app, you'd show a confirmation dialog first.
-    if (window.confirm('¿Estás seguro de que quieres eliminar este proveedor?')) {
-      deleteProvider(id);
+  const handleDeleteProvider = (provider: Provider) => {
+    if (window.confirm(`¿Estás seguro de que quieres eliminar a ${provider.name}?`)) {
+      deleteProvider(provider.id);
     }
   };
 
@@ -68,9 +55,16 @@ const Providers: React.FC = () => {
     setProviderToEdit(null);
   };
 
-  if (isLoading) {
-    return <CircularProgress />;
-  }
+  const filteredProviders = useMemo(() => {
+    if (!searchTerm) {
+      return providers;
+    }
+    return providers.filter(provider =>
+      provider.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      provider.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      provider.address.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [providers, searchTerm]);
 
   if (isError) {
     return <Typography color="error">Error: {error?.message || 'Failed to fetch providers'}</Typography>;
@@ -79,8 +73,10 @@ const Providers: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <ProvidersHeader onAddProvider={handleAddProvider} />
-      <MockProvidersTable
-        providers={providers}
+      <ProvidersToolbar onSearchChange={setSearchTerm} />
+      <ProvidersTable
+        providers={filteredProviders}
+        isLoading={isLoading}
         onEdit={handleEditProvider}
         onDelete={handleDeleteProvider}
       />
