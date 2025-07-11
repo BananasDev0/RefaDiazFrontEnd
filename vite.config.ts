@@ -10,8 +10,4 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
   },
-  // Define the environment variable for tests
-  define: {
-    'import.meta.env.VITE_API_REFA_BASE_PATH': JSON.stringify('/api'),
-  },
 })

@@ -15,7 +15,6 @@ export const useProviders = () => {
     queryFn: ProviderService.getProviders,
   });
 
-  // --- MUTATIONS (Sin cambios aquí, ya eran correctas) ---
   const { mutate: createProvider, isPending: isCreating } = useMutation({
     mutationFn: (providerData: Omit<Provider, 'id'>) => ProviderService.createProvider(providerData),
     onSuccess: () => {
