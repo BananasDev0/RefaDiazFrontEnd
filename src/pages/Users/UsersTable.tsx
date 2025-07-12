@@ -93,7 +93,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({ users, isLoading, onView
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={createMenuClickHandler(onView)}>Ver Detalles</MenuItem>
         <MenuItem onClick={createMenuClickHandler(onEdit)}>Editar Usuario</MenuItem>
-        <MenuItem onClick={createMenuClickHandler(onChangeRole)}>Cambiar Rol</MenuItem>
+        
         <Divider sx={{ my: 0.5 }} />
         <MenuItem onClick={createMenuClickHandler(onDelete)} sx={{ color: 'error.main' }}>Eliminar</MenuItem>
       </Menu>
