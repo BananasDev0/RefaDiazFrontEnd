@@ -10,7 +10,8 @@ import { Login } from './pages/Login'
 import { AuthGuard } from './components/AuthGuard'
 import { Dashboard } from './pages/Dashboard'
 import Providers from './pages/Providers'
-import Products from './pages/Products'
+import ProductTypeSelection from './pages/Products/ProductTypeSelection'
+import ProductCatalog from './pages/Products/ProductCatalog'
 import Users from './pages/Users'
 
 // Crear instancia de QueryClient
@@ -44,7 +45,9 @@ function App() {
                 >
                   <Route index element={<Navigate to="/products" replace />} />
 
-                  <Route path="products" element={<Products />} />
+                  <Route index element={<Navigate to="/products" replace />} />
+                  
+                  <Route path="products/:productType/*" element={<ProductCatalog />} />
                   <Route path="providers" element={<Providers />} />
                   <Route path="users" element={<Users />} />
                 </Route>
