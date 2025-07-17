@@ -1,9 +1,10 @@
 import { http, HttpResponse } from 'msw'
 import type { Provider } from '../types/provider.types'
+import type { Product } from '../types/product.types'
 
 const apiBaseUrl = import.meta.env.VITE_API_REFA_BASE_PATH || '/api';
 
-// Export the original data so we can reset it in our tests
+// Exporta los datos originales para poder reiniciarlos en los tests
 export const originalMockProviders: Provider[] = [
   {
     id: 1,
@@ -36,10 +37,96 @@ export const originalMockProviders: Provider[] = [
   },
 ];
 
-// Use `let` to allow modification in handlers
+// Usar `let` para permitir modificación en los handlers
 let mockProviders: Provider[] = JSON.parse(JSON.stringify(originalMockProviders));
 
-// Export a reset function to be called before each test
+export const mockProducts: Product[] = [
+  {
+    id: 1,
+    name: 'Radiador de Aluminio para Civic',
+    productTypeId: 1,
+    stockCount: 15,
+    comments: 'Radiador de alto rendimiento',
+    dpi: 'RD-HON-CIV-1822',
+    files: [],
+    productProviders: [],
+    productPrices: [],
+    productCarModels: [
+      {
+        carModelId: 101,
+        initialYear: 2018,
+        lastYear: 2022,
+        carModel: {
+          id: 101,
+          name: 'Civic',
+          brandId: 201,
+          brand: { id: 201, name: 'Honda', brandTypeId: 1 },
+        },
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: 'Bomba de Agua para Lobo',
+    productTypeId: 2,
+    stockCount: 30,
+    comments: 'Bomba de agua original',
+    dpi: 'BA-FOR-LOB-1520',
+    files: [],
+    productProviders: [],
+    productPrices: [],
+    productCarModels: [
+      {
+        carModelId: 103,
+        initialYear: 2015,
+        lastYear: 2020,
+        carModel: {
+          id: 103,
+          name: 'Lobo',
+          brandId: 202,
+          brand: { id: 202, name: 'Ford', brandTypeId: 1 },
+        },
+      },
+    ],
+  },
+  {
+    id: 3,
+    name: 'Filtro de Aire K&N',
+    productTypeId: 3,
+    stockCount: 50,
+    comments: 'Filtro de alto flujo lavable',
+    dpi: 'FA-KN-UNIV',
+    files: [],
+    productProviders: [],
+    productPrices: [],
+    productCarModels: [
+      {
+        carModelId: 101,
+        initialYear: 2000,
+        lastYear: 2024,
+        carModel: {
+          id: 101,
+          name: 'Civic',
+          brandId: 201,
+          brand: { id: 201, name: 'Honda', brandTypeId: 1 },
+        },
+      },
+      {
+        carModelId: 103,
+        initialYear: 2000,
+        lastYear: 2024,
+        carModel: {
+          id: 103,
+          name: 'Lobo',
+          brandId: 202,
+          brand: { id: 202, name: 'Ford', brandTypeId: 1 },
+        },
+      },
+    ],
+  },
+];
+
+// Exporta una función para reiniciar los proveedores antes de cada test
 export const resetMockProviders = () => {
   mockProviders = JSON.parse(JSON.stringify(originalMockProviders));
 }
@@ -52,10 +139,15 @@ export const handlers = [
     })
   }),
 
-  http.put(`${apiBaseUrl}/providers/:id`, async ({ request, params }) => {
-    const { id } = params;
+  // Ahora el id viene como query param, no como path param
+  http.put(`${apiBaseUrl}/providers`, async ({ request }) => {
+    const idParam = request.url.split('?')[1].split('=')[1];
+    if (!idParam) {
+      return new HttpResponse(null, { status: 400 });
+    }
+    const id = Number(idParam);
     const updates = await request.json() as Partial<Provider>;
-    const providerIndex = mockProviders.findIndex(p => p.id === Number(id));
+    const providerIndex = mockProviders.findIndex(p => p.id === id);
 
     if (providerIndex === -1) {
       return new HttpResponse(null, { status: 404 });
@@ -66,9 +158,13 @@ export const handlers = [
     return HttpResponse.json(mockProviders[providerIndex]);
   }),
 
-  http.delete(`${apiBaseUrl}/providers/:id`, ({ params }) => {
-    const { id } = params;
-    const providerIndex = mockProviders.findIndex(p => p.id === Number(id));
+  http.delete(`${apiBaseUrl}/providers`, ({ request }) => {
+    const idParam = request.url.split('?')[1].split('=')[1];
+    if (!idParam) {
+      return new HttpResponse(null, { status: 400 });
+    }
+    const id = Number(idParam);
+    const providerIndex = mockProviders.findIndex(p => p.id === id);
 
     if (providerIndex === -1) {
       return new HttpResponse(null, { status: 404 });
@@ -77,5 +173,48 @@ export const handlers = [
     mockProviders.splice(providerIndex, 1);
 
     return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.get(`${apiBaseUrl}/products`, ({ request }) => {
+    const url = new URL(request.url);
+    const productTypeId = url.searchParams.get('productTypeId');
+    const brandId = url.searchParams.get('brandId');
+    const modelId = url.searchParams.get('modelId');
+    const modelYear = url.searchParams.get('modelYear');
+    const q = url.searchParams.get('q');
+
+    let filteredProducts = mockProducts;
+
+    if (productTypeId) {
+      filteredProducts = filteredProducts.filter(p => p.productTypeId === Number(productTypeId));
+    }
+
+    if (brandId) {
+      filteredProducts = filteredProducts.filter(p => 
+        p.productCarModels.some(pcm => pcm.carModel?.brand?.id === Number(brandId))
+      );
+    }
+
+    if (modelId) {
+      filteredProducts = filteredProducts.filter(p => 
+        p.productCarModels.some(pcm => pcm.carModel.id === Number(modelId))
+      );
+    }
+
+    if (modelYear) {
+      const year = Number(modelYear);
+      filteredProducts = filteredProducts.filter(p => 
+        p.productCarModels.some(pcm => pcm.initialYear <= year && pcm.lastYear >= year)
+      );
+    }
+
+    if (q) {
+      filteredProducts = filteredProducts.filter(p => 
+        p.name.toLowerCase().includes(q.toLowerCase()) || 
+        (p.dpi && p.dpi.toLowerCase().includes(q.toLowerCase()))
+      );
+    }
+
+    return HttpResponse.json(filteredProducts);
   }),
 ]

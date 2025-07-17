@@ -1,5 +1,4 @@
 // src/types/product.types.ts
-import type { Brand } from './brand.types';
 import type { CarModel } from './model.types';
 import type { Provider } from './provider.types';
 import type { File } from './common.types';
@@ -39,7 +38,6 @@ export interface Product {
   id?: number;
   name: string;
   productTypeId: ProductType;
-  brand?: Brand;
   comments?: string;
   stockCount: number;
   dpi?: string;

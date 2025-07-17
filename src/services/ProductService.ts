@@ -1,0 +1,38 @@
+import axiosInstance from './axiosConfig';
+import type { Product } from '../types/product.types';
+import type { Brand } from '../types/brand.types';
+import type { CarModel } from '../types/model.types';
+import type { ProductFilters } from '../stores/useProductStore';
+
+// 1. FUNCIÓN PARA OBTENER PRODUCTOS CON FILTROS
+// Recibe el tipo de producto y el objeto de filtros de nuestro store de Zustand.
+export const getProducts = async (
+  productType: string | null,
+  filters: ProductFilters
+): Promise<Product[]> => {
+  // Construimos los parámetros de búsqueda, omitiendo los valores nulos.
+  const params = {
+    productTypeId: productType,
+    brandId: filters.brandId,
+    modelId: filters.modelId,
+    modelYear: filters.year,
+    q: filters.textSearch,
+  };
+
+  return axiosInstance.get('/products', { params });;
+};
+
+// 2. FUNCIÓN PARA OBTENER TODAS LAS MARCAS
+export const getBrands = async (): Promise<Brand[]> => {
+  const response = await axiosInstance.get<Brand[]>('/brands');
+  return response.data;
+};
+
+// 3. FUNCIÓN PARA OBTENER MODELOS POR MARCA
+export const getModelsByBrand = async (brandId: number): Promise<CarModel[]> => {
+  // La API filtrará los modelos basándose en el brandId enviado como query param.
+  const response = await axiosInstance.get<CarModel[]>('/models', {
+    params: { brandId },
+  });
+  return response.data;
+};
