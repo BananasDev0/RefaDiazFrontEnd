@@ -44,10 +44,10 @@ function App() {
                   }
                 >
                   <Route index element={<Navigate to="/products" replace />} />
-
-                  <Route index element={<Navigate to="/products" replace />} />
-                  
-                  <Route path="products/:productType/*" element={<ProductCatalog />} />
+                  <Route path="products" >
+                    <Route index element={<ProductTypeSelection />} />
+                    <Route path=":productType/*" element={<ProductCatalog />} />
+                  </Route>
                   <Route path="providers" element={<Providers />} />
                   <Route path="users" element={<Users />} />
                 </Route>
