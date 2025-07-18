@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
 import { useParams, useSearchParams, useMatch } from 'react-router-dom';
 import { useProductStore } from '../../stores/useProductStore';
+import { useProducts } from '../../hooks/useProducts';
+import ProductGrid from './ProductGrid';
 import type { ProductFilters } from '../../stores/useProductStore';
+import { PRODUCT_TYPE_MAP } from '../../constants/productConstants';
 
 const ProductCatalog: React.FC = () => {
   const { productType } = useParams<{ productType: string }>();
@@ -9,10 +12,11 @@ const ProductCatalog: React.FC = () => {
   const isNewRoute = useMatch('/products/:productType/new');
   const editRouteMatch = useMatch('/products/:productType/edit/:productId');
 
-  const { setProductType, setFilters, openModal, closeModal } = useProductStore();
+  const { setProductType, setFilters, openModal, closeModal, filters } = useProductStore();
 
   useEffect(() => {
-    setProductType(productType || null);
+    const numericProductType = productType ? PRODUCT_TYPE_MAP[productType] : null;
+    setProductType(numericProductType);
 
     const filtersFromURL: ProductFilters = {
       textSearch: searchParams.get('q'),
@@ -42,12 +46,11 @@ const ProductCatalog: React.FC = () => {
     closeModal
   ]);
 
-  const currentState = useProductStore();
+  const { data, isLoading } = useProducts();
 
   return (
     <div>
-      <h1>Estado Actual (Sincronizado desde la URL)</h1>
-      <pre>{JSON.stringify(currentState, null, 2)}</pre>
+      <ProductGrid products={data || []} isLoading={isLoading} />
     </div>
   );
 };
