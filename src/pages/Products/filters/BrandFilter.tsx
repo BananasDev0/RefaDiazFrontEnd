@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Autocomplete, TextField, CircularProgress } from '@mui/material';
-import { useBrands } from '../../hooks/useVehicleData';
-import { Brand } from '../../types/product.types';
-import { BRAND_TYPE_AUTOMOTIVE } from '../../constants/productConstants';
+import { useBrands } from '../../../hooks/useVehicleData';
+import { Brand } from '../../../types/product.types';
+import { BRAND_TYPE_AUTOMOTIVE } from '../../../constants/productConstants';
 
 const BrandFilter: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();

@@ -29,9 +29,7 @@ export const getBrands = async (): Promise<Brand[]> => {
 
 // 3. FUNCIÓN PARA OBTENER MODELOS POR MARCA
 export const getModelsByBrand = async (brandId: number): Promise<CarModel[]> => {
-  // La API filtrará los modelos basándose en el brandId enviado como query param.
-  const response = await axiosInstance.get<CarModel[]>('/models', {
+  return axiosInstance.get('/models', {
     params: { brandId },
   });
-  return response.data;
 };

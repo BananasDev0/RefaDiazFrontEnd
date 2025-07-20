@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
-import { BRAND_TYPE_AUTOMOTIVE, BRAND_TYPE_HEAVY_DUTY } from '../../constants/productConstants';
+import { BRAND_TYPE_AUTOMOTIVE, BRAND_TYPE_HEAVY_DUTY } from '../../../constants/productConstants';
 
 const CategoryFilter: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();

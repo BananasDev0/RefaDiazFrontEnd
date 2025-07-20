@@ -1,8 +1,9 @@
 import React from 'react';
 import { Box, Grid } from '@mui/material';
-import TextSearchFilter from './TextSearchFilter';
-import CategoryFilter from './CategoryFilter';
-import BrandFilter from './BrandFilter';
+import BrandFilter from './filters/BrandFilter';
+import ModelFilter from './filters/ModelFilter';
+import TextSearchFilter from './filters/TextSearchFilter';
+import CategoryFilter from './filters/CategoryFilter';
 
 const ProductFilterBar: React.FC = () => {
   return (
@@ -11,11 +12,14 @@ const ProductFilterBar: React.FC = () => {
         <Grid size={12}>
           <TextSearchFilter />
         </Grid>
-        <Grid size={6}>
+        <Grid size={2}>
           <CategoryFilter />
         </Grid>
-        <Grid size={6}>
+        <Grid size={2}>
           <BrandFilter />
+        </Grid>
+        <Grid size={2}>
+          <ModelFilter />
         </Grid>
       </Grid>
     </Box>
