@@ -24,8 +24,7 @@ export const getProducts = async (
 
 // 2. FUNCIÓN PARA OBTENER TODAS LAS MARCAS
 export const getBrands = async (): Promise<Brand[]> => {
-  const response = await axiosInstance.get<Brand[]>('/brands');
-  return response.data;
+  return axiosInstance.get('/brands');
 };
 
 // 3. FUNCIÓN PARA OBTENER MODELOS POR MARCA

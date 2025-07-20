@@ -15,3 +15,6 @@ export const PRODUCT_TYPE_NAME_MAP: { [key: string]: string } = {
   '2': 'tapas',
   '3': 'accesorios',
 };
+
+export const BRAND_TYPE_AUTOMOTIVE = 1;
+export const BRAND_TYPE_HEAVY_DUTY = 2;

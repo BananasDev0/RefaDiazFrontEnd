@@ -1,35 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { TextField, Box } from '@mui/material';
+import React from 'react';
+import { Box, Grid } from '@mui/material';
+import TextSearchFilter from './TextSearchFilter';
+import CategoryFilter from './CategoryFilter';
+import BrandFilter from './BrandFilter';
 
 const ProductFilterBar: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (searchTerm) {
-        searchParams.set('q', searchTerm);
-      } else {
-        searchParams.delete('q');
-      }
-      setSearchParams(searchParams);
-    }, 500);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchTerm, setSearchParams]);
-
   return (
     <Box sx={{ my: 2 }}>
-      <TextField
-        fullWidth
-        label="Buscar por texto"
-        variant="outlined"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <Grid container spacing={2}>
+        <Grid size={12}>
+          <TextSearchFilter />
+        </Grid>
+        <Grid size={6}>
+          <CategoryFilter />
+        </Grid>
+        <Grid size={6}>
+          <BrandFilter />
+        </Grid>
+      </Grid>
     </Box>
   );
 };
