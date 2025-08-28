@@ -12,6 +12,7 @@ import { Dashboard } from './pages/Dashboard'
 import Providers from './pages/Providers'
 import ProductTypeSelection from './pages/Products/ProductTypeSelection'
 import ProductCatalog from './pages/Products/ProductCatalog'
+import ProductFormPage from './pages/Products/ProductFormPage'
 import Users from './pages/Users'
 
 // Crear instancia de QueryClient
@@ -44,8 +45,10 @@ function App() {
                   }
                 >
                   <Route index element={<Navigate to="/products" replace />} />
-                  <Route path="products" >
+                  <Route path="products">
                     <Route index element={<ProductTypeSelection />} />
+                    <Route path=":productType/new" element={<ProductFormPage />} />
+                    <Route path=":productType/edit/:productId" element={<ProductFormPage />} />
                     <Route path=":productType/*" element={<ProductCatalog />} />
                   </Route>
                   <Route path="providers" element={<Providers />} />

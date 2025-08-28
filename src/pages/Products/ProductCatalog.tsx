@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams, useSearchParams, useMatch, useNavigate } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useProductStore, type ProductFilters } from '../../stores/useProductStore';
 import { useProducts } from '../../hooks/useProducts';
 import ProductGrid from './ProductGrid';
@@ -14,10 +14,8 @@ const ProductCatalog: React.FC = () => {
   const { productType } = useParams<{ productType: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const isNewRoute = useMatch('/products/:productType/new');
-  const editRouteMatch = useMatch('/products/:productType/edit/:productId');
 
-  const { setProductType, openModal, setFilters, closeModal } = useProductStore();
+  const { setProductType, setFilters } = useProductStore();
 
   useEffect(() => {
     const numericProductType = productType ? PRODUCT_TYPE_MAP[productType] : null;
@@ -31,24 +29,11 @@ const ProductCatalog: React.FC = () => {
     };
     setFilters(filtersFromURL);
 
-    if (isNewRoute) {
-      openModal();
-    } else if (editRouteMatch) {
-      console.log('ID de producto a editar:', editRouteMatch.params.productId);
-      openModal();
-    } else {
-      closeModal();
-    }
-
   }, [
     productType,
     searchParams,
-    isNewRoute,
-    editRouteMatch,
     setProductType,
     setFilters,
-    openModal,
-    closeModal
   ]);
 
   const { data, isLoading } = useProducts();
