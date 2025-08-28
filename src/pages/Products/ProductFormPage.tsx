@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Accordion,
   AccordionSummary,
@@ -12,6 +12,7 @@ import {
   Box,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EditIcon from '@mui/icons-material/Edit';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useParams } from 'react-router-dom';
@@ -28,7 +29,6 @@ import PageHeader from '../../components/common/PageHeader';
 
 // Helper function to transform API data to form data
 const transformProductToFormData = (product: Product): ProductFormData => {
-  console.log('product', product);
   return {
     name: product.name || '',
     dpi: product.dpi || '',
@@ -55,10 +55,10 @@ const transformProductToFormData = (product: Product): ProductFormData => {
   };
 };
 
-
 const ProductFormPage = () => {
   const { productId } = useParams<{ productId: string }>();
   const isEditMode = !!productId;
+  const [isReadOnly, setIsReadOnly] = useState(isEditMode);
   const numericProductId = isEditMode ? parseInt(productId, 10) : null;
 
   const { data: productData, isLoading: isLoadingProduct } = useProduct(numericProductId);
@@ -87,6 +87,9 @@ const ProductFormPage = () => {
   const onSubmit = (data: ProductFormData) => {
     console.log('Form Data:', data);
     // Step 6.2 will handle saving
+    if (isEditMode) {
+      setIsReadOnly(true); // Go back to read-only after saving
+    }
   };
 
   if (isLoadingProduct) {
@@ -97,26 +100,45 @@ const ProductFormPage = () => {
     );
   }
 
+  const renderHeaderButton = () => {
+    if (!isEditMode) {
+      return (
+        <Button type="submit" variant="contained" color="primary" disabled={methods.formState.isSubmitting}>
+          Guardar Producto
+        </Button>
+      );
+    }
+
+    if (isReadOnly) {
+      return (
+        <Button variant="contained" startIcon={<EditIcon />} onClick={() => setIsReadOnly(false)}>
+          Editar
+        </Button>
+      );
+    }
+
+    return (
+      <Button type="submit" variant="contained" color="primary" disabled={methods.formState.isSubmitting}>
+        Guardar Cambios
+      </Button>
+    );
+  };
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Container maxWidth="xl" sx={{ pb: 4 }}>
           <PageHeader
-            title={isEditMode ? `Editar Producto: ${productData?.name}` : 'Crear Nuevo Producto'}
-            subtitle={isEditMode ? 'Modifique la información del producto.' : 'Complete la información para registrar un nuevo producto.'}
-            actionButton={
-              <Button type="submit" variant="contained" color="primary" disabled={methods.formState.isSubmitting}>
-                {isEditMode ? 'Guardar Cambios' : 'Guardar Producto'}
-              </Button>
-            }
+            title={isEditMode ? 'Detalle del Producto' : 'Crear Nuevo Producto'}
+            actionButton={renderHeaderButton()}
           />
           <Paper sx={{ p: 3, mb: 3 }}>
             <Grid container spacing={3}>
               <Grid size={6}>
-                <ProductBasicInfo />
+                <ProductBasicInfo isReadOnly={isReadOnly} />
               </Grid>
               <Grid size={6}>
-                <ProductImageManager />
+                <ProductImageManager isReadOnly={isReadOnly} />
               </Grid>
             </Grid>
           </Paper>
@@ -126,7 +148,7 @@ const ProductFormPage = () => {
               <Typography variant="h6">Compatibilidad de Modelos</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <ModelCompatibilityManager />
+              <ModelCompatibilityManager isReadOnly={isReadOnly} />
             </AccordionDetails>
           </Accordion>
 
@@ -135,7 +157,7 @@ const ProductFormPage = () => {
               <Typography variant="h6">Proveedores</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <ProductProvidersManager />
+              <ProductProvidersManager isReadOnly={isReadOnly} />
             </AccordionDetails>
           </Accordion>
 
@@ -144,7 +166,7 @@ const ProductFormPage = () => {
               <Typography variant="h6">Precios de Venta</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <ProductPricesManager />
+              <ProductPricesManager isReadOnly={isReadOnly} />
             </AccordionDetails>
           </Accordion>
         </Container>

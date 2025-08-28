@@ -1,8 +1,13 @@
+import React from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { TextField, Grid, Paper, Typography } from '@mui/material';
 import type { ProductFormData } from '../../../types/product.types';
 
-const ProductBasicInfo = () => {
+interface ProductBasicInfoProps {
+  isReadOnly: boolean;
+}
+
+const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ isReadOnly }) => {
   const { control } = useFormContext<ProductFormData>();
 
   return (
@@ -23,6 +28,9 @@ const ProductBasicInfo = () => {
                 required
                 error={!!error}
                 helperText={error?.message}
+                InputProps={{
+                  readOnly: isReadOnly,
+                }}
               />
             )}
           />
@@ -39,6 +47,9 @@ const ProductBasicInfo = () => {
                 required
                 error={!!error}
                 helperText={error?.message}
+                InputProps={{
+                  readOnly: isReadOnly,
+                }}
               />
             )}
           />
@@ -57,6 +68,9 @@ const ProductBasicInfo = () => {
                 error={!!error}
                 helperText={error?.message}
                 onChange={(e) => field.onChange(parseInt(e.target.value, 10) || 0)}
+                InputProps={{
+                  readOnly: isReadOnly,
+                }}
               />
             )}
           />
@@ -74,6 +88,9 @@ const ProductBasicInfo = () => {
                 fullWidth
                 error={!!error}
                 helperText={error?.message}
+                InputProps={{
+                  readOnly: isReadOnly,
+                }}
               />
             )}
           />

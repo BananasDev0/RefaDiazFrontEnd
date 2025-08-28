@@ -21,7 +21,11 @@ import { useProviders } from '../../../hooks/useProviders';
 import type { Provider } from '../../../types/provider.types';
 import type { ProductFormData } from '../../../types/product.types';
 
-const ProductProvidersManager = () => {
+interface ProductProvidersManagerProps {
+  isReadOnly: boolean;
+}
+
+const ProductProvidersManager: React.FC<ProductProvidersManagerProps> = ({ isReadOnly }) => {
   const { control } = useFormContext<ProductFormData>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -38,15 +42,12 @@ const ProductProvidersManager = () => {
     if (!selectedProvider || !purchasePrice) {
       return;
     }
-
     append({
       providerId: selectedProvider.id,
       purchasePrice: parseFloat(purchasePrice),
       numSeries: numSeries,
-      providerName: selectedProvider.name, // For display purposes
+      providerName: selectedProvider.name,
     });
-
-    // Reset form
     setSelectedProvider(null);
     setPurchasePrice('');
     setNumSeries('');
@@ -54,53 +55,57 @@ const ProductProvidersManager = () => {
 
   return (
     <Box>
-      <Typography variant="subtitle1" gutterBottom>Agregar Proveedor</Typography>
-      <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.default' }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid size={2}>
-            <Autocomplete
-              options={providers}
-              getOptionLabel={(option) => option.name}
-              value={selectedProvider}
-              onChange={(_, newValue) => setSelectedProvider(newValue)}
-              loading={isLoadingProviders}
-              renderInput={(params) => <TextField {...params} label="Proveedor" />}
-            />
-          </Grid>
-          <Grid size={2}>
-            <TextField
-              label="Precio de Compra"
-              type="number"
-              value={purchasePrice}
-              onChange={(e) => setPurchasePrice(e.target.value)}
-              fullWidth
-            />
-          </Grid>
-          <Grid size={2}>
-            <TextField
-              label="Número de Serie (Opcional)"
-              value={numSeries}
-              onChange={(e) => setNumSeries(e.target.value)}
-              fullWidth
-            />
-          </Grid>
-        </Grid>
-        <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
-          <Grid size={2}>
-            <Button
-              variant="contained"
-              startIcon={<Add />}
-              onClick={handleAdd}
-              disabled={!selectedProvider || !purchasePrice}
-              fullWidth
-            >
-              Agregar
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
+      {!isReadOnly && (
+        <>
+          <Typography variant="subtitle1" gutterBottom>Agregar Proveedor</Typography>
+          <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.default' }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid size={3}>
+                <Autocomplete
+                  options={providers}
+                  getOptionLabel={(option) => option.name}
+                  value={selectedProvider}
+                  onChange={(_, newValue) => setSelectedProvider(newValue)}
+                  loading={isLoadingProviders}
+                  renderInput={(params) => <TextField {...params} label="Proveedor" />}
+                />
+              </Grid>
+              <Grid size={3}>
+                <TextField
+                  label="Precio de Compra"
+                  type="number"
+                  value={purchasePrice}
+                  onChange={(e) => setPurchasePrice(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid size={3}>
+                <TextField
+                  label="Número de Serie (Opcional)"
+                  value={numSeries}
+                  onChange={(e) => setNumSeries(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
+            <Grid>
+                <Button
+                  variant="contained"
+                  startIcon={<Add />}
+                  onClick={handleAdd}
+                  disabled={!selectedProvider || !purchasePrice}
+                  fullWidth
+                >
+                  Agregar
+                </Button>
+              </Grid>
+            </Grid>
+          </Paper>
+        </>
+      )}
 
-      {fields.length > 0 && (
+      {fields.length > 0 ? (
         <TableContainer component={Paper} sx={{ bgcolor: 'background.default' }}>
           <Table size="small">
             <TableHead>
@@ -108,7 +113,7 @@ const ProductProvidersManager = () => {
                 <TableCell>Proveedor</TableCell>
                 <TableCell>Precio Compra</TableCell>
                 <TableCell>No. Serie</TableCell>
-                <TableCell align="right">Acciones</TableCell>
+                {!isReadOnly && <TableCell align="right">Acciones</TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -117,16 +122,20 @@ const ProductProvidersManager = () => {
                   <TableCell>{field.providerName}</TableCell>
                   <TableCell>{`${field.purchasePrice}`}</TableCell>
                   <TableCell>{field.numSeries}</TableCell>
-                  <TableCell align="right">
-                    <IconButton onClick={() => remove(index)} color="error">
-                      <Delete />
-                    </IconButton>
-                  </TableCell>
+                  {!isReadOnly && (
+                    <TableCell align="right">
+                      <IconButton onClick={() => remove(index)} color="error">
+                        <Delete />
+                      </IconButton>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
+      ) : (
+        <Typography sx={{ mt: 2, color: 'text.secondary' }}>No hay proveedores asignados.</Typography>
       )}
     </Box>
   );
