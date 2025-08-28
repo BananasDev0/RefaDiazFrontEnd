@@ -19,7 +19,7 @@ import {
 import { Add, Delete } from '@mui/icons-material';
 import { useBrands, useModels } from '../../../hooks/useVehicleData';
 import type { Brand } from '../../../types/brand.types';
-import type { Model } from '../../../types/model.types';
+import type { CarModel } from '../../../types/model.types';
 import type { ProductFormData } from '../../../types/product.types';
 
 interface ModelCompatibilityManagerProps {
@@ -34,7 +34,7 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
   });
 
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
-  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [selectedModel, setSelectedModel] = useState<CarModel | null>(null);
   const [initialYear, setInitialYear] = useState('');
   const [lastYear, setLastYear] = useState('');
 
