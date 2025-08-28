@@ -67,6 +67,8 @@ export interface ProductFormData {
     carModelId: number;
     initialYear: number;
     lastYear: number;
+    brandName?: string; // For display purposes in the form
+    modelName?: string; // For display purposes in the form
   }[];
 
   // Providers
@@ -74,6 +76,7 @@ export interface ProductFormData {
     providerId: number;
     numSeries: string;
     purchasePrice: number;
+    providerName?: string; // For display purposes
   }[];
 
   // Sale Prices
