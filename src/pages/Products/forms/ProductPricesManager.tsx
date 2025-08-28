@@ -95,7 +95,7 @@ const ProductPricesManager = () => {
               {fields.map((field, index) => (
                 <TableRow key={field.id}>
                   <TableCell>{field.description}</TableCell>
-                  <TableCell>{`$${field.cost.toFixed(2)}`}</TableCell>
+                  <TableCell>{`${field.cost}`}</TableCell>
                   <TableCell align="right">
                     <IconButton onClick={() => remove(index)} color="error">
                       <Delete />

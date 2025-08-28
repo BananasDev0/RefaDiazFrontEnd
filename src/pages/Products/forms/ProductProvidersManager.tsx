@@ -115,7 +115,7 @@ const ProductProvidersManager = () => {
               {fields.map((field, index) => (
                 <TableRow key={field.id}>
                   <TableCell>{field.providerName}</TableCell>
-                  <TableCell>{`$${field.purchasePrice.toFixed(2)}`}</TableCell>
+                  <TableCell>{`${field.purchasePrice}`}</TableCell>
                   <TableCell>{field.numSeries}</TableCell>
                   <TableCell align="right">
                     <IconButton onClick={() => remove(index)} color="error">

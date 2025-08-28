@@ -33,3 +33,8 @@ export const getModelsByBrand = async (brandId: number): Promise<CarModel[]> => 
     params: { brandId },
   });
 };
+
+// 4. FUNCIÓN PARA OBTENER UN PRODUCTO POR SU ID
+export const getProductById = async (productId: number): Promise<Product> => {
+  return axiosInstance.get(`/products?id=${productId}`);
+};

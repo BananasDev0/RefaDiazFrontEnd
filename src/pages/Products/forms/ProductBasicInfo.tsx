@@ -27,7 +27,7 @@ const ProductBasicInfo = () => {
             )}
           />
         </Grid>
-        <Grid size={12}>
+        <Grid size={6}>
           <Controller
             name="dpi"
             control={control}
@@ -43,7 +43,7 @@ const ProductBasicInfo = () => {
             )}
           />
         </Grid>
-        <Grid size={12}>
+        <Grid size={6}>
           <Controller
             name="stockCount"
             control={control}
