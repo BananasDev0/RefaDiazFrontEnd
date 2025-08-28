@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Grid,
-  Typography,
-  Container,
-  Paper,
-  Button,
   CircularProgress,
   Box,
+  Container,
+  Button,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,12 +13,12 @@ import { useParams } from 'react-router-dom';
 import { productSchema } from './productSchema';
 import type { Product, ProductFormData } from '../../types/product.types';
 import { useProduct } from '../../hooks/useProducts';
-import ProductBasicInfo from './forms/ProductBasicInfo';
-import ProductImageManager from './forms/ProductImageManager';
-import ModelCompatibilityManager from './forms/ModelCompatibilityManager';
-import ProductProvidersManager from './forms/ProductProvidersManager';
-import ProductPricesManager from './forms/ProductPricesManager';
 import PageHeader from '../../components/common/PageHeader';
+
+// Import product-specific form components
+import RadiatorForm from './forms/productTypeForms/RadiatorForm';
+import CapForm from './forms/productTypeForms/CapForm';
+import AccessoryForm from './forms/productTypeForms/AccessoryForm';
 
 // Helper function to transform API data to form data
 const transformProductToFormData = (product: Product): ProductFormData => {
@@ -52,11 +45,15 @@ const transformProductToFormData = (product: Product): ProductFormData => {
       description: pp.price.description,
       cost: pp.price.cost,
     })) || [],
+    // Add product-specific fields here if they exist in the Product type
+    // For example:
+    // coreMaterial: (product as any).coreMaterial,
+    // finType: (product as any).finType,
   };
 };
 
 const ProductFormPage = () => {
-  const { productId } = useParams<{ productId: string }>();
+  const { productId, productType: productTypeParam } = useParams<{ productId: string; productType: string }>();
   const isEditMode = !!productId;
   const [isReadOnly, setIsReadOnly] = useState(isEditMode);
   const numericProductId = isEditMode ? parseInt(productId, 10) : null;
@@ -86,9 +83,8 @@ const ProductFormPage = () => {
 
   const onSubmit = (data: ProductFormData) => {
     console.log('Form Data:', data);
-    // Step 6.2 will handle saving
     if (isEditMode) {
-      setIsReadOnly(true); // Go back to read-only after saving
+      setIsReadOnly(true);
     }
   };
 
@@ -124,6 +120,23 @@ const ProductFormPage = () => {
     );
   };
 
+  const renderProductSpecificForm = () => {
+    switch (productTypeParam) {
+      case 'radiadores':
+        return <RadiatorForm isReadOnly={isReadOnly} />; 
+      case 'tapas':
+        return <CapForm isReadOnly={isReadOnly} />; 
+      case 'accesorios':
+        return <AccessoryForm isReadOnly={isReadOnly} />; 
+      default:
+        return (
+          <Typography variant="body2" color="error">
+            Tipo de producto desconocido: {productTypeParam}
+          </Typography>
+        );
+    }
+  };
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -132,43 +145,7 @@ const ProductFormPage = () => {
             title={isEditMode ? 'Detalle del Producto' : 'Crear Nuevo Producto'}
             actionButton={renderHeaderButton()}
           />
-          <Paper sx={{ p: 3, mb: 3 }}>
-            <Grid container spacing={3}>
-              <Grid size={6}>
-                <ProductBasicInfo isReadOnly={isReadOnly} />
-              </Grid>
-              <Grid size={6}>
-                <ProductImageManager isReadOnly={isReadOnly} />
-              </Grid>
-            </Grid>
-          </Paper>
-
-          <Accordion defaultExpanded>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6">Compatibilidad de Modelos</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <ModelCompatibilityManager isReadOnly={isReadOnly} />
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6">Proveedores</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <ProductProvidersManager isReadOnly={isReadOnly} />
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6">Precios de Venta</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <ProductPricesManager isReadOnly={isReadOnly} />
-            </AccordionDetails>
-          </Accordion>
+          {renderProductSpecificForm()}
         </Container>
       </form>
     </FormProvider>
