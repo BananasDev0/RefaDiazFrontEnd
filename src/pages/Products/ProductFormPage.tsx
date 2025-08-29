@@ -4,15 +4,19 @@ import {
   Box,
   Container,
   Button,
+  Typography,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import { productSchema } from './productSchema';
 import type { Product, ProductFormData } from '../../types/product.types';
+import { PRODUCT_TYPE_MAP } from '../../constants/productConstants';
 import { useProduct } from '../../hooks/useProducts';
+import { useProductMutations } from '../../hooks/useProductMutations';
 import PageHeader from '../../components/common/PageHeader';
 
 // Import product-specific form components
@@ -52,13 +56,49 @@ const transformProductToFormData = (product: Product): ProductFormData => {
   };
 };
 
+// NUEVA FUNCIÓN para transformar los datos del formulario al payload del backend
+const transformFormDataToPayload = (
+  formData: ProductFormData,
+  productTypeId: number
+): Partial<Product> => {
+  // Mapear y transformar los datos para el backend
+  const payload: Partial<Product> = {
+    name: formData.name,
+    dpi: formData.dpi,
+    stockCount: formData.stockCount,
+    comments: formData.comments,
+    productTypeId: productTypeId as Product['productTypeId'],
+    files: [], // Dejado vacío intencionalmente
+    productCarModels: formData.productCarModels.map(pcm => ({
+      carModelId: pcm.carModelId,
+      initialYear: pcm.initialYear,
+      lastYear: pcm.lastYear,
+    })),
+    productProviders: formData.productProviders.map(pp => ({
+      providerId: pp.providerId,
+      numSeries: pp.numSeries,
+      price: { cost: pp.purchasePrice, description: `Precio de compra` },
+    })),
+    productPrices: formData.productPrices.map(pp => ({
+      price: { description: pp.description, cost: pp.cost },
+    })),
+  };
+
+  return payload;
+};
+
+
 const ProductFormPage = () => {
   const { productId, productType: productTypeParam } = useParams<{ productId: string; productType: string }>();
+  const navigate = useNavigate();
   const isEditMode = !!productId;
   const [isReadOnly, setIsReadOnly] = useState(isEditMode);
+
   const numericProductId = isEditMode ? parseInt(productId, 10) : null;
+  const numericProductType = productTypeParam ? parseInt(PRODUCT_TYPE_MAP[productTypeParam], 10) : 0;
 
   const { data: productData, isLoading: isLoadingProduct } = useProduct(numericProductId);
+  const { createProduct, isCreating, updateProduct, isUpdating } = useProductMutations();
 
   const methods = useForm<ProductFormData>({
     resolver: yupResolver(productSchema),
@@ -82,11 +122,22 @@ const ProductFormPage = () => {
   }, [productData, isEditMode, methods]);
 
   const onSubmit = (data: ProductFormData) => {
-    console.log('Form Data:', data);
-    if (isEditMode) {
-      setIsReadOnly(true);
+    try {
+      const payload = transformFormDataToPayload(data, numericProductType);
+      
+      if (isEditMode) {
+        updateProduct({ id: numericProductId!, data: payload }, {
+          onSuccess: () => setIsReadOnly(true),
+        });
+      } else {
+        createProduct(payload as Product);
+      }
+    } catch (error) {
+      console.error("Error al preparar o enviar el formulario:", error);
     }
   };
+
+  const isSubmitting = isCreating || isUpdating;
 
   if (isLoadingProduct) {
     return (
@@ -95,39 +146,44 @@ const ProductFormPage = () => {
       </Box>
     );
   }
+  
+  const handleCancel = () => {
+    if (isEditMode) {
+      setIsReadOnly(true);
+      if (productData) methods.reset(transformProductToFormData(productData));
+    } else {
+      navigate(`/products/${productTypeParam}`);
+    }
+  };
 
   const renderHeaderButton = () => {
-    if (!isEditMode) {
-      return (
-        <Button type="submit" variant="contained" color="primary" disabled={methods.formState.isSubmitting}>
-          Guardar Producto
-        </Button>
-      );
-    }
-
-    if (isReadOnly) {
+    if (isReadOnly && isEditMode) {
       return (
         <Button variant="contained" startIcon={<EditIcon />} onClick={() => setIsReadOnly(false)}>
           Editar
         </Button>
       );
     }
-
     return (
-      <Button type="submit" variant="contained" color="primary" disabled={methods.formState.isSubmitting}>
-        Guardar Cambios
-      </Button>
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <Button variant="outlined" color="secondary" onClick={handleCancel} disabled={isSubmitting}>
+          Cancelar
+        </Button>
+        <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} startIcon={<SaveIcon />}>
+          {isSubmitting ? 'Guardando...' : (isEditMode ? 'Guardar Cambios' : 'Guardar Producto')}
+        </Button>
+      </Box>
     );
   };
-
+  
   const renderProductSpecificForm = () => {
     switch (productTypeParam) {
       case 'radiadores':
-        return <RadiatorForm isReadOnly={isReadOnly} />; 
+        return <RadiatorForm isReadOnly={isReadOnly} />;
       case 'tapas':
-        return <CapForm isReadOnly={isReadOnly} />; 
+        return <CapForm isReadOnly={isReadOnly} />;
       case 'accesorios':
-        return <AccessoryForm isReadOnly={isReadOnly} />; 
+        return <AccessoryForm isReadOnly={isReadOnly} />;
       default:
         return (
           <Typography variant="body2" color="error">
@@ -142,7 +198,7 @@ const ProductFormPage = () => {
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Container maxWidth="xl" sx={{ pb: 4 }}>
           <PageHeader
-            title={isEditMode ? 'Detalle del Producto' : 'Crear Nuevo Producto'}
+            title={isEditMode ? 'Detalle del Producto' : `Crear Nuevo ${productTypeParam || 'Producto'}`}
             actionButton={renderHeaderButton()}
           />
           {renderProductSpecificForm()}

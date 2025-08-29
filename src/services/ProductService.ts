@@ -38,3 +38,11 @@ export const getModelsByBrand = async (brandId: number): Promise<CarModel[]> => 
 export const getProductById = async (productId: number): Promise<Product> => {
   return axiosInstance.get(`/products?id=${productId}`);
 };
+
+export const createProduct = async (productData: Product): Promise<Product> => {
+  return axiosInstance.post('/products', productData);
+};
+
+export const updateProduct = async (productId: number, productData: Product): Promise<Product> => {
+  return axiosInstance.put(`/products?id=${productId}`, productData);
+};
