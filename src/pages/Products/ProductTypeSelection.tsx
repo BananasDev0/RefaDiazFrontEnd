@@ -2,9 +2,9 @@ import React from 'react';
 import { Grid, Box } from '@mui/material';
 import PageHeader from '../../components/common/PageHeader';
 import ProductTypeCard from './ProductTypeCard';
-import radiator from '../../assets/radiator.png';
-import cap from '../../assets/cap.png';
-import fan from '../../assets/fan.png';
+import radiator from '../../assets/radiadores_portada.jpeg';
+import cap from '../../assets/tapas_portada.jpeg';
+import fan from '../../assets/abanicos_portada.jpeg';
 
 const productTypes = [
   { name: 'Radiadores', url: '/products/radiadores', image: radiator },

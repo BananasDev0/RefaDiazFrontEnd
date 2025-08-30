@@ -17,7 +17,7 @@ const ProductTypeCard: React.FC<ProductTypeCardProps> = ({ name, url, image }) =
           height="200"
           image={image}
           alt={name}
-          sx={{ objectFit: 'cover' }}
+          sx={{ objectFit: 'cover', minWidth: 320}}
         />
         <CardContent sx={{ textAlign: 'center' }}>
           <Typography variant="h5" component="div">

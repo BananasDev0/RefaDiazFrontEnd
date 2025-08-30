@@ -95,7 +95,7 @@ const BrandFilter: React.FC = () => {
                   <Avatar 
                     src={logoUrls[selectedBrand.id]} 
                     alt={selectedBrand.name}
-                    sx={{ width: 24, height: 24, ml: 1, mr: -1, objectFit: 'contain' }}
+                    sx={{ width: 24, height: 24, ml: 1, mr: 0, objectFit: 'contain' }}
                   />
                 )}
               </>
