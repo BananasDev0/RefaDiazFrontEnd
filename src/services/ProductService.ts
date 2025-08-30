@@ -46,3 +46,7 @@ export const createProduct = async (productData: Product): Promise<Product> => {
 export const updateProduct = async (productId: number, productData: Product): Promise<Product> => {
   return axiosInstance.put(`/products?id=${productId}`, productData);
 };
+
+export const deleteProduct = async (productId: number): Promise<void> => {
+  return axiosInstance.delete(`/products?id=${productId}`);
+};

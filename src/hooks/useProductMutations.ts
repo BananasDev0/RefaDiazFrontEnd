@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from '../contexts/SnackbarContext';
-import { createProduct, updateProduct } from '../services/ProductService';
+import { createProduct, updateProduct, deleteProduct} from '../services/ProductService';
 import type { Product } from '../types/product.types';
 import { PRODUCT_TYPE_NAME_MAP } from '../constants/productConstants';
 
@@ -49,10 +49,23 @@ export const useProductMutations = () => {
     },
   });
 
+  const deleteProductMutation = useMutation({
+    mutationFn: (id: number) => deleteProduct(id),
+    onSuccess: () => {
+      showSnackbar('Producto eliminado exitosamente', 'success');
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+    onError: (error) => {
+      showSnackbar(`Error al eliminar el producto: ${error.message}`, 'error');
+    },
+  });
+
   return {
     createProduct: createProductMutation.mutate,
     isCreating: createProductMutation.isPending,
     updateProduct: updateProductMutation.mutate,
     isUpdating: updateProductMutation.isPending,
+    deleteProduct: deleteProductMutation.mutate,
+    isDeleting: deleteProductMutation.isPending,
   };
 };
