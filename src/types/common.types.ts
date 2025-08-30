@@ -12,4 +12,5 @@ export interface File {
   orderId: number;
   fileData?: string | null; // Base64 para el frontend
   fileTypeId: number;
+  nativeFile?: globalThis.File; // Para manejar nuevos archivos seleccionados por el usuario
 }

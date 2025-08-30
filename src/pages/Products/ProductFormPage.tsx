@@ -17,6 +17,7 @@ import type { Product, ProductFormData } from '../../types/product.types';
 import { PRODUCT_TYPE_MAP } from '../../constants/productConstants';
 import { useProduct } from '../../hooks/useProducts';
 import { useProductMutations } from '../../hooks/useProductMutations';
+import { ProductImageService } from '../../services/ProductImageService';
 import PageHeader from '../../components/common/PageHeader';
 
 // Import product-specific form components
@@ -57,18 +58,21 @@ const transformProductToFormData = (product: Product): ProductFormData => {
 };
 
 // NUEVA FUNCIÓN para transformar los datos del formulario al payload del backend
-const transformFormDataToPayload = (
+const transformFormDataToPayload = async (
   formData: ProductFormData,
   productTypeId: number
-): Partial<Product> => {
-  // Mapear y transformar los datos para el backend
+): Promise<Partial<Product>> => {
+  // 1. Manejar la subida de archivos
+  const uploadedFiles = await ProductImageService.uploadFiles(formData.files);
+
+  // 2. Mapear y transformar los datos para el backend
   const payload: Partial<Product> = {
     name: formData.name,
     dpi: formData.dpi,
     stockCount: formData.stockCount,
     comments: formData.comments,
     productTypeId: productTypeId as Product['productTypeId'],
-    files: [], // Dejado vacío intencionalmente
+    files: uploadedFiles,
     productCarModels: formData.productCarModels.map(pcm => ({
       carModelId: pcm.carModelId,
       initialYear: pcm.initialYear,
@@ -121,9 +125,9 @@ const ProductFormPage = () => {
     }
   }, [productData, isEditMode, methods]);
 
-  const onSubmit = (data: ProductFormData) => {
+  const onSubmit = async (data: ProductFormData) => {
     try {
-      const payload = transformFormDataToPayload(data, numericProductType);
+      const payload = await transformFormDataToPayload(data, numericProductType);
       
       if (isEditMode) {
         updateProduct({ id: numericProductId!, data: payload }, {
