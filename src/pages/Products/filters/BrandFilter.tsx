@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Autocomplete, TextField, CircularProgress } from '@mui/material';
 import { useBrands } from '../../../hooks/useVehicleData';
-import { Brand } from '../../../types/product.types';
 import { BRAND_TYPE_AUTOMOTIVE } from '../../../constants/productConstants';
+import type { Brand } from '../../../types/brand.types';
 
 const BrandFilter: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,7 +13,9 @@ const BrandFilter: React.FC = () => {
   const { data: brands = [], isLoading: isLoadingBrands } = useBrands();
 
   const filteredBrands = useMemo(() => {
-    return brands.filter(brand => brand.brandTypeId === brandTypeId);
+    return brands
+      .filter(brand => brand.brandTypeId === brandTypeId)
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [brands, brandTypeId]);
 
   useEffect(() => {

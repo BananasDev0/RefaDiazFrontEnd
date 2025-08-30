@@ -12,6 +12,10 @@ const ModelFilter: React.FC = () => {
 
   const { data: models = [], isLoading: isLoadingModels } = useModels(brandId);
 
+  const sortedModels = useMemo(() => {
+    return models.slice().sort((a, b) => a.name.localeCompare(b.name));
+  }, [models]);
+
   useEffect(() => {
     const modelId = searchParams.get('modelId');
     if (modelId && models.length) {
@@ -36,7 +40,7 @@ const ModelFilter: React.FC = () => {
   return (
     <Autocomplete
       fullWidth
-      options={models}
+      options={sortedModels}
       getOptionLabel={(option) => option.name}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       value={selectedModel}

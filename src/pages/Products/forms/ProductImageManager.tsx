@@ -12,7 +12,7 @@ interface ProductImageManagerProps {
   isReadOnly: boolean;
 }
 
-const MAX_FILES = 5;
+const MAX_FILES = 4;
 
 const ProductImageManager: React.FC<ProductImageManagerProps> = ({ isReadOnly }) => {
   const { control } = useFormContext();
