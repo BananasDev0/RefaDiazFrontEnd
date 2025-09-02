@@ -3,10 +3,14 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { TextField, Button, Box, Grid } from '@mui/material';
 import { providerSchema } from './providerSchema';
-import type { Provider } from '../../types/provider.types';
 
 // The form will accept a subset of the Provider type
-export type ProviderFormData = Pick<Provider, 'name' | 'phoneNumber' | 'address' | 'comments'>;
+export type ProviderFormData = {
+  name: string;
+  phoneNumber: string;
+  address: string;
+  comments?: string;
+};
 
 interface ProviderFormProps {
   onSubmit: (data: ProviderFormData) => void;
@@ -23,7 +27,7 @@ export const ProviderForm: React.FC<ProviderFormProps> = ({ onSubmit, onCancel, 
     reset,
     formState: { errors },
   } = useForm<ProviderFormData>({
-    resolver: yupResolver(providerSchema),
+    resolver: yupResolver(providerSchema) as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     defaultValues: defaultValues || { name: '', phoneNumber: '', address: '', comments: '' },
   });
 

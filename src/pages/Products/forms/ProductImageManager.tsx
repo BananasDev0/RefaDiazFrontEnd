@@ -28,7 +28,7 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({ isReadOnly })
     const urlsToRevoke: string[] = [];
 
     fields.forEach((field) => {
-      const file = field as AppFile;
+      const file = field as unknown as AppFile;
       if (file.nativeFile) {
         const blobUrl = URL.createObjectURL(file.nativeFile);
         newPreviews[field.id] = blobUrl;
@@ -66,8 +66,6 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({ isReadOnly })
     <ImageDropzone
       onFilesAdded={handleFilesAdded}
       disabled={isReadOnly || fields.length >= MAX_FILES}
-      maxFiles={MAX_FILES}
-      currentFileCount={fields.length}
     />
   );
   

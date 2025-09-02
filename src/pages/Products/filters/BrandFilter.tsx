@@ -50,7 +50,7 @@ const BrandFilter: React.FC = () => {
     }
   }, [searchParams, filteredBrands]);
 
-  const handleBrandChange = (_: any, newValue: Brand | null) => {
+  const handleBrandChange = (_: React.SyntheticEvent, newValue: Brand | null) => {
     setSelectedBrand(newValue);
     const params = new URLSearchParams(searchParams);
     if (newValue) {

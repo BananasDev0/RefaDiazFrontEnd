@@ -56,7 +56,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ images, previews, onDe
             <Item original={previews[mainImage.id] || ''} width={mainImageDims.width} height={mainImageDims.height}>
               {({ ref, open }) => (
                 <img
-                  ref={ref as React.MutableRefObject<HTMLImageElement>}
+                  ref={ref}
                   onClick={open}
                   src={previews[mainImage.id] || ''}
                   alt="Imagen principal"
@@ -91,7 +91,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ images, previews, onDe
                     <Item original={previews[thumbnail.id] || ''} width={thumbDims.width} height={thumbDims.height}>
                       {({ ref, open }) => (
                         <img
-                          ref={ref as React.MutableRefObject<HTMLImageElement>}
+                          ref={ref}
                           onClick={open}
                           src={previews[thumbnail.id] || ''}
                           alt={`Miniatura ${index + 1}`}

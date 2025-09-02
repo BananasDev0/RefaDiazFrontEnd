@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const providerSchema = yup.object().shape({
+export const providerSchema = yup.object({
   name: yup
     .string()
     .required('El nombre del proveedor es obligatorio.')
@@ -13,7 +13,5 @@ export const providerSchema = yup.object().shape({
   address: yup
     .string()
     .required('La dirección es obligatoria.'),
-  comments: yup
-    .string()
-    .optional(),
+  comments: yup.string().optional(),
 });

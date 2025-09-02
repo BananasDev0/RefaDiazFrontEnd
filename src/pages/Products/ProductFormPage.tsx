@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   CircularProgress,
   Box,
@@ -24,6 +24,9 @@ import PageHeader from '../../components/common/PageHeader';
 import RadiatorForm from './forms/productTypeForms/RadiatorForm';
 import CapForm from './forms/productTypeForms/CapForm';
 import AccessoryForm from './forms/productTypeForms/AccessoryForm';
+import type { File as AppFile } from '../../types/common.types';
+import type { ProductCarModel } from '../../types/product.types';
+import type { ProviderProduct } from '../../types/product.types';
 
 // Helper function to transform API data to form data
 const transformProductToFormData = (product: Product): ProductFormData => {
@@ -63,8 +66,8 @@ const transformFormDataToPayload = async (
   productTypeId: number
 ): Promise<Partial<Product>> => {
   // 1. Manejar la subida de archivos
-  const uploadedFiles = await ProductImageService.uploadFiles(formData.files);
-
+  const filesToUpload = formData.files as AppFile[];
+  const uploadedFiles = await ProductImageService.uploadFiles(filesToUpload);
   // 2. Mapear y transformar los datos para el backend
   const payload: Partial<Product> = {
     name: formData.name,
@@ -72,17 +75,17 @@ const transformFormDataToPayload = async (
     stockCount: formData.stockCount,
     comments: formData.comments,
     productTypeId: productTypeId as Product['productTypeId'],
-    files: uploadedFiles,
+    files: uploadedFiles as AppFile[],
     productCarModels: formData.productCarModels.map(pcm => ({
       carModelId: pcm.carModelId,
       initialYear: pcm.initialYear,
       lastYear: pcm.lastYear,
-    })),
+    })) as ProductCarModel[],
     productProviders: formData.productProviders.map(pp => ({
       providerId: pp.providerId,
       numSeries: pp.numSeries,
       price: { cost: pp.purchasePrice, description: `Precio de compra` },
-    })),
+    })) as ProviderProduct[],
     productPrices: formData.productPrices.map(pp => ({
       price: { description: pp.description, cost: pp.cost },
     })),
@@ -128,7 +131,7 @@ const ProductFormPage = () => {
   const onSubmit = async (data: ProductFormData) => {
     try {
       const payload = await transformFormDataToPayload(data, numericProductType);
-      
+
       if (isEditMode) {
         updateProduct({ id: numericProductId!, data: payload }, {
           onSuccess: () => setIsReadOnly(true),
@@ -150,7 +153,7 @@ const ProductFormPage = () => {
       </Box>
     );
   }
-  
+
   const handleCancel = () => {
     if (isEditMode) {
       setIsReadOnly(true);
@@ -179,7 +182,7 @@ const ProductFormPage = () => {
       </Box>
     );
   };
-  
+
   const renderProductSpecificForm = () => {
     switch (productTypeParam) {
       case 'radiadores':

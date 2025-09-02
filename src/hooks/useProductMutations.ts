@@ -38,7 +38,7 @@ export const useProductMutations = () => {
 
   const updateProductMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Product }) => updateProduct(id, data),
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       showSnackbar('Producto actualizado exitosamente', 'success');
       // Invalida la query de este producto y la lista general
       queryClient.invalidateQueries({ queryKey: ['products'] });

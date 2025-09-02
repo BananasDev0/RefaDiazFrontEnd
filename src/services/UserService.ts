@@ -100,7 +100,7 @@ export const deleteUser = async (id: string): Promise<void> => {
 };
 
 
-export const getUserById = async (id: string): Promise<User> => {
+export const getUserById = async (): Promise<User> => {
   const mockUser: User = {
     id: '1',
     person: {
