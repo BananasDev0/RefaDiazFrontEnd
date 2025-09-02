@@ -16,7 +16,7 @@ export const signIn = async (credentials: LoginFormInputs): Promise<User> => {
   localStorage.setItem('token', authData.session.access_token);
 
   try {
-    const user = await getUserById();
+    const user = await getUserById(authData.user.id);
     if (!user) {
       await supabase.auth.signOut();
       localStorage.removeItem('token');
