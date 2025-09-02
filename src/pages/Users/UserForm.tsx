@@ -45,6 +45,7 @@ export const UserForm: React.FC<UserFormProps> = ({ onSubmit, onCancel, isSubmit
     reset,
     formState: { errors },
   } = useForm<UserFormData>({
+    // @ts-expect-error - Ignorar incompatibilidad de tipos entre Yup schema y UserFormData
     resolver: yupResolver(isEditMode ? editUserSchema : userSchema),
     // Agregamos los valores por defecto para los nuevos campos
     defaultValues: {

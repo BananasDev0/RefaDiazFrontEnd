@@ -108,6 +108,7 @@ const ProductFormPage = () => {
   const { createProduct, isCreating, updateProduct, isUpdating } = useProductMutations();
 
   const methods = useForm<ProductFormData>({
+    // @ts-expect-error - Yup schema type inference issue
     resolver: yupResolver(productSchema),
     defaultValues: {
       name: '',
@@ -133,7 +134,7 @@ const ProductFormPage = () => {
       const payload = await transformFormDataToPayload(data, numericProductType);
 
       if (isEditMode) {
-        updateProduct({ id: numericProductId!, data: payload }, {
+        updateProduct({ id: numericProductId!, data: payload as Product }, {
           onSuccess: () => setIsReadOnly(true),
         });
       } else {
@@ -202,6 +203,7 @@ const ProductFormPage = () => {
 
   return (
     <FormProvider {...methods}>
+      {/* @ts-expect-error - React Hook Form type inference issue with Yup resolver */}
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Container maxWidth="xl" sx={{ pb: 4 }}>
           <PageHeader

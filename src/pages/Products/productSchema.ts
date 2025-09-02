@@ -9,10 +9,10 @@ export const productSchema = yup.object({
     .min(0, 'El stock no puede ser negativo.')
     .integer('El stock debe ser un número entero.')
     .required('La cantidad de stock es requerida.'),
-  comments: yup.string().optional(),
+  comments: yup.string().optional().default(undefined),
   // Los arrays se añadirán en pasos posteriores
-  files: yup.array().of(yup.mixed()).optional(), // yup.mixed() para File/Blob
-  productCarModels: yup.array().of(yup.object({})).optional(),
-  productProviders: yup.array().of(yup.object({})).optional(),
-  productPrices: yup.array().of(yup.object({})).optional(),
+  files: yup.array().of(yup.mixed()).optional().default([]), // yup.mixed() para File/Blob
+  productCarModels: yup.array().of(yup.object({})).optional().default([]),
+  productProviders: yup.array().of(yup.object({})).optional().default([]),
+  productPrices: yup.array().of(yup.object({})).optional().default([]),
 });
