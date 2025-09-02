@@ -50,3 +50,7 @@ export const updateProduct = async (productId: number, productData: Product): Pr
 export const deleteProduct = async (productId: number): Promise<void> => {
   return axiosInstance.delete(`/products?id=${productId}`);
 };
+
+export const createCarModel = async (modelData: Pick<CarModel, 'name' | 'brandId'>): Promise<CarModel> => {
+  return axiosInstance.post('/models', modelData);
+};

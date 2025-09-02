@@ -20,7 +20,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, actionButton }) => {
           // Add a gap for spacing when stacked
           gap: { xs: 2, sm: 0 },
           // Align items to the start when stacked
-          alignItems: { xs: 'flex-start', sm: 'center' },
         }}
       >
         <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>

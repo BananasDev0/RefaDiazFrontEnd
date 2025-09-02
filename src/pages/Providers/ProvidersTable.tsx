@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, IconButton, Menu, MenuItem, CircularProgress, Divider } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
+import type { GridColDef } from '@mui/x-data-grid';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import type { Provider } from '../../types/provider.types';
 

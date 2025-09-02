@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Chip, IconButton, Menu, MenuItem, Divider } from '@mui/material';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
+import type { GridColDef } from '@mui/x-data-grid';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import type { User } from '../../types/user.types';
 
@@ -9,11 +10,10 @@ interface UsersTableProps {
   isLoading: boolean;
   onView: (user: User) => void;
   onEdit: (user: User) => void;
-  onChangeRole: (user: User) => void;
   onDelete: (user: User) => void;
 }
 
-export const UsersTable: React.FC<UsersTableProps> = ({ users, isLoading, onView, onEdit, onChangeRole, onDelete }) => {
+export const UsersTable: React.FC<UsersTableProps> = ({ users, isLoading, onView, onEdit, onDelete }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedUser, setSelectedUser] = useState<null | User>(null);
 
@@ -38,15 +38,14 @@ export const UsersTable: React.FC<UsersTableProps> = ({ users, isLoading, onView
       headerName: 'Nombre Completo',
       flex: 1,
       minWidth: 200,
-      valueGetter: (params: GridValueGetterParams<User>) =>
-        `${params.row.person?.name || ''} ${params.row.person?.lastName || ''}`,
+      valueGetter: (_value, row) => `${row.person?.name || ''} ${row.person?.lastName || ''}`,
     },
     {
       field: 'email',
       headerName: 'Correo Electrónico',
       flex: 1.5,
       minWidth: 250,
-      valueGetter: (params: GridValueGetterParams<User>) => params.row.person?.email || '',
+      valueGetter: (_value, row) => row.person?.email || '',
     },
     {
       field: 'role',

@@ -100,21 +100,10 @@ export const deleteUser = async (id: string): Promise<void> => {
 };
 
 
+/**
+ * Fetches a single user by their ID.
+ */
 export const getUserById = async (id: string): Promise<User> => {
-  const mockUser: User = {
-    id: '1',
-    person: {
-      name: 'John',
-      lastName: 'Doe',
-      birthDate: '1990-01-01',
-      email: 'john.doe@example.com',
-      phoneNumber: '1234567890',
-      address: '123 Main St, Anytown, USA',
-    },
-    role: {
-      id: 1,
-      description: 'ADMINISTRADOR',
-    },
-  };
-  return mockUser;
+  // Asumiendo que el backend devuelve un solo objeto de usuario cuando se filtra por ID
+  return axiosInstance.get(`/users?id=${id}`);
 };

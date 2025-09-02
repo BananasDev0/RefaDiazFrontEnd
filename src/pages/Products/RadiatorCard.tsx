@@ -39,8 +39,12 @@ export const RadiatorCard: React.FC<RadiatorCardProps> = ({ product }) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = (event?: React.MouseEvent<HTMLElement>) => {
-    event?.stopPropagation();
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuCloseFromMouse = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
     setAnchorEl(null);
   };
 
@@ -139,7 +143,7 @@ export const RadiatorCard: React.FC<RadiatorCardProps> = ({ product }) => {
         anchorEl={anchorEl}
         open={menuOpen}
         onClose={handleMenuClose}
-        onClick={(e) => e.stopPropagation()}
+        onClick={handleMenuCloseFromMouse}
       >
         <MenuItem onClick={handleEdit}>
           <ListItemIcon>

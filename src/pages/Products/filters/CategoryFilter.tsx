@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { BRAND_TYPE_AUTOMOTIVE, BRAND_TYPE_HEAVY_DUTY } from '../../../constants/productConstants';
+import type { SelectChangeEvent } from '@mui/material';
 
 const CategoryFilter: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -9,7 +10,7 @@ const CategoryFilter: React.FC = () => {
     parseInt(searchParams.get('brandTypeId') || String(BRAND_TYPE_AUTOMOTIVE), 10)
   );
 
-  const handleBrandTypeChange = (event: any) => {
+  const handleBrandTypeChange = (event: SelectChangeEvent<number>) => {
     const newBrandType = event.target.value as number;
     setBrandType(newBrandType);
 

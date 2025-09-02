@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Autocomplete, TextField, CircularProgress } from '@mui/material';
 import { useModels } from '../../../hooks/useVehicleData';
-import { Model } from '../../../types/product.types';
+import { type CarModel } from '../../../types/model.types';
 
 const ModelFilter: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [selectedModel, setSelectedModel] = useState<CarModel | null>(null);
 
   const brandId = searchParams.get('brandId') ? parseInt(searchParams.get('brandId')!, 10) : null;
 
@@ -26,7 +26,7 @@ const ModelFilter: React.FC = () => {
     }
   }, [searchParams, models]);
 
-  const handleModelChange = (_: any, newValue: Model | null) => {
+  const handleModelChange = (_: React.SyntheticEvent, newValue: CarModel | null) => {
     setSelectedModel(newValue);
     const params = new URLSearchParams(searchParams);
     if (newValue) {

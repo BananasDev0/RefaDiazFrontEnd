@@ -87,7 +87,6 @@ const UsersPage: React.FC = () => {
     }
   };
 
-  const handleChangeRole = (user: User) => console.log('TODO: Cambiar Rol para', user);
 
   if (isError) {
     return <Typography color="error">Error: {error?.message || 'No se pudieron cargar los usuarios'}</Typography>;
@@ -102,7 +101,6 @@ const UsersPage: React.FC = () => {
         isLoading={isLoading}
         onView={handleOpenViewDialog}
         onEdit={handleOpenEditDialog}
-        onChangeRole={handleChangeRole}
         onDelete={handleOpenDeleteDialog}
       />
 
