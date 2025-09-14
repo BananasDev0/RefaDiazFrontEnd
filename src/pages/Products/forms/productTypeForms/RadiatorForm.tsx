@@ -18,15 +18,16 @@ import ProductPricesManager from '../ProductPricesManager';
 
 interface RadiatorFormProps {
   isReadOnly: boolean;
+  isNameReadOnly: boolean;
 }
 
-const RadiatorForm: React.FC<RadiatorFormProps> = ({ isReadOnly }) => {
+const RadiatorForm: React.FC<RadiatorFormProps> = ({ isReadOnly, isNameReadOnly }) => {
   return (
     <>
       <Paper sx={{ p: 3, mb: 3 }}>
         <Grid container spacing={3}>
           <Grid size={6}>
-            <ProductBasicInfo isReadOnly={isReadOnly} />
+            <ProductBasicInfo isReadOnly={isReadOnly} isNameReadOnly={isNameReadOnly} />
           </Grid>
           <Grid size={6}>
             <ProductImageManager isReadOnly={isReadOnly} />

@@ -5,9 +5,10 @@ import type { ProductFormData } from '../../../types/product.types';
 
 interface ProductBasicInfoProps {
   isReadOnly: boolean;
+  isNameReadOnly?: boolean;
 }
 
-const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ isReadOnly }) => {
+const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ isReadOnly, isNameReadOnly }) => {
   const { control } = useFormContext<ProductFormData>();
 
   return (
@@ -29,7 +30,7 @@ const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ isReadOnly }) => {
                 error={!!error}
                 helperText={error?.message}
                 InputProps={{
-                  readOnly: isReadOnly,
+                  readOnly: isReadOnly || isNameReadOnly,
                 }}
               />
             )}
