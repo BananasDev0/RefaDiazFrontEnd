@@ -129,6 +129,22 @@ const ProductFormPage = () => {
     }
   }, [productData, isEditMode, methods]);
 
+  const { watch, setValue } = methods;
+  const dpi = watch('dpi');
+  const stockCount = watch('stockCount');
+  const productCarModels = watch('productCarModels');
+
+  useEffect(() => {
+    if (productTypeParam === 'radiadores') {
+      const carModelsString = productCarModels
+        ?.map(cm => `${cm.modelName} (${cm.initialYear}-${cm.lastYear})`)
+        .join('-');
+      
+      const name = `${dpi || ''} ${carModelsString || ''} [${stockCount || 0}]`.trim();
+      setValue('name', name);
+    }
+  }, [dpi, stockCount, productCarModels, productTypeParam, setValue]);
+
   const onSubmit = async (data: ProductFormData) => {
     try {
       const payload = await transformFormDataToPayload(data, numericProductType);
@@ -185,9 +201,10 @@ const ProductFormPage = () => {
   };
 
   const renderProductSpecificForm = () => {
+    const isNameReadOnly = productTypeParam === 'radiadores';
     switch (productTypeParam) {
       case 'radiadores':
-        return <RadiatorForm isReadOnly={isReadOnly} />;
+        return <RadiatorForm isReadOnly={isReadOnly} isNameReadOnly={isNameReadOnly} />;
       case 'tapas':
         return <CapForm isReadOnly={isReadOnly} />;
       case 'accesorios':

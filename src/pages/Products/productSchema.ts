@@ -2,7 +2,7 @@ import * as yup from 'yup';
 
 export const productSchema = yup.object({
   name: yup.string().required('El nombre del producto es requerido.'),
-  dpi: yup.string().required('El DPI o identificador es requerido.'),
+  dpi: yup.string().optional(),
   stockCount: yup
     .number()
     .typeError('El stock debe ser un número.')
