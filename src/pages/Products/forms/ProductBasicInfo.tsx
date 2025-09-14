@@ -45,7 +45,6 @@ const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({ isReadOnly, isNameR
                 {...field}
                 label="DPI / Identificador Único"
                 fullWidth
-                required
                 error={!!error}
                 helperText={error?.message}
                 InputProps={{
