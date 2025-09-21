@@ -20,6 +20,7 @@ import { Add, Delete } from '@mui/icons-material';
 import { useProviders } from '../../../hooks/useProviders';
 import type { Provider } from '../../../types/provider.types';
 import type { ProductFormData } from '../../../types/product.types';
+import { ProviderDialog } from '../../Providers/ProviderDialog';
 
 interface ProductProvidersManagerProps {
   isReadOnly: boolean;
@@ -35,6 +36,8 @@ const ProductProvidersManager: React.FC<ProductProvidersManagerProps> = ({ isRea
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
   const [purchasePrice, setPurchasePrice] = useState('');
   const [numSeries, setNumSeries] = useState('');
+  const [viewProvider, setViewProvider] = useState<Provider | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
 
   const { providers, isLoading: isLoadingProviders } = useProviders();
 
@@ -51,6 +54,21 @@ const ProductProvidersManager: React.FC<ProductProvidersManagerProps> = ({ isRea
     setSelectedProvider(null);
     setPurchasePrice('');
     setNumSeries('');
+  };
+
+  const handleViewProvider = (providerId: number) => {
+    const provider = providers.find((item) => item.id === providerId);
+    console.log('provider', providerId, providers);
+    if (!provider) {
+      return;
+    }
+    setViewProvider(provider);
+    setIsViewDialogOpen(true);
+  };
+
+  const handleCloseViewDialog = () => {
+    setIsViewDialogOpen(false);
+    setViewProvider(null);
   };
 
   return (
@@ -113,6 +131,7 @@ const ProductProvidersManager: React.FC<ProductProvidersManagerProps> = ({ isRea
                 <TableCell>Proveedor</TableCell>
                 <TableCell>Precio Compra</TableCell>
                 <TableCell>No. Serie</TableCell>
+                <TableCell align="center">Detalles</TableCell>
                 {!isReadOnly && <TableCell align="right">Acciones</TableCell>}
               </TableRow>
             </TableHead>
@@ -122,6 +141,15 @@ const ProductProvidersManager: React.FC<ProductProvidersManagerProps> = ({ isRea
                   <TableCell>{field.providerName}</TableCell>
                   <TableCell>{`${field.purchasePrice}`}</TableCell>
                   <TableCell>{field.numSeries}</TableCell>
+                  <TableCell align="center">
+                    <Button
+                      variant="text"
+                      size="small"
+                      onClick={() => handleViewProvider(field.providerId)}
+                    >
+                      Ver
+                    </Button>
+                  </TableCell>
                   {!isReadOnly && (
                     <TableCell align="right">
                       <IconButton onClick={() => remove(index)} color="error">
@@ -137,6 +165,14 @@ const ProductProvidersManager: React.FC<ProductProvidersManagerProps> = ({ isRea
       ) : (
         <Typography sx={{ mt: 2, color: 'text.secondary' }}>No hay proveedores asignados.</Typography>
       )}
+      <ProviderDialog
+        open={isViewDialogOpen}
+        onClose={handleCloseViewDialog}
+        onSubmit={() => {}}
+        providerToEdit={viewProvider}
+        isSubmitting={false}
+        viewMode
+      />
     </Box>
   );
 };
