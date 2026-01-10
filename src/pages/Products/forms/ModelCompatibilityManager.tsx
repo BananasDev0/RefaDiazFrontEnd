@@ -102,6 +102,23 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
                   value={selectedBrand}
                   onChange={(_, newValue) => setSelectedBrand(newValue)}
                   loading={isLoadingBrands}
+                  renderGroup={(params) => (
+                    <li key={params.key}>
+                      <Box
+                        sx={{
+                          position: 'sticky',
+                          top: '-8px',
+                          padding: '8px 16px',
+                          fontWeight: 'bold',
+                          backgroundColor: params.group === 'Automotriz' ? 'primary.light' : 'secondary.light',
+                          color: params.group === 'Automotriz' ? 'primary.contrastText' : 'secondary.contrastText',
+                        }}
+                      >
+                        {params.group}
+                      </Box>
+                      <ul style={{ padding: 0 }}>{params.children}</ul>
+                    </li>
+                  )}
                   renderInput={(params) => <TextField {...params} label="Marca" />}
                 />
               </Grid>
