@@ -4,6 +4,21 @@ Todos los cambios importantes del sistema se documentan en este archivo.
 
 ---
 
+## [2026-01-10]
+
+### Corrección de formularios anidados en creación de modelos
+
+**Problema:**
+Al crear un nuevo modelo de vehículo desde el formulario de productos (sección "Compatibilidad de Modelos"), el formulario principal se reiniciaba y salía del modo edición. Esto ocurría porque el diálogo de creación de modelo tenía un tag `<form>` anidado dentro del formulario principal, causando que el submit del diálogo disparara también el submit del formulario padre.
+
+**Solución:**
+Se eliminó el tag `<form>` del componente `AddModelDialog` y se cambió el botón de guardar para usar `onClick={handleSubmit(onSubmit)}` en lugar de `type="submit"`. React Hook Form permite llamar `handleSubmit()` directamente desde un evento click, validando el formulario y ejecutando el callback si es válido, sin necesidad de un tag `<form>`.
+
+**Archivos modificados:**
+- `src/pages/Products/forms/dialogs/AddModelDialog.tsx`
+
+---
+
 ## [2026-01-09]
 
 ### Mejora visual en selector de marcas
