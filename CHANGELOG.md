@@ -4,6 +4,26 @@ Todos los cambios importantes del sistema se documentan en este archivo.
 
 ---
 
+## [2026-01-12]
+
+### Eliminacion de modelos desde el formulario de productos
+
+**Descripcion:**
+Se agrego la funcionalidad para eliminar modelos de vehiculos directamente desde el selector de modelos en el formulario de productos. Ahora cada modelo en la lista desplegable muestra un icono de eliminar que permite remover el modelo del sistema.
+
+**Funcionalidad:**
+- Boton de eliminar visible en cada opcion del selector de modelos (excepto la opcion "Añadir nuevo modelo")
+- Dialogo de confirmacion antes de eliminar para prevenir eliminaciones accidentales
+- Actualizacion automatica de la lista de modelos despues de eliminar
+
+**Archivos modificados:**
+- `src/services/ProductService.ts` - Nueva funcion `deleteCarModel`
+- `src/hooks/useVehicleData.ts` - Nuevo hook `useDeleteCarModel`
+- `src/pages/Products/forms/ModelCompatibilityManager.tsx` - Integracion del boton de eliminar en el selector
+- `src/pages/Products/forms/dialogs/DeleteModelDialog.tsx` - Nuevo componente de dialogo de confirmacion
+
+---
+
 ## [2026-01-10]
 
 ### Corrección de formularios anidados en creación de modelos

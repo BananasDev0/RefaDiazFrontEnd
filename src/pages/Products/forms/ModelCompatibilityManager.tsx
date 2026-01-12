@@ -23,6 +23,7 @@ import type { Brand } from '../../../types/brand.types';
 import type { CarModel } from '../../../types/model.types';
 import type { ProductFormData } from '../../../types/product.types';
 import { AddModelDialog } from './dialogs/AddModelDialog';
+import { DeleteModelDialog } from './dialogs/DeleteModelDialog';
 
 interface ModelCompatibilityManagerProps {
   isReadOnly: boolean;
@@ -42,6 +43,7 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
   const [initialYear, setInitialYear] = useState('');
   const [lastYear, setLastYear] = useState('');
   const [isAddModelDialogOpen, setAddModelDialogOpen] = useState(false);
+  const [modelToDelete, setModelToDelete] = useState<CarModel | null>(null);
 
   const { data: brands, isLoading: isLoadingBrands } = useBrands();
   const { data: models, isLoading: isLoadingModels } = useModels(selectedBrand?.id ?? null);
@@ -85,6 +87,17 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
 
   const handleNewModelSuccess = (newModel: CarModel) => {
     setSelectedModel(newModel);
+  };
+
+  const handleDeleteModelClick = (event: React.MouseEvent, model: CarModel) => {
+    event.stopPropagation();
+    setModelToDelete(model);
+  };
+
+  const handleDeleteSuccess = () => {
+    if (selectedModel?.id === modelToDelete?.id) {
+      setSelectedModel(null);
+    }
   };
 
   return (
@@ -135,7 +148,16 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
                       {option.id === ADD_NEW_MODEL_ID ? (
                         <Box sx={{ fontStyle: 'italic', color: 'primary.main' }}>{option.name}</Box>
                       ) : (
-                        option.name
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                          <span>{option.name}</span>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => handleDeleteModelClick(e, option)}
+                            sx={{ ml: 1, color: 'error.main', '&:hover': { backgroundColor: 'error.light', color: 'error.contrastText' } }}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Box>
                       )}
                     </li>
                   )}
@@ -210,12 +232,21 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
       </TableContainer>
 
       {selectedBrand && (
-        <AddModelDialog
-          open={isAddModelDialogOpen}
-          onClose={() => setAddModelDialogOpen(false)}
-          onSuccess={handleNewModelSuccess}
-          brandId={selectedBrand.id}
-        />
+        <>
+          <AddModelDialog
+            open={isAddModelDialogOpen}
+            onClose={() => setAddModelDialogOpen(false)}
+            onSuccess={handleNewModelSuccess}
+            brandId={selectedBrand.id}
+          />
+          <DeleteModelDialog
+            open={!!modelToDelete}
+            onClose={() => setModelToDelete(null)}
+            onSuccess={handleDeleteSuccess}
+            model={modelToDelete}
+            brandId={selectedBrand.id}
+          />
+        </>
       )}
     </Box>
   );

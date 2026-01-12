@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getBrands, getModelsByBrand, createCarModel } from '../services/ProductService';
+import { getBrands, getModelsByBrand, createCarModel, deleteCarModel } from '../services/ProductService';
 import { useSnackbar } from '../contexts/SnackbarContext';
 import type { CarModel } from '../types/model.types';
 
@@ -34,6 +34,23 @@ export const useCreateCarModel = () => {
     },
     onError: (error: Error) => {
       showSnackbar(`Error al crear el modelo: ${error.message}`, 'error');
+    },
+  });
+};
+
+// Hook para eliminar un modelo de auto
+export const useDeleteCarModel = () => {
+  const queryClient = useQueryClient();
+  const { showSnackbar } = useSnackbar();
+
+  return useMutation({
+    mutationFn: ({ modelId }: { modelId: number; brandId: number }) => deleteCarModel(modelId),
+    onSuccess: (_, variables) => {
+      showSnackbar('Modelo eliminado exitosamente', 'success');
+      queryClient.invalidateQueries({ queryKey: ['models', variables.brandId] });
+    },
+    onError: (error: Error) => {
+      showSnackbar(`Error al eliminar el modelo: ${error.message}`, 'error');
     },
   });
 };

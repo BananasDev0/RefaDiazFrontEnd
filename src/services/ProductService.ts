@@ -54,3 +54,7 @@ export const deleteProduct = async (productId: number): Promise<void> => {
 export const createCarModel = async (modelData: Pick<CarModel, 'name' | 'brandId'>): Promise<CarModel> => {
   return axiosInstance.post('/models', modelData);
 };
+
+export const deleteCarModel = async (modelId: number): Promise<void> => {
+  return axiosInstance.delete(`/models?id=${modelId}`);
+};
