@@ -40,34 +40,32 @@ export const AddModelDialog: React.FC<AddModelDialogProps> = ({ open, onClose, o
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogTitle>Añadir Nuevo Modelo</DialogTitle>
-        <DialogContent>
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                autoFocus
-                margin="dense"
-                label="Nombre del Modelo"
-                type="text"
-                fullWidth
-                variant="outlined"
-                error={!!errors.name}
-                helperText={errors.name?.message}
-              />
-            )}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} disabled={createModelMutation.isPending}>Cancelar</Button>
-          <Button type="submit" variant="contained" disabled={createModelMutation.isPending}>
-            {createModelMutation.isPending ? <CircularProgress size={24} /> : 'Guardar'}
-          </Button>
-        </DialogActions>
-      </form>
+      <DialogTitle>Añadir Nuevo Modelo</DialogTitle>
+      <DialogContent>
+        <Controller
+          name="name"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              autoFocus
+              margin="dense"
+              label="Nombre del Modelo"
+              type="text"
+              fullWidth
+              variant="outlined"
+              error={!!errors.name}
+              helperText={errors.name?.message}
+            />
+          )}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={createModelMutation.isPending}>Cancelar</Button>
+        <Button onClick={handleSubmit(onSubmit)} variant="contained" disabled={createModelMutation.isPending}>
+          {createModelMutation.isPending ? <CircularProgress size={24} /> : 'Guardar'}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
