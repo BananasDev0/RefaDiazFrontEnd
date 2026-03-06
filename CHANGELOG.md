@@ -4,6 +4,38 @@ Todos los cambios importantes del sistema se documentan en este archivo.
 
 ---
 
+## [2026-03-06]
+
+### Soporte para componentes en radiadores
+
+**Descripcion:**
+Se actualizo el frontend para soportar el nuevo contrato de productos con `components`, permitiendo administrar tapas asociadas a radiadores dentro del mismo flujo de formulario.
+
+**Funcionalidad:**
+- Se agrego una seccion `Tapas` dentro del formulario de radiadores
+- Ahora es posible crear tapas nuevas desde un dialogo embebido en el flujo del radiador
+- Las tapas existentes se hidratan al abrir el radiador en modo edicion
+- El detalle completo de una tapa existente se carga bajo demanda al abrirla
+- Las tapas nuevas y existentes pueden editarse desde el flujo del radiador
+- El guardado del radiador ahora ejecuta un flujo secuencial compatible con backend:
+  - crea tapas nuevas primero
+  - actualiza tapas existentes editadas
+  - guarda el radiador con el arreglo final de `components`
+- Se corrigieron problemas de formularios anidados y se alineo la UI del dialogo con los patrones visuales del proyecto
+
+**Archivos modificados:**
+- `src/types/product.types.ts`
+- `src/pages/Products/ProductFormPage.tsx`
+- `src/pages/Products/forms/ProductBasicInfo.tsx`
+- `src/pages/Products/forms/ProductIdentityFields.tsx`
+- `src/pages/Products/forms/ProductImageManager.tsx`
+- `src/pages/Products/forms/RadiatorComponentsManager.tsx`
+- `src/pages/Products/forms/dialogs/CapDialog.tsx`
+- `src/pages/Products/forms/dialogs/capDialogSchema.ts`
+- `src/pages/Products/forms/productTypeForms/RadiatorForm.tsx`
+
+---
+
 ## [2026-01-12]
 
 ### Eliminacion de modelos desde el formulario de productos

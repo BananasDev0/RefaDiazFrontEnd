@@ -18,6 +18,8 @@ import { PRODUCT_TYPE_MAP } from '../../constants/productConstants';
 import { useProduct } from '../../hooks/useProducts';
 import { useProductMutations } from '../../hooks/useProductMutations';
 import { ProductImageService } from '../../services/ProductImageService';
+import { createProduct as createProductRequest } from '../../services/ProductService';
+import { updateProduct as updateProductRequest } from '../../services/ProductService';
 import PageHeader from '../../components/common/PageHeader';
 
 // Import product-specific form components
@@ -26,7 +28,41 @@ import CapForm from './forms/productTypeForms/CapForm';
 import AccessoryForm from './forms/productTypeForms/AccessoryForm';
 import type { File as AppFile } from '../../types/common.types';
 import type { ProductCarModel } from '../../types/product.types';
+import type { ProductComponentFormEntry } from '../../types/product.types';
+import type { ProductComponentRelation } from '../../types/product.types';
+import type { ProductComponentDraftFormData } from '../../types/product.types';
 import type { ProviderProduct } from '../../types/product.types';
+import type { ProductFormProvider } from '../../types/product.types';
+import type { ProductFormPrice } from '../../types/product.types';
+
+const CAP_PRODUCT_TYPE_ID = Number(PRODUCT_TYPE_MAP.tapas);
+
+const mapProductProvidersToForm = (productProviders: Product['productProviders'] = []): ProductFormProvider[] => (
+  productProviders.map((pp) => ({
+    providerId: pp.providerId,
+    numSeries: pp.numSeries,
+    purchasePrice: pp.price.cost,
+    providerName: pp.provider.name,
+  }))
+);
+
+const mapFormProvidersToPayload = (productProviders: ProductFormProvider[] = []): ProviderProduct[] => (
+  productProviders.map((provider) => ({
+    providerId: provider.providerId,
+    numSeries: provider.numSeries,
+    price: { cost: provider.purchasePrice, description: 'Precio de compra' },
+  })) as ProviderProduct[]
+);
+
+const mapFormPricesToPayload = (productPrices: ProductFormPrice[] = []) => (
+  productPrices.map((price) => ({
+    price: { description: price.description, cost: price.cost },
+  }))
+);
+
+const uploadProductFiles = async (files: (AppFile | File)[] = []) => (
+  ProductImageService.uploadFiles(files as AppFile[])
+);
 
 // Helper function to transform API data to form data
 const transformProductToFormData = (product: Product): ProductFormData => {
@@ -43,16 +79,17 @@ const transformProductToFormData = (product: Product): ProductFormData => {
       brandName: pcm.carModel.brand?.name || 'Marca Desconocida',
       modelName: pcm.carModel.name || 'Modelo Desconocido',
     })) || [],
-    productProviders: product.productProviders?.map(pp => ({
-      providerId: pp.providerId,
-      numSeries: pp.numSeries,
-      purchasePrice: pp.price.cost,
-      providerName: pp.provider.name,
-    })) || [],
+    productProviders: mapProductProvidersToForm(product.productProviders),
     productPrices: product.productPrices?.map(pp => ({
       description: pp.price.description,
       cost: pp.price.cost,
     })) || [],
+    components: product.components?.map((component) => ({
+      source: 'existing' as const,
+      componentProductId: component.componentProductId,
+      componentProduct: component.componentProduct,
+    })) || [],
+    componentsTouched: false,
     // Add product-specific fields here if they exist in the Product type
     // For example:
     // coreMaterial: (product as any).coreMaterial,
@@ -63,11 +100,13 @@ const transformProductToFormData = (product: Product): ProductFormData => {
 // NUEVA FUNCIÓN para transformar los datos del formulario al payload del backend
 const transformFormDataToPayload = async (
   formData: ProductFormData,
-  productTypeId: number
+  productTypeId: number,
+  options?: {
+    components?: ProductComponentRelation[];
+  }
 ): Promise<Partial<Product>> => {
   // 1. Manejar la subida de archivos
-  const filesToUpload = formData.files as AppFile[];
-  const uploadedFiles = await ProductImageService.uploadFiles(filesToUpload);
+  const uploadedFiles = await uploadProductFiles(formData.files);
   // 2. Mapear y transformar los datos para el backend
   const payload: Partial<Product> = {
     name: formData.name,
@@ -81,17 +120,65 @@ const transformFormDataToPayload = async (
       initialYear: pcm.initialYear,
       lastYear: pcm.lastYear,
     })) as ProductCarModel[],
-    productProviders: formData.productProviders.map(pp => ({
-      providerId: pp.providerId,
-      numSeries: pp.numSeries,
-      price: { cost: pp.purchasePrice, description: `Precio de compra` },
-    })) as ProviderProduct[],
-    productPrices: formData.productPrices.map(pp => ({
-      price: { description: pp.description, cost: pp.cost },
-    })),
+    productProviders: mapFormProvidersToPayload(formData.productProviders),
+    productPrices: mapFormPricesToPayload(formData.productPrices),
   };
 
+  if (options?.components !== undefined) {
+    payload.components = options.components;
+  }
+
   return payload;
+};
+
+const transformCapDraftToPayload = async (
+  draft: ProductComponentDraftFormData
+): Promise<Partial<Product>> => {
+  const uploadedFiles = await uploadProductFiles(draft.files);
+
+  return {
+    name: draft.name,
+    dpi: draft.dpi,
+    stockCount: 0,
+    productTypeId: CAP_PRODUCT_TYPE_ID as Product['productTypeId'],
+    files: uploadedFiles as AppFile[],
+    productCarModels: [],
+    productProviders: mapFormProvidersToPayload(draft.productProviders),
+    productPrices: [],
+  };
+};
+
+const resolveComponentsForSubmit = async (
+  components: ProductComponentFormEntry[]
+): Promise<ProductComponentRelation[]> => {
+  const resolvedComponents: ProductComponentRelation[] = [];
+
+  for (const component of components) {
+    if (component.source === 'existing') {
+      if (component.draftDirty && component.draft) {
+        const updatedComponentPayload = await transformCapDraftToPayload(component.draft);
+        await updateProductRequest(component.componentProductId, updatedComponentPayload as Product);
+      }
+
+      resolvedComponents.push({
+        componentProductId: component.componentProductId,
+      });
+      continue;
+    }
+
+    const componentPayload = await transformCapDraftToPayload(component.draft);
+    const createdComponent = await createProductRequest(componentPayload as Product);
+
+    if (!createdComponent.id) {
+      throw new Error('No se pudo obtener el ID de la tapa creada.');
+    }
+
+    resolvedComponents.push({
+      componentProductId: createdComponent.id,
+    });
+  }
+
+  return resolvedComponents;
 };
 
 
@@ -119,6 +206,8 @@ const ProductFormPage = () => {
       productCarModels: [],
       productProviders: [],
       productPrices: [],
+      components: [],
+      componentsTouched: false,
     },
   });
 
@@ -147,7 +236,15 @@ const ProductFormPage = () => {
 
   const onSubmit = async (data: ProductFormData) => {
     try {
-      const payload = await transformFormDataToPayload(data, numericProductType);
+      const shouldSendComponents = isEditMode
+        ? data.componentsTouched
+        : data.components.length > 0;
+      const resolvedComponents = shouldSendComponents
+        ? await resolveComponentsForSubmit(data.components)
+        : undefined;
+      const payload = await transformFormDataToPayload(data, numericProductType, {
+        components: shouldSendComponents ? resolvedComponents : undefined,
+      });
 
       if (isEditMode) {
         updateProduct({ id: numericProductId!, data: payload as Product }, {

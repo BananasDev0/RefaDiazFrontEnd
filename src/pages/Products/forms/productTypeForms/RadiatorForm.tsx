@@ -15,6 +15,7 @@ import ProductImageManager from '../ProductImageManager';
 import ModelCompatibilityManager from '../ModelCompatibilityManager';
 import ProductProvidersManager from '../ProductProvidersManager';
 import ProductPricesManager from '../ProductPricesManager';
+import RadiatorComponentsManager from '../RadiatorComponentsManager';
 
 interface RadiatorFormProps {
   isReadOnly: boolean;
@@ -59,6 +60,15 @@ const RadiatorForm: React.FC<RadiatorFormProps> = ({ isReadOnly, isNameReadOnly 
         </AccordionSummary>
         <AccordionDetails>
           <ProductPricesManager isReadOnly={isReadOnly} />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">Tapas</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <RadiatorComponentsManager isReadOnly={isReadOnly} />
         </AccordionDetails>
       </Accordion>
     </>

@@ -16,7 +16,6 @@ RefaDiaz Frontend es una aplicacion React + TypeScript + Vite para la gestion de
 
 ## Rutas clave del proyecto
 
-- `docs/frontend-contract.md`: fuente de verdad para el contrato frontend/backend de productos y componentes.
 - `src/types/product.types.ts`: tipos de dominio de productos y datos del formulario.
 - `src/services/ProductService.ts`: llamadas `GET /products`, `POST /products`, `PUT /products`.
 - `src/hooks/useProducts.ts`: lectura de productos.
@@ -33,17 +32,10 @@ RefaDiaz Frontend es una aplicacion React + TypeScript + Vite para la gestion de
 - La compatibilidad vehicular se maneja por `productCarModels`.
 - Imagenes, proveedores y precios se capturan desde el mismo flujo de producto.
 
-## Documentacion relacionada
-
-- `docs/frontend-contract.md`: contrato actual frontend/backend para productos.
-- `docs/product-components-implementation-tasks.md`: tareas y alcance para implementar soporte de `components` en frontend.
-
 ## Forma de trabajo recomendada
 
-- Tomar `docs/frontend-contract.md` como fuente principal antes de asumir el payload.
 - Mantener consistencia con React Hook Form, Yup, TanStack Query y MUI existentes.
 - Evitar `any`; extender los tipos del dominio primero y luego ajustar transformaciones y UI.
-- Si hay dudas de comportamiento en `components`, seguir el contrato del documento antes que inferencias del codigo actual.
 
 ## Comandos utiles
 

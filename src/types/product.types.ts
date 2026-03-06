@@ -34,6 +34,11 @@ export interface ProductCarModel {
   carModel: CarModel;
 }
 
+export interface ProductComponentRelation {
+  componentProductId: number;
+  componentProduct?: Product;
+}
+
 export interface Product {
   id?: number;
   name: string;
@@ -45,11 +50,57 @@ export interface Product {
   productProviders: ProviderProduct[];
   productPrices: ProductPrice[];
   productCarModels: ProductCarModel[];
+  components?: ProductComponentRelation[];
   active?: boolean;
   createdAt?: string;
   updatedAt?: string;
   imageUrl?: string; // Para la URL pública de la imagen principal
 }
+
+export interface ProductFormCarModel {
+  carModelId: number;
+  initialYear: number;
+  lastYear: number;
+  brandName?: string; // For display purposes in the form
+  modelName?: string; // For display purposes in the form
+}
+
+export interface ProductFormProvider {
+  providerId: number;
+  numSeries: string;
+  purchasePrice: number;
+  providerName?: string; // For display purposes
+}
+
+export interface ProductFormPrice {
+  description: string;
+  cost: number;
+}
+
+export interface ProductComponentDraftFormData {
+  name: string;
+  dpi: string;
+  files: (StoredFile | File)[];
+  productProviders: ProductFormProvider[];
+}
+
+export interface ExistingProductComponentFormEntry {
+  source: 'existing';
+  componentProductId: number;
+  componentProduct?: Product;
+  draft?: ProductComponentDraftFormData;
+  draftDirty?: boolean;
+}
+
+export interface DraftProductComponentFormEntry {
+  source: 'draft';
+  tempId: string;
+  draft: ProductComponentDraftFormData;
+}
+
+export type ProductComponentFormEntry =
+  | ExistingProductComponentFormEntry
+  | DraftProductComponentFormEntry;
 
 // Corresponds to the data structure of the product form
 export interface ProductFormData {
@@ -63,25 +114,15 @@ export interface ProductFormData {
   files: (StoredFile | File)[]; // Supports existing StoredFile and new browser File objects
 
   // Model Compatibility
-  productCarModels: {
-    carModelId: number;
-    initialYear: number;
-    lastYear: number;
-    brandName?: string; // For display purposes in the form
-    modelName?: string; // For display purposes in the form
-  }[];
+  productCarModels: ProductFormCarModel[];
 
   // Providers
-  productProviders: {
-    providerId: number;
-    numSeries: string;
-    purchasePrice: number;
-    providerName?: string; // For display purposes
-  }[];
+  productProviders: ProductFormProvider[];
 
   // Sale Prices
-  productPrices: {
-    description: string;
-    cost: number;
-  }[];
+  productPrices: ProductFormPrice[];
+
+  // Product Components
+  components: ProductComponentFormEntry[];
+  componentsTouched: boolean;
 }

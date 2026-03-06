@@ -10,11 +10,15 @@ import { ImageDropzone } from './ImageDropZone';
 
 interface ProductImageManagerProps {
   isReadOnly: boolean;
+  fillHeight?: boolean;
 }
 
 const MAX_FILES = 4;
 
-const ProductImageManager: React.FC<ProductImageManagerProps> = ({ isReadOnly }) => {
+const ProductImageManager: React.FC<ProductImageManagerProps> = ({
+  isReadOnly,
+  fillHeight = true,
+}) => {
   const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray<any>({
     control,
@@ -70,7 +74,7 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({ isReadOnly })
   );
   
   return (
-    <Paper elevation={2} sx={{ p: 2, bgcolor: '#fff', height: '100%' }}>
+    <Paper elevation={2} sx={{ p: 2, bgcolor: '#fff', height: fillHeight ? '100%' : 'auto' }}>
       <ImageViewer
         images={fields}
         previews={imagePreviews}
