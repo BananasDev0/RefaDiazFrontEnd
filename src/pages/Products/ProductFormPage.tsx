@@ -12,9 +12,9 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import { productSchema } from './productSchema';
+import { getProductSchema } from './productSchema';
 import type { Product, ProductFormData } from '../../types/product.types';
-import { PRODUCT_TYPE_MAP } from '../../constants/productConstants';
+import { ACCESSORY_PRODUCT_TYPE_ID, CAP_PRODUCT_TYPE_ID, PRODUCT_TYPE_MAP } from '../../constants/productConstants';
 import { useProduct } from '../../hooks/useProducts';
 import { useProductMutations } from '../../hooks/useProductMutations';
 import { ProductImageService } from '../../services/ProductImageService';
@@ -34,8 +34,6 @@ import type { ProductComponentDraftFormData } from '../../types/product.types';
 import type { ProviderProduct } from '../../types/product.types';
 import type { ProductFormProvider } from '../../types/product.types';
 import type { ProductFormPrice } from '../../types/product.types';
-
-const CAP_PRODUCT_TYPE_ID = Number(PRODUCT_TYPE_MAP.tapas);
 
 const mapProductProvidersToForm = (productProviders: Product['productProviders'] = []): ProductFormProvider[] => (
   productProviders.map((pp) => ({
@@ -69,7 +67,8 @@ const transformProductToFormData = (product: Product): ProductFormData => {
   return {
     name: product.name || '',
     dpi: product.dpi || '',
-    stockCount: product.stockCount || 0,
+    stockCount: product.stockCount ?? 0,
+    productCategoryId: product.productCategoryId ?? null,
     comments: product.comments || '',
     files: product.files || [],
     productCarModels: product.productCarModels?.map(pcm => ({
@@ -102,12 +101,31 @@ const transformFormDataToPayload = async (
   formData: ProductFormData,
   productTypeId: number,
   options?: {
+    active?: boolean;
     components?: ProductComponentRelation[];
   }
 ): Promise<Partial<Product>> => {
-  // 1. Manejar la subida de archivos
   const uploadedFiles = await uploadProductFiles(formData.files);
-  // 2. Mapear y transformar los datos para el backend
+
+  if (productTypeId === ACCESSORY_PRODUCT_TYPE_ID) {
+    const accessoryPayload: Partial<Product> = {
+      name: formData.name,
+      comments: formData.comments,
+      productTypeId: productTypeId as Product['productTypeId'],
+      files: uploadedFiles as AppFile[],
+      productCarModels: formData.productCarModels.map((pcm) => ({
+        carModelId: pcm.carModelId,
+      })) as ProductCarModel[],
+      active: options?.active ?? true,
+    };
+
+    if (formData.productCategoryId !== null) {
+      accessoryPayload.productCategoryId = formData.productCategoryId;
+    }
+
+    return accessoryPayload;
+  }
+
   const payload: Partial<Product> = {
     name: formData.name,
     dpi: formData.dpi,
@@ -190,17 +208,20 @@ const ProductFormPage = () => {
 
   const numericProductId = isEditMode ? parseInt(productId, 10) : null;
   const numericProductType = productTypeParam ? parseInt(PRODUCT_TYPE_MAP[productTypeParam], 10) : 0;
+  const isAccessoryProduct = numericProductType === ACCESSORY_PRODUCT_TYPE_ID;
+  const validationSchema = getProductSchema(productTypeParam);
 
   const { data: productData, isLoading: isLoadingProduct } = useProduct(numericProductId);
   const { createProduct, isCreating, updateProduct, isUpdating } = useProductMutations();
 
   const methods = useForm<ProductFormData>({
     // @ts-expect-error - Yup schema type inference issue
-    resolver: yupResolver(productSchema),
+    resolver: yupResolver(validationSchema),
     defaultValues: {
       name: '',
       dpi: '',
       stockCount: 0,
+      productCategoryId: null,
       comments: '',
       files: [],
       productCarModels: [],
@@ -236,13 +257,14 @@ const ProductFormPage = () => {
 
   const onSubmit = async (data: ProductFormData) => {
     try {
-      const shouldSendComponents = isEditMode
+      const shouldSendComponents = !isAccessoryProduct && (isEditMode
         ? data.componentsTouched
-        : data.components.length > 0;
+        : data.components.length > 0);
       const resolvedComponents = shouldSendComponents
         ? await resolveComponentsForSubmit(data.components)
         : undefined;
       const payload = await transformFormDataToPayload(data, numericProductType, {
+        active: isEditMode ? (productData?.active ?? true) : true,
         components: shouldSendComponents ? resolvedComponents : undefined,
       });
 

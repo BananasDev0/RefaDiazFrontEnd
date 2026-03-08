@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { useProductStore, type ProductFilters } from '../../stores/useProductStore';
+import {
+  initialProductFilters,
+  useProductStore,
+  type ProductFilters,
+} from '../../stores/useProductStore';
 import { useProducts } from '../../hooks/useProducts';
 import ProductGrid from './ProductGrid';
 
@@ -14,6 +18,8 @@ const ProductCatalog: React.FC = () => {
   const { productType } = useParams<{ productType: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const searchParamsKey = searchParams.toString();
+  const shouldShowFilterBar = productType !== 'tapas';
 
   const { setProductType, setFilters } = useProductStore();
 
@@ -21,17 +27,24 @@ const ProductCatalog: React.FC = () => {
     const numericProductType = productType ? PRODUCT_TYPE_MAP[productType] : null;
     setProductType(numericProductType);
 
-    const filtersFromURL: ProductFilters = {
-      textSearch: searchParams.get('q'),
-      brandId: searchParams.get('brandId') ? parseInt(searchParams.get('brandId')!, 10) : null,
-      modelId: searchParams.get('modelId') ? parseInt(searchParams.get('modelId')!, 10) : null,
-      year: searchParams.get('year') ? parseInt(searchParams.get('year')!, 10) : null,
-    };
+    const filtersFromURL: ProductFilters = shouldShowFilterBar
+      ? {
+          textSearch: searchParams.get('q'),
+          productCategoryId: searchParams.get('productCategoryId')
+            ? parseInt(searchParams.get('productCategoryId')!, 10)
+            : null,
+          brandId: searchParams.get('brandId') ? parseInt(searchParams.get('brandId')!, 10) : null,
+          modelId: searchParams.get('modelId') ? parseInt(searchParams.get('modelId')!, 10) : null,
+          year: searchParams.get('year') ? parseInt(searchParams.get('year')!, 10) : null,
+        }
+      : { ...initialProductFilters };
+
     setFilters(filtersFromURL);
 
   }, [
     productType,
-    searchParams,
+    searchParamsKey,
+    shouldShowFilterBar,
     setProductType,
     setFilters,
   ]);
@@ -42,8 +55,20 @@ const ProductCatalog: React.FC = () => {
     navigate(`/products/${productType}/new`);
   };
 
+  const productTitleMap: Record<string, string> = {
+    radiadores: 'Catálogo de Radiadores',
+    tapas: 'Catálogo de Tapas',
+    accesorios: 'Catálogo de Accesorios',
+  };
+
+  const addButtonLabelMap: Record<string, string> = {
+    radiadores: 'Agregar Producto',
+    tapas: 'Agregar Producto',
+    accesorios: 'Agregar Accesorio',
+  };
+
   const pageTitle = productType
-    ? `Catálogo de ${productType.charAt(0).toUpperCase() + productType.slice(1)}`
+    ? productTitleMap[productType] || `Catálogo de ${productType.charAt(0).toUpperCase() + productType.slice(1)}`
     : 'Catálogo de Productos';
 
   return (
@@ -57,11 +82,11 @@ const ProductCatalog: React.FC = () => {
             startIcon={<Add />}
             onClick={handleAddProduct}
           >
-            Agregar Producto
+            {productType ? (addButtonLabelMap[productType] || 'Agregar Producto') : 'Agregar Producto'}
           </Button>
         }
       />
-      <ProductFilterBar />
+      {shouldShowFilterBar && <ProductFilterBar productType={productType} />}
       <ProductGrid products={data || []} isLoading={isLoading} />
     </div>
   );

@@ -4,6 +4,7 @@ import type { Product } from '../types/product.types'; // Asumimos que el tipo P
 // Definimos la estructura de nuestros filtros
 export interface ProductFilters {
   textSearch: string | null;
+  productCategoryId: number | null;
   brandId: number | null;
   modelId: number | null;
   year: number | null;
@@ -22,8 +23,9 @@ type ProductState = {
 };
 
 // Estado inicial para los filtros
-const initialFilters: ProductFilters = {
+export const initialProductFilters: ProductFilters = {
   textSearch: null,
+  productCategoryId: null,
   brandId: null,
   modelId: null,
   year: null,
@@ -32,7 +34,7 @@ const initialFilters: ProductFilters = {
 export const useProductStore = create<ProductState>((set) => ({
   // Estado inicial del store
   productType: null,
-  filters: initialFilters,
+  filters: initialProductFilters,
   isModalOpen: false,
   productForModal: null,
 

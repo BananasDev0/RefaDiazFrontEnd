@@ -4,6 +4,43 @@ Todos los cambios importantes del sistema se documentan en este archivo.
 
 ---
 
+## [2026-03-08]
+
+### Catalogo y formulario de accesorios
+
+**Descripcion:**
+Se agrego soporte completo para accesorios dentro del flujo compartido de productos, incluyendo catalogo, formulario, categorias, relacion opcional con modelos de auto y filtros propios del modulo.
+
+**Funcionalidad:**
+- Se habilito el catalogo de accesorios dentro de `ProductCatalog`, reutilizando la misma ruta dinamica y la misma abstraccion base que radiadores
+- Se agrego una tarjeta especifica para accesorios con categoria visual, nombre estandarizado y compatibilidad vehicular opcional
+- Se reemplazo el placeholder del formulario de accesorios por un flujo real con imagenes, categoria y relacion de marca/modelo
+- Se incorporo la administracion inline de categorias de accesorios desde el formulario
+- Se habilito la relacion opcional de accesorios con modelos de auto sin rango de años
+- Se agregaron filtros para accesorios: busqueda por texto, categoria y modelo de auto
+- Se extendio la capa de tipos, store, servicios y mocks para soportar categorias de producto y filtros de accesorios
+
+**Archivos modificados:**
+- `src/pages/Products/ProductCatalog.tsx`
+- `src/pages/Products/ProductFilterBar.tsx`
+- `src/pages/Products/ProductFormPage.tsx`
+- `src/pages/Products/ProductGrid.tsx`
+- `src/pages/Products/AccessoryCard.tsx`
+- `src/pages/Products/forms/productTypeForms/AccessoryForm.tsx`
+- `src/pages/Products/forms/AccessoryCategoryManager.tsx`
+- `src/pages/Products/forms/AccessoryModelManager.tsx`
+- `src/pages/Products/forms/dialogs/AddAccessoryCategoryDialog.tsx`
+- `src/pages/Products/forms/dialogs/DeleteAccessoryCategoryDialog.tsx`
+- `src/pages/Products/filters/ProductCategoryFilter.tsx`
+- `src/services/ProductService.ts`
+- `src/hooks/useProductCategories.ts`
+- `src/stores/useProductStore.ts`
+- `src/types/product.types.ts`
+- `src/types/productCategory.types.ts`
+- `src/mocks/handlers.ts`
+
+---
+
 ## [2026-03-06]
 
 ### Soporte para componentes en radiadores

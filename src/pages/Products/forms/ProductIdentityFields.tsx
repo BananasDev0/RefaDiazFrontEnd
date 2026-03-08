@@ -10,11 +10,13 @@ export interface ProductIdentityFormValues {
 interface ProductIdentityFieldsProps {
   isReadOnly: boolean;
   isNameReadOnly?: boolean;
+  showDpi?: boolean;
 }
 
 const ProductIdentityFields: React.FC<ProductIdentityFieldsProps> = ({
   isReadOnly,
   isNameReadOnly,
+  showDpi = true,
 }) => {
   const { control } = useFormContext<ProductIdentityFormValues>();
 
@@ -39,24 +41,26 @@ const ProductIdentityFields: React.FC<ProductIdentityFieldsProps> = ({
           )}
         />
       </Grid>
-      <Grid size={6}>
-        <Controller
-          name="dpi"
-          control={control}
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              {...field}
-              label="DPI / Identificador Unico"
-              fullWidth
-              error={!!error}
-              helperText={error?.message}
-              InputProps={{
-                readOnly: isReadOnly,
-              }}
-            />
-          )}
-        />
-      </Grid>
+      {showDpi && (
+        <Grid size={6}>
+          <Controller
+            name="dpi"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <TextField
+                {...field}
+                label="DPI / Identificador Unico"
+                fullWidth
+                error={!!error}
+                helperText={error?.message}
+                InputProps={{
+                  readOnly: isReadOnly,
+                }}
+              />
+            )}
+          />
+        </Grid>
+      )}
     </>
   );
 };

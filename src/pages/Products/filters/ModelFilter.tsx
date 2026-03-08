@@ -7,6 +7,7 @@ import { type CarModel } from '../../../types/model.types';
 const ModelFilter: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedModel, setSelectedModel] = useState<CarModel | null>(null);
+  const searchParamsKey = searchParams.toString();
 
   const brandId = searchParams.get('brandId') ? parseInt(searchParams.get('brandId')!, 10) : null;
 
@@ -24,7 +25,7 @@ const ModelFilter: React.FC = () => {
     } else if (!modelId) {
       setSelectedModel(null); // Clear selected model if modelId is removed from URL
     }
-  }, [searchParams, models]);
+  }, [searchParamsKey, models]);
 
   const handleModelChange = (_: React.SyntheticEvent, newValue: CarModel | null) => {
     setSelectedModel(newValue);

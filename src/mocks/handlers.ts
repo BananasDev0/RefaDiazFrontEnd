@@ -204,7 +204,14 @@ export const handlers = [
     if (modelYear) {
       const year = Number(modelYear);
       filteredProducts = filteredProducts.filter(p => 
-        p.productCarModels.some(pcm => pcm.initialYear <= year && pcm.lastYear >= year)
+        p.productCarModels.some(
+          (pcm) => pcm.initialYear !== undefined
+            && pcm.initialYear !== null
+            && pcm.lastYear !== undefined
+            && pcm.lastYear !== null
+            && pcm.initialYear <= year
+            && pcm.lastYear >= year
+        )
       );
     }
 

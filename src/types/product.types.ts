@@ -2,6 +2,7 @@
 import type { CarModel } from './model.types';
 import type { Provider } from './provider.types';
 import type { File as StoredFile } from './common.types';
+import type { ProductCategory } from './productCategory.types';
 
 export type ProductType = 1 | 2 | 3;
 
@@ -29,8 +30,8 @@ export interface ProviderProduct {
 export interface ProductCarModel {
   productId?: number;
   carModelId: number;
-  initialYear: number;
-  lastYear: number;
+  initialYear?: number | null;
+  lastYear?: number | null;
   carModel: CarModel;
 }
 
@@ -43,9 +44,11 @@ export interface Product {
   id?: number;
   name: string;
   productTypeId: ProductType;
+  productCategoryId?: number | null;
+  productCategory?: ProductCategory | null;
   comments?: string;
-  stockCount: number;
-  dpi?: string;
+  stockCount: number | null;
+  dpi?: string | null;
   files: StoredFile[];
   productProviders: ProviderProduct[];
   productPrices: ProductPrice[];
@@ -59,8 +62,8 @@ export interface Product {
 
 export interface ProductFormCarModel {
   carModelId: number;
-  initialYear: number;
-  lastYear: number;
+  initialYear?: number | null;
+  lastYear?: number | null;
   brandName?: string; // For display purposes in the form
   modelName?: string; // For display purposes in the form
 }
@@ -108,6 +111,7 @@ export interface ProductFormData {
   name: string;
   dpi: string;
   stockCount: number;
+  productCategoryId: number | null;
   comments?: string;
 
   // Images

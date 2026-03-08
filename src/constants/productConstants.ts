@@ -1,10 +1,14 @@
 /**
  * Mapeo de los nombres de tipo de producto de la URL a sus IDs numéricos.
  */
+export const RADIATOR_PRODUCT_TYPE_ID = 1;
+export const CAP_PRODUCT_TYPE_ID = 2;
+export const ACCESSORY_PRODUCT_TYPE_ID = 3;
+
 export const PRODUCT_TYPE_MAP: { [key: string]: string } = {
-  radiadores: '1',
-  tapas: '2',
-  accesorios: '3',
+  radiadores: String(RADIATOR_PRODUCT_TYPE_ID),
+  tapas: String(CAP_PRODUCT_TYPE_ID),
+  accesorios: String(ACCESSORY_PRODUCT_TYPE_ID),
 };
 
 /**

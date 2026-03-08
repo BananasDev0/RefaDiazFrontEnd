@@ -22,7 +22,7 @@ describe('useProducts hook', () => {
     // Create a new QueryClient for each test
     queryClient = createTestQueryClient();
     // Reset the store before each test
-    useProductStore.setState({ productType: null, filters: { textSearch: null, brandId: null, modelId: null, year: null } });
+    useProductStore.setState({ productType: null, filters: { textSearch: null, productCategoryId: null, brandId: null, modelId: null, year: null } });
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
