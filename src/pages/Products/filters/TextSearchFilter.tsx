@@ -5,10 +5,11 @@ import { TextField } from '@mui/material';
 const TextSearchFilter: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
+  const searchParamsKey = searchParams.toString();
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      const params = new URLSearchParams(searchParams);
+      const params = new URLSearchParams(searchParamsKey);
       if (searchTerm) {
         params.set('q', searchTerm);
       } else {
@@ -18,7 +19,7 @@ const TextSearchFilter: React.FC = () => {
     }, 500);
 
     return () => clearTimeout(handler);
-  }, [searchTerm, setSearchParams, searchParams]);
+  }, [searchTerm, searchParamsKey, setSearchParams]);
 
   return (
     <TextField

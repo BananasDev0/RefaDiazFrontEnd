@@ -15,6 +15,8 @@ import ProductImageManager from '../ProductImageManager';
 import ModelCompatibilityManager from '../ModelCompatibilityManager';
 import ProductProvidersManager from '../ProductProvidersManager';
 import ProductPricesManager from '../ProductPricesManager';
+import RadiatorComponentsManager from '../RadiatorComponentsManager';
+import { CAP_PRODUCT_TYPE_ID, FAN_PRODUCT_TYPE_ID } from '../../../../constants/productConstants';
 
 interface RadiatorFormProps {
   isReadOnly: boolean;
@@ -59,6 +61,36 @@ const RadiatorForm: React.FC<RadiatorFormProps> = ({ isReadOnly, isNameReadOnly 
         </AccordionSummary>
         <AccordionDetails>
           <ProductPricesManager isReadOnly={isReadOnly} />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">Tapas</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <RadiatorComponentsManager
+            isReadOnly={isReadOnly}
+            componentTypeId={CAP_PRODUCT_TYPE_ID}
+            componentTypeLabel="Tapa"
+            componentTypePluralLabel="Tapas"
+            componentTypeArticle="la"
+          />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">Abanicos</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <RadiatorComponentsManager
+            isReadOnly={isReadOnly}
+            componentTypeId={FAN_PRODUCT_TYPE_ID}
+            componentTypeLabel="Abanico"
+            componentTypePluralLabel="Abanicos"
+            componentTypeArticle="el"
+          />
         </AccordionDetails>
       </Accordion>
     </>

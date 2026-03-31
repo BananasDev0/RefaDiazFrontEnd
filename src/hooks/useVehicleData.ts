@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getBrands, getModelsByBrand, createCarModel, deleteCarModel } from '../services/ProductService';
+import { getModelsByBrand, createCarModel, deleteCarModel } from '../services/ProductService';
+import { getBrands } from '../services/BrandService';
 import { useSnackbar } from '../contexts/SnackbarContext';
 import type { CarModel } from '../types/model.types';
 

@@ -3,6 +3,7 @@ import type { Product } from '../types/product.types';
 import type { Brand } from '../types/brand.types';
 import type { CarModel } from '../types/model.types';
 import type { ProductFilters } from '../stores/useProductStore';
+import type { CreateProductCategoryPayload, ProductCategory } from '../types/productCategory.types';
 
 // 1. FUNCIÓN PARA OBTENER PRODUCTOS CON FILTROS
 // Recibe el tipo de producto y el objeto de filtros de nuestro store de Zustand.
@@ -13,6 +14,7 @@ export const getProducts = async (
   // Construimos los parámetros de búsqueda, omitiendo los valores nulos.
   const params = {
     productTypeId: productType,
+    productCategoryId: filters.productCategoryId,
     brandId: filters.brandId,
     modelId: filters.modelId,
     modelYear: filters.year,
@@ -57,4 +59,20 @@ export const createCarModel = async (modelData: Pick<CarModel, 'name' | 'brandId
 
 export const deleteCarModel = async (modelId: number): Promise<void> => {
   return axiosInstance.delete(`/models?id=${modelId}`);
+};
+
+export const getProductCategories = async (productTypeId: number): Promise<ProductCategory[]> => {
+  return axiosInstance.get('/product-categories', {
+    params: { productTypeId },
+  });
+};
+
+export const createProductCategory = async (
+  categoryData: CreateProductCategoryPayload
+): Promise<ProductCategory> => {
+  return axiosInstance.post('/product-categories', categoryData);
+};
+
+export const deleteProductCategory = async (categoryId: number): Promise<ProductCategory> => {
+  return axiosInstance.delete(`/product-categories?id=${categoryId}`);
 };

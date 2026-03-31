@@ -9,6 +9,7 @@ import { supabase } from '../../../services/supabaseClient';
 const BrandFilter: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
+  const searchParamsKey = searchParams.toString();
   const brandTypeId = parseInt(searchParams.get('brandTypeId') || String(BRAND_TYPE_AUTOMOTIVE), 10);
 
   const { data: brands = [], isLoading: isLoadingBrands } = useBrands();
@@ -48,7 +49,7 @@ const BrandFilter: React.FC = () => {
     } else {
       setSelectedBrand(null);
     }
-  }, [searchParams, filteredBrands]);
+  }, [searchParamsKey, filteredBrands]);
 
   const handleBrandChange = (_: React.SyntheticEvent, newValue: Brand | null) => {
     setSelectedBrand(newValue);
@@ -71,18 +72,22 @@ const BrandFilter: React.FC = () => {
       value={selectedBrand}
       onChange={handleBrandChange}
       loading={isLoadingBrands}
-      renderOption={(props, option) => (
-        <Box component="li" sx={{ '& > .MuiAvatar-root': { mr: 2, flexShrink: 0 } }} {...props}>
-          <Avatar 
-            src={logoUrls[option.id]} 
-            alt={option.name} 
-            sx={{ width: 28, height: 28, objectFit: 'contain' }}
-          >
-            {option.name.charAt(0)}
-          </Avatar>
-          {option.name}
-        </Box>
-      )}
+      renderOption={(props, option) => {
+        const { key, ...optionProps } = props;
+
+        return (
+          <Box component="li" key={key} sx={{ '& > .MuiAvatar-root': { mr: 2, flexShrink: 0 } }} {...optionProps}>
+            <Avatar
+              src={logoUrls[option.id]}
+              alt={option.name}
+              sx={{ width: 28, height: 28, objectFit: 'contain' }}
+            >
+              {option.name.charAt(0)}
+            </Avatar>
+            {option.name}
+          </Box>
+        );
+      }}
       renderInput={(params) => (
         <TextField
           {...params}
