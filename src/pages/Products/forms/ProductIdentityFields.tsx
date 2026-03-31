@@ -49,7 +49,7 @@ const ProductIdentityFields: React.FC<ProductIdentityFieldsProps> = ({
             render={({ field, fieldState: { error } }) => (
               <TextField
                 {...field}
-                label="DPI / Identificador Unico"
+                label="Clave"
                 fullWidth
                 error={!!error}
                 helperText={error?.message}

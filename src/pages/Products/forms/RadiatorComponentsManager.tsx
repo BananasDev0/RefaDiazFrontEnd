@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import {
   Box,
@@ -19,22 +19,32 @@ import type {
   ProductComponentDraftFormData,
   ProductComponentFormEntry,
   ProductFormData,
+  ProductType,
 } from '../../../types/product.types';
 import CapDialog from './dialogs/CapDialog';
 
 interface RadiatorComponentsManagerProps {
   isReadOnly: boolean;
+  componentTypeId: ProductType;
+  componentTypeLabel: string;
+  componentTypePluralLabel: string;
+  componentTypeArticle: 'el' | 'la';
 }
 
 type CapDialogMode = 'create' | 'edit' | 'view';
 
-const getComponentTitle = (component: ProductComponentFormEntry) => {
+const getComponentTitle = (
+  component: ProductComponentFormEntry,
+  componentTypeLabel: string,
+  componentTypeArticle: 'el' | 'la'
+) => {
   if (component.source === 'existing' && component.draft) {
-    return component.draft.name || 'Tapa sin nombre';
+    return component.draft.name || `${componentTypeLabel} sin nombre`;
   }
 
   if (component.source === 'draft') {
-    return component.draft.name || 'Nueva tapa sin nombre';
+    const prefix = componentTypeArticle === 'la' ? 'Nueva' : 'Nuevo';
+    return component.draft.name || `${prefix} ${componentTypeLabel.toLowerCase()} sin nombre`;
   }
 
   return component.componentProduct?.name || `Componente #${component.componentProductId}`;
@@ -64,6 +74,7 @@ const toDraftFormData = (component: ProductComponentFormEntry): ProductComponent
   return {
     name: component.componentProduct?.name || '',
     dpi: component.componentProduct?.dpi || '',
+    comments: component.componentProduct?.comments || '',
     files: component.componentProduct?.files || [],
     productProviders: component.componentProduct?.productProviders?.map((provider) => ({
       providerId: provider.providerId,
@@ -74,17 +85,35 @@ const toDraftFormData = (component: ProductComponentFormEntry): ProductComponent
   };
 };
 
-const RadiatorComponentsManager = ({ isReadOnly }: RadiatorComponentsManagerProps) => {
+const RadiatorComponentsManager = ({
+  isReadOnly,
+  componentTypeId,
+  componentTypeLabel,
+  componentTypePluralLabel,
+  componentTypeArticle,
+}: RadiatorComponentsManagerProps) => {
   const { showSnackbar } = useSnackbar();
-  const { control, setValue } = useFormContext<ProductFormData>();
-  const { fields, append, remove, update } = useFieldArray({
+  const { control, getValues, setValue } = useFormContext<ProductFormData>();
+  const components = useWatch({
     control,
     name: 'components',
-  });
+  }) || [];
   const [isCapDialogOpen, setIsCapDialogOpen] = useState(false);
   const [isComponentDetailLoading, setIsComponentDetailLoading] = useState(false);
   const [dialogMode, setDialogMode] = useState<CapDialogMode>('create');
   const [selectedComponentIndex, setSelectedComponentIndex] = useState<number | null>(null);
+
+  const setComponents = (nextComponents: ProductComponentFormEntry[], shouldMarkTouched = true) => {
+    setValue('components', nextComponents, { shouldDirty: shouldMarkTouched });
+
+    if (shouldMarkTouched) {
+      setValue('componentsTouched', true, { shouldDirty: true });
+    }
+  };
+
+  const filteredComponents = components.flatMap((component, index) => (
+    component.productTypeId === componentTypeId ? [{ component, index }] : []
+  ));
 
   const handleOpenCapDialog = () => {
     setDialogMode('create');
@@ -101,34 +130,54 @@ const RadiatorComponentsManager = ({ isReadOnly }: RadiatorComponentsManagerProp
 
   const handleAddDraftCap = (draft: ProductComponentDraftFormData) => {
     if (dialogMode === 'edit' && selectedComponentIndex !== null) {
-      const currentComponent = fields[selectedComponentIndex] as unknown as ProductComponentFormEntry;
+      const currentComponent = components[selectedComponentIndex];
+
+      if (!currentComponent) {
+        handleCloseCapDialog();
+        return;
+      }
 
       if (currentComponent.source === 'draft') {
-        update(selectedComponentIndex, {
-          ...currentComponent,
-          draft,
-        });
+        setComponents(components.map((component, index) => (
+          index === selectedComponentIndex
+            ? {
+              ...currentComponent,
+              draft,
+            }
+            : component
+        )));
       } else {
-        update(selectedComponentIndex, {
-          ...currentComponent,
-          draft,
-          draftDirty: true,
-        });
+        setComponents(components.map((component, index) => (
+          index === selectedComponentIndex
+            ? {
+              ...currentComponent,
+              draft,
+              draftDirty: true,
+            }
+            : component
+        )));
       }
     } else {
-      append({
-        source: 'draft',
-        tempId: uuidv4(),
-        draft,
-      });
+      setComponents([
+        ...components,
+        {
+          productTypeId: componentTypeId,
+          source: 'draft',
+          tempId: uuidv4(),
+          draft,
+        },
+      ]);
     }
 
-    setValue('componentsTouched', true, { shouldDirty: true });
     handleCloseCapDialog();
   };
 
   const handleOpenComponentDialog = async (index: number) => {
-    const component = fields[index] as unknown as ProductComponentFormEntry;
+    const component = components[index];
+
+    if (!component) {
+      return;
+    }
 
     setSelectedComponentIndex(index);
     setDialogMode(!isReadOnly ? 'edit' : 'view');
@@ -152,94 +201,105 @@ const RadiatorComponentsManager = ({ isReadOnly }: RadiatorComponentsManagerProp
 
     try {
       const fullComponent = await getProductById(component.componentProductId);
-      update(index, {
-        ...component,
-        componentProduct: fullComponent as Product,
-      });
+      const currentComponents = getValues('components');
+      setComponents(currentComponents.map((entry, entryIndex) => (
+        entryIndex === index
+          ? {
+            ...component,
+            componentProduct: fullComponent as Product,
+          }
+          : entry
+      )), false);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'No se pudo cargar el detalle de la tapa.';
-      showSnackbar(`Error al cargar la tapa: ${message}`, 'error');
+      const message = error instanceof Error ? error.message : `No se pudo cargar el detalle del ${componentTypeLabel.toLowerCase()}.`;
+      showSnackbar(`Error al cargar el ${componentTypeLabel.toLowerCase()}: ${message}`, 'error');
     } finally {
       setIsComponentDetailLoading(false);
     }
   };
 
   const handleRemoveComponent = (index: number) => {
-    remove(index);
-    setValue('componentsTouched', true, { shouldDirty: true });
+    setComponents(components.filter((_, componentIndex) => componentIndex !== index));
   };
 
   const selectedComponent = selectedComponentIndex !== null
-    ? fields[selectedComponentIndex] as unknown as ProductComponentFormEntry
+    ? components[selectedComponentIndex] || null
     : null;
 
   const dialogDefaultValues = selectedComponent ? toDraftFormData(selectedComponent) : undefined;
   const isDialogReadOnly = dialogMode === 'view' || isReadOnly;
+  const detailPrefix = componentTypeArticle === 'la' ? 'Detalle de la' : 'Detalle del';
+  const createPrefix = componentTypeArticle === 'la' ? 'Nueva' : 'Nuevo';
   const dialogTitle = dialogMode === 'edit'
-    ? 'Editar Tapa'
+    ? `Editar ${componentTypeLabel}`
     : dialogMode === 'view'
-      ? 'Detalle de la Tapa'
-      : 'Nueva Tapa';
-  const dialogSubmitLabel = dialogMode === 'edit' ? 'Guardar Cambios' : 'Agregar Tapa';
+      ? `${detailPrefix} ${componentTypeLabel}`
+      : `${createPrefix} ${componentTypeLabel}`;
+  const dialogSubmitLabel = dialogMode === 'edit'
+    ? 'Guardar Cambios'
+    : `Agregar ${componentTypeLabel}`;
 
   return (
     <Box>
       {!isReadOnly && (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
           <Button type="button" variant="contained" startIcon={<Add />} onClick={handleOpenCapDialog}>
-            Agregar Tapa
+            Agregar {componentTypeLabel}
           </Button>
         </Box>
       )}
 
-      {fields.length === 0 ? (
+      {filteredComponents.length === 0 ? (
         <Typography color="text.secondary">
-          No hay tapas asociadas a este radiador.
+          No hay {componentTypePluralLabel.toLowerCase()} asociados a este radiador.
         </Typography>
       ) : (
         <Stack spacing={2}>
-          {fields.map((field, index) => {
-            const component = field as unknown as ProductComponentFormEntry;
-
-            return (
-              <Paper key={field.id} sx={{ p: 2, bgcolor: '#fff' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-                  <Box>
-                    <Stack direction="row" spacing={1} sx={{ mb: 1, flexWrap: 'wrap' }}>
-                      <Typography variant="subtitle1">{getComponentTitle(component)}</Typography>
-                      <Chip
-                        size="small"
-                        label={component.source === 'draft' ? 'Nueva' : 'Existente'}
-                        color={component.source === 'draft' ? 'primary' : 'default'}
-                      />
-                    </Stack>
-                    <Typography variant="body2" color="text.secondary">
-                      {getComponentSubtitle(component)}
+          {filteredComponents.map(({ component, index }) => (
+            <Paper
+              key={component.source === 'draft' ? component.tempId : `${component.componentProductId}-${index}`}
+              sx={{ p: 2, bgcolor: '#fff' }}
+            >
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+                <Box>
+                  <Stack direction="row" spacing={1} sx={{ mb: 1, flexWrap: 'wrap' }}>
+                    <Typography variant="subtitle1">
+                      {getComponentTitle(component, componentTypeLabel, componentTypeArticle)}
                     </Typography>
-                  </Box>
-                  <Stack direction="row" spacing={1} alignItems="flex-start">
-                    <Button
-                      type="button"
-                      variant="outlined"
-                      onClick={() => void handleOpenComponentDialog(index)}
-                    >
-                      {!isReadOnly ? 'Editar' : 'Ver'}
-                    </Button>
-                    {!isReadOnly && (
-                      <IconButton
-                        type="button"
-                        onClick={() => handleRemoveComponent(index)}
-                        color="error"
-                        aria-label="Quitar tapa"
-                      >
-                        <Delete />
-                      </IconButton>
-                    )}
+                    <Chip
+                      size="small"
+                      label={component.source === 'draft'
+                        ? (componentTypeArticle === 'la' ? 'Nueva' : 'Nuevo')
+                        : 'Existente'}
+                      color={component.source === 'draft' ? 'primary' : 'default'}
+                    />
                   </Stack>
+                  <Typography variant="body2" color="text.secondary">
+                    {getComponentSubtitle(component)}
+                  </Typography>
                 </Box>
-              </Paper>
-            );
-          })}
+                <Stack direction="row" spacing={1} alignItems="flex-start">
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    onClick={() => void handleOpenComponentDialog(index)}
+                  >
+                    {!isReadOnly ? 'Editar' : 'Ver'}
+                  </Button>
+                  {!isReadOnly && (
+                    <IconButton
+                      type="button"
+                      onClick={() => handleRemoveComponent(index)}
+                      color="error"
+                      aria-label={`Quitar ${componentTypeLabel.toLowerCase()}`}
+                    >
+                      <Delete />
+                    </IconButton>
+                  )}
+                </Stack>
+              </Box>
+            </Paper>
+          ))}
         </Stack>
       )}
 

@@ -36,6 +36,7 @@ const AccessoryModelManager = ({ isReadOnly }: AccessoryModelManagerProps) => {
 
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [selectedModel, setSelectedModel] = useState<CarModel | null>(null);
+  const [modelYear, setModelYear] = useState('');
   const { data: brands = [], isLoading: isLoadingBrands } = useBrands();
   const { data: models = [], isLoading: isLoadingModels } = useModels(selectedBrand?.id ?? null);
 
@@ -48,11 +49,14 @@ const AccessoryModelManager = ({ isReadOnly }: AccessoryModelManagerProps) => {
   }, [selectedBrand]);
 
   const handleAdd = () => {
-    if (!selectedBrand || !selectedModel) {
+    if (!selectedBrand || !selectedModel || !modelYear) {
       return;
     }
 
-    const alreadyAdded = fields.some((field) => field.carModelId === selectedModel.id);
+    const parsedYear = parseInt(modelYear, 10);
+    const alreadyAdded = fields.some((field) => (
+      field.carModelId === selectedModel.id && field.initialYear === parsedYear
+    ));
 
     if (alreadyAdded) {
       return;
@@ -60,9 +64,13 @@ const AccessoryModelManager = ({ isReadOnly }: AccessoryModelManagerProps) => {
 
     append({
       carModelId: selectedModel.id,
+      initialYear: parsedYear,
+      lastYear: parsedYear,
       brandName: selectedBrand.name,
       modelName: selectedModel.name,
     });
+
+    setModelYear('');
   };
 
   const handleModelChange = (_: SyntheticEvent, newValue: CarModel | null) => {
@@ -119,11 +127,20 @@ const AccessoryModelManager = ({ isReadOnly }: AccessoryModelManagerProps) => {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 2 }}>
+                <TextField
+                  label="Año"
+                  type="number"
+                  value={modelYear}
+                  onChange={(e) => setModelYear(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <Button
                   variant="contained"
                   startIcon={<Add />}
                   onClick={handleAdd}
-                  disabled={!selectedBrand || !selectedModel}
+                  disabled={!selectedBrand || !selectedModel || !modelYear}
                   fullWidth
                 >
                   Agregar
@@ -142,6 +159,7 @@ const AccessoryModelManager = ({ isReadOnly }: AccessoryModelManagerProps) => {
             <TableRow>
               <TableCell>Marca</TableCell>
               <TableCell>Modelo</TableCell>
+              <TableCell>Año</TableCell>
               {!isReadOnly && <TableCell align="right">Acciones</TableCell>}
             </TableRow>
           </TableHead>
@@ -150,6 +168,7 @@ const AccessoryModelManager = ({ isReadOnly }: AccessoryModelManagerProps) => {
               <TableRow key={field.id}>
                 <TableCell>{field.brandName}</TableCell>
                 <TableCell>{field.modelName}</TableCell>
+                <TableCell>{field.initialYear ?? '-'}</TableCell>
                 {!isReadOnly && (
                   <TableCell align="right">
                     <IconButton onClick={() => remove(index)} color="error">
@@ -161,7 +180,7 @@ const AccessoryModelManager = ({ isReadOnly }: AccessoryModelManagerProps) => {
             ))}
             {fields.length === 0 && (
               <TableRow>
-                <TableCell colSpan={isReadOnly ? 2 : 3} align="center">
+                <TableCell colSpan={isReadOnly ? 3 : 4} align="center">
                   Sin modelos relacionados.
                 </TableCell>
               </TableRow>

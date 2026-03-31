@@ -4,6 +4,7 @@
 export const RADIATOR_PRODUCT_TYPE_ID = 1;
 export const CAP_PRODUCT_TYPE_ID = 2;
 export const ACCESSORY_PRODUCT_TYPE_ID = 3;
+export const FAN_PRODUCT_TYPE_ID = 4;
 
 export const PRODUCT_TYPE_MAP: { [key: string]: string } = {
   radiadores: String(RADIATOR_PRODUCT_TYPE_ID),

@@ -2,7 +2,8 @@
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { RoleName } from '../types/user.types';
 
 export interface NavItem {
@@ -25,13 +26,19 @@ export const mainNavItems: NavItem[] = [
     path: '/providers',
     roles: [RoleName.ADMIN, RoleName.EMPLOYEE],
   },
+  {
+    text: 'Notas de Vehiculos',
+    icon: <DescriptionIcon />,
+    path: '/vehicle-notes',
+    roles: [RoleName.ADMIN, RoleName.EMPLOYEE],
+  },
 ];
 
 export const adminNavItems: NavItem[] = [
   {
-    text: 'Usuarios',
-    icon: <ManageAccountsIcon />,
-    path: '/users',
+    text: 'Administracion',
+    icon: <AdminPanelSettingsIcon />,
+    path: '/admin',
     roles: [RoleName.ADMIN],
   },
 ];

@@ -14,7 +14,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { getProductSchema } from './productSchema';
 import type { Product, ProductFormData } from '../../types/product.types';
-import { ACCESSORY_PRODUCT_TYPE_ID, CAP_PRODUCT_TYPE_ID, PRODUCT_TYPE_MAP } from '../../constants/productConstants';
+import {
+  ACCESSORY_PRODUCT_TYPE_ID,
+  CAP_PRODUCT_TYPE_ID,
+  FAN_PRODUCT_TYPE_ID,
+  PRODUCT_TYPE_MAP,
+} from '../../constants/productConstants';
 import { useProduct } from '../../hooks/useProducts';
 import { useProductMutations } from '../../hooks/useProductMutations';
 import { ProductImageService } from '../../services/ProductImageService';
@@ -85,6 +90,7 @@ const transformProductToFormData = (product: Product): ProductFormData => {
     })) || [],
     components: product.components?.map((component) => ({
       source: 'existing' as const,
+      productTypeId: component.componentProduct?.productTypeId ?? CAP_PRODUCT_TYPE_ID,
       componentProductId: component.componentProductId,
       componentProduct: component.componentProduct,
     })) || [],
@@ -115,7 +121,10 @@ const transformFormDataToPayload = async (
       files: uploadedFiles as AppFile[],
       productCarModels: formData.productCarModels.map((pcm) => ({
         carModelId: pcm.carModelId,
+        initialYear: pcm.initialYear,
+        lastYear: pcm.initialYear,
       })) as ProductCarModel[],
+      productProviders: mapFormProvidersToPayload(formData.productProviders),
       active: options?.active ?? true,
     };
 
@@ -150,15 +159,17 @@ const transformFormDataToPayload = async (
 };
 
 const transformCapDraftToPayload = async (
-  draft: ProductComponentDraftFormData
+  draft: ProductComponentDraftFormData,
+  productTypeId: Product['productTypeId']
 ): Promise<Partial<Product>> => {
   const uploadedFiles = await uploadProductFiles(draft.files);
 
   return {
     name: draft.name,
     dpi: draft.dpi,
+    comments: draft.comments,
     stockCount: 0,
-    productTypeId: CAP_PRODUCT_TYPE_ID as Product['productTypeId'],
+    productTypeId,
     files: uploadedFiles as AppFile[],
     productCarModels: [],
     productProviders: mapFormProvidersToPayload(draft.productProviders),
@@ -174,7 +185,7 @@ const resolveComponentsForSubmit = async (
   for (const component of components) {
     if (component.source === 'existing') {
       if (component.draftDirty && component.draft) {
-        const updatedComponentPayload = await transformCapDraftToPayload(component.draft);
+        const updatedComponentPayload = await transformCapDraftToPayload(component.draft, component.productTypeId);
         await updateProductRequest(component.componentProductId, updatedComponentPayload as Product);
       }
 
@@ -184,11 +195,12 @@ const resolveComponentsForSubmit = async (
       continue;
     }
 
-    const componentPayload = await transformCapDraftToPayload(component.draft);
+    const componentPayload = await transformCapDraftToPayload(component.draft, component.productTypeId);
     const createdComponent = await createProductRequest(componentPayload as Product);
 
     if (!createdComponent.id) {
-      throw new Error('No se pudo obtener el ID de la tapa creada.');
+      const componentLabel = component.productTypeId === FAN_PRODUCT_TYPE_ID ? 'abanico' : 'tapa';
+      throw new Error(`No se pudo obtener el ID del ${componentLabel} creado.`);
     }
 
     resolvedComponents.push({

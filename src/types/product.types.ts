@@ -4,7 +4,7 @@ import type { Provider } from './provider.types';
 import type { File as StoredFile } from './common.types';
 import type { ProductCategory } from './productCategory.types';
 
-export type ProductType = 1 | 2 | 3;
+export type ProductType = 1 | 2 | 3 | 4;
 
 export interface Price {
   id?: number;
@@ -83,12 +83,14 @@ export interface ProductFormPrice {
 export interface ProductComponentDraftFormData {
   name: string;
   dpi: string;
+  comments?: string;
   files: (StoredFile | File)[];
   productProviders: ProductFormProvider[];
 }
 
 export interface ExistingProductComponentFormEntry {
   source: 'existing';
+  productTypeId: ProductType;
   componentProductId: number;
   componentProduct?: Product;
   draft?: ProductComponentDraftFormData;
@@ -97,6 +99,7 @@ export interface ExistingProductComponentFormEntry {
 
 export interface DraftProductComponentFormEntry {
   source: 'draft';
+  productTypeId: ProductType;
   tempId: string;
   draft: ProductComponentDraftFormData;
 }

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Box,
@@ -11,6 +11,7 @@ import {
   DialogTitle,
   Grid,
   Paper,
+  TextField,
   Typography,
 } from '@mui/material';
 
@@ -35,6 +36,7 @@ interface CapDialogProps {
 const EMPTY_DEFAULT_VALUES: ProductComponentDraftFormData = {
   name: '',
   dpi: '',
+  comments: '',
   files: [],
   productProviders: [],
 };
@@ -100,6 +102,26 @@ export const CapDialog = ({
                     </Typography>
                     <Grid container spacing={2}>
                       <ProductIdentityFields isReadOnly={isSubmitting || readOnly} />
+                      <Grid size={12}>
+                        <Controller
+                          name="comments"
+                          control={methods.control}
+                          render={({ field, fieldState: { error } }) => (
+                            <TextField
+                              {...field}
+                              label="Comentarios"
+                              multiline
+                              rows={4}
+                              fullWidth
+                              error={!!error}
+                              helperText={error?.message}
+                              InputProps={{
+                                readOnly: isSubmitting || readOnly,
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>

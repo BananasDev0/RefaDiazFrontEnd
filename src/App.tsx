@@ -13,7 +13,12 @@ import Providers from './pages/Providers'
 import ProductTypeSelection from './pages/Products/ProductTypeSelection'
 import ProductCatalog from './pages/Products/ProductCatalog'
 import ProductFormPage from './pages/Products/ProductFormPage'
+import Admin from './pages/Admin'
+import Brands from './pages/Brands'
 import Users from './pages/Users'
+import VehicleNotesCatalog from './pages/VehicleNotes/VehicleNotesCatalog'
+import VehicleNoteFormPage from './pages/VehicleNotes/VehicleNoteFormPage'
+import VehicleNoteDetailPage from './pages/VehicleNotes/VehicleNoteDetailPage'
 
 // Crear instancia de QueryClient
 const queryClient = new QueryClient({
@@ -52,7 +57,18 @@ function App() {
                     <Route path=":productType/*" element={<ProductCatalog />} />
                   </Route>
                   <Route path="providers" element={<Providers />} />
-                  <Route path="users" element={<Users />} />
+                  <Route path="admin">
+                    <Route index element={<Admin />} />
+                    <Route path="users" element={<Users />} />
+                    <Route path="brands" element={<Brands />} />
+                  </Route>
+                  <Route path="users" element={<Navigate to="/admin/users" replace />} />
+                  <Route path="vehicle-notes">
+                    <Route index element={<VehicleNotesCatalog />} />
+                    <Route path="new" element={<VehicleNoteFormPage />} />
+                    <Route path=":noteId" element={<VehicleNoteDetailPage />} />
+                    <Route path="edit/:noteId" element={<VehicleNoteFormPage />} />
+                  </Route>
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
