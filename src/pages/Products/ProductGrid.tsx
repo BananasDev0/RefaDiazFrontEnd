@@ -9,6 +9,8 @@ import {
   CardContent,
 } from '@mui/material';
 import AccessoryCard from './AccessoryCard';
+import CapCard from './CapCard';
+import FanCard from './FanCard';
 import RadiatorCard from './RadiatorCard';
 import type { Product } from '../../types/product.types';
 import { useProductStore } from '../../stores/useProductStore';
@@ -59,7 +61,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading }) => {
       {products.map((product) => (
         <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
           {productType === '1' && <RadiatorCard product={product} />}
+          {productType === '2' && <CapCard product={product} />}
           {productType === '3' && <AccessoryCard product={product} />}
+          {productType === '4' && <FanCard product={product} />}
         </Grid>
       ))}
     </Grid>

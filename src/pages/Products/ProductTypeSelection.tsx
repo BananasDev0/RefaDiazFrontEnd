@@ -5,11 +5,13 @@ import ProductTypeCard from './ProductTypeCard';
 import radiator from '../../assets/radiadores_portada.jpeg';
 import cap from '../../assets/tapas_portada.jpeg';
 import fan from '../../assets/abanicos_portada.jpeg';
+import accesory from '../../assets/accesorios.jpg';
 
 const productTypes = [
   { name: 'Radiadores', url: '/products/radiadores', image: radiator },
   { name: 'Tapas', url: '/products/tapas', image: cap },
-  { name: 'Accesorios', url: '/products/accesorios', image: fan },
+  { name: 'Abanicos', url: '/products/abanicos', image: fan },
+  { name: 'Accesorios', url: '/products/accesorios', image: accesory },
 ];
 
 const ProductTypeSelection: React.FC = () => {

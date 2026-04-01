@@ -7,11 +7,11 @@ import ProductBasicInfo from '../ProductBasicInfo';
 import ProductImageManager from '../ProductImageManager';
 import ProductProvidersManager from '../ProductProvidersManager';
 
-interface CapFormProps {
+interface FanFormProps {
   isReadOnly: boolean;
 }
 
-const CapForm = ({ isReadOnly }: CapFormProps) => {
+const FanForm = ({ isReadOnly }: FanFormProps) => {
   return (
     <>
       <Paper sx={{ p: 3, mb: 3 }}>
@@ -43,4 +43,4 @@ const CapForm = ({ isReadOnly }: CapFormProps) => {
   );
 };
 
-export default CapForm;
+export default FanForm;
