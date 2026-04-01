@@ -10,6 +10,7 @@ export const PRODUCT_TYPE_MAP: { [key: string]: string } = {
   radiadores: String(RADIATOR_PRODUCT_TYPE_ID),
   tapas: String(CAP_PRODUCT_TYPE_ID),
   accesorios: String(ACCESSORY_PRODUCT_TYPE_ID),
+  abanicos: String(FAN_PRODUCT_TYPE_ID),
 };
 
 /**
@@ -19,6 +20,7 @@ export const PRODUCT_TYPE_NAME_MAP: { [key: string]: string } = {
   '1': 'radiadores',
   '2': 'tapas',
   '3': 'accesorios',
+  '4': 'abanicos',
 };
 
 export const BRAND_TYPE_AUTOMOTIVE = 1;

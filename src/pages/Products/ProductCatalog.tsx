@@ -19,7 +19,7 @@ const ProductCatalog: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const searchParamsKey = searchParams.toString();
-  const shouldShowFilterBar = productType !== 'tapas';
+  const shouldShowFilterBar = !!productType;
 
   const { setProductType, setFilters } = useProductStore();
 
@@ -50,6 +50,7 @@ const ProductCatalog: React.FC = () => {
   ]);
 
   const { data, isLoading } = useProducts();
+  const isReadOnlyCatalog = productType === 'tapas' || productType === 'abanicos';
 
   const handleAddProduct = () => {
     navigate(`/products/${productType}/new`);
@@ -58,12 +59,14 @@ const ProductCatalog: React.FC = () => {
   const productTitleMap: Record<string, string> = {
     radiadores: 'Catálogo de Radiadores',
     tapas: 'Catálogo de Tapas',
+    abanicos: 'Catálogo de Abanicos',
     accesorios: 'Catálogo de Accesorios',
   };
 
   const addButtonLabelMap: Record<string, string> = {
     radiadores: 'Agregar Producto',
     tapas: 'Agregar Producto',
+    abanicos: 'Agregar Producto',
     accesorios: 'Agregar Accesorio',
   };
 
@@ -75,7 +78,7 @@ const ProductCatalog: React.FC = () => {
     <div>
       <PageHeader
         title={pageTitle}
-        actionButton={
+        actionButton={!isReadOnlyCatalog ? (
           <Button
             variant="contained"
             color="primary"
@@ -84,7 +87,7 @@ const ProductCatalog: React.FC = () => {
           >
             {productType ? (addButtonLabelMap[productType] || 'Agregar Producto') : 'Agregar Producto'}
           </Button>
-        }
+        ) : undefined}
       />
       {shouldShowFilterBar && <ProductFilterBar productType={productType} />}
       <ProductGrid products={data || []} isLoading={isLoading} />

@@ -31,6 +31,7 @@ import PageHeader from '../../components/common/PageHeader';
 import RadiatorForm from './forms/productTypeForms/RadiatorForm';
 import CapForm from './forms/productTypeForms/CapForm';
 import AccessoryForm from './forms/productTypeForms/AccessoryForm';
+import FanForm from './forms/productTypeForms/FanForm';
 import type { File as AppFile } from '../../types/common.types';
 import type { ProductCarModel } from '../../types/product.types';
 import type { ProductComponentFormEntry } from '../../types/product.types';
@@ -338,6 +339,8 @@ const ProductFormPage = () => {
         return <RadiatorForm isReadOnly={isReadOnly} isNameReadOnly={isNameReadOnly} />;
       case 'tapas':
         return <CapForm isReadOnly={isReadOnly} />;
+      case 'abanicos':
+        return <FanForm isReadOnly={isReadOnly} />;
       case 'accesorios':
         return <AccessoryForm isReadOnly={isReadOnly} />;
       default:

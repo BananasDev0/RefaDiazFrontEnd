@@ -53,6 +53,7 @@ export interface Product {
   productProviders: ProviderProduct[];
   productPrices: ProductPrice[];
   productCarModels: ProductCarModel[];
+  transitiveProductCarModels?: ProductCarModel[];
   components?: ProductComponentRelation[];
   active?: boolean;
   createdAt?: string;
