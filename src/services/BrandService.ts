@@ -48,8 +48,12 @@ const mapBrandFormToPayload = async (brandData: BrandFormData): Promise<BrandPay
   return payload;
 };
 
-export const getBrands = async (): Promise<Brand[]> => {
-  return axiosInstance.get('/brands');
+export const getBrands = async (name?: string | null): Promise<Brand[]> => {
+  return axiosInstance.get('/brands', {
+    params: {
+      name: name || undefined,
+    },
+  });
 };
 
 export const createBrand = async (brandData: BrandFormData): Promise<Brand> => {

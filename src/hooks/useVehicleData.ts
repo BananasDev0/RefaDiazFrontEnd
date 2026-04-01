@@ -8,7 +8,7 @@ import type { CarModel } from '../types/model.types';
 export const useBrands = () => {
   return useQuery({
     queryKey: ['brands'],
-    queryFn: getBrands,
+    queryFn: () => getBrands(),
   });
 };
 
