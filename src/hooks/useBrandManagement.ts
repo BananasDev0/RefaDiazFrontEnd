@@ -5,13 +5,21 @@ import type { Brand, BrandFormData } from '../types/brand.types';
 
 const BRANDS_QUERY_KEY = ['brands'];
 
-export const useBrandManagement = () => {
+interface UseBrandManagementOptions {
+  includeList?: boolean;
+  name?: string | null;
+}
+
+export const useBrandManagement = (options?: UseBrandManagementOptions) => {
   const queryClient = useQueryClient();
   const { showSnackbar } = useSnackbar();
+  const includeList = options?.includeList ?? true;
+  const searchName = options?.name ?? null;
 
   const { data: brands = [], isLoading, error, isError } = useQuery<Brand[]>({
-    queryKey: BRANDS_QUERY_KEY,
-    queryFn: BrandService.getBrands,
+    queryKey: [...BRANDS_QUERY_KEY, searchName || ''],
+    queryFn: () => BrandService.getBrands(searchName),
+    enabled: includeList,
   });
 
   const { mutate: createBrand, isPending: isCreating } = useMutation({
@@ -59,4 +67,11 @@ export const useBrandManagement = () => {
     deleteBrand,
     isDeleting,
   };
+};
+
+export const useBrandList = (name?: string | null) => {
+  return useQuery<Brand[]>({
+    queryKey: [...BRANDS_QUERY_KEY, name || ''],
+    queryFn: () => BrandService.getBrands(name),
+  });
 };

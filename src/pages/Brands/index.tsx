@@ -1,25 +1,31 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
-import { useBrandManagement } from '../../hooks/useBrandManagement';
+import { useBrandList, useBrandManagement } from '../../hooks/useBrandManagement';
 import type { Brand, BrandFormData } from '../../types/brand.types';
 import BrandDialog from './BrandDialog';
 import BrandsHeader from './BrandsHeader';
 import BrandsTable from './BrandsTable';
+import BrandTextSearchFilter from './BrandTextSearchFilter';
 
 const BrandsPage = () => {
+  const [searchParams] = useSearchParams();
+  const searchName = searchParams.get('name');
   const {
-    brands,
-    isLoading,
-    isError,
-    error,
     createBrand,
     isCreating,
     updateBrand,
     isUpdating,
     deleteBrand,
     isDeleting,
-  } = useBrandManagement();
+  } = useBrandManagement({ includeList: false });
+  const {
+    data: brands = [],
+    isLoading,
+    isError,
+    error,
+  } = useBrandList(searchName);
   const [isBrandDialogOpen, setBrandDialogOpen] = useState(false);
   const [isConfirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
@@ -78,6 +84,9 @@ const BrandsPage = () => {
   return (
     <Box sx={{ p: 3 }}>
       <BrandsHeader onAddBrand={handleOpenAddDialog} />
+      <Box sx={{ mb: 3 }}>
+        <BrandTextSearchFilter />
+      </Box>
 
       <BrandsTable
         brands={brands}
