@@ -1,17 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getProducts, getProductById } from '../services/ProductService';
 import { useProductStore } from '../stores/useProductStore';
+import type { ProductPaginationParams } from '../types/product.types';
 
-export const useProducts = () => {
+export const useProducts = (pagination: ProductPaginationParams) => {
   const { productType, filters } = useProductStore();
 
   return useQuery({
     // La clave incluye el tipo de producto y los filtros para que la consulta
     // se vuelva a ejecutar automáticamente cuando cambien.
-    queryKey: ['products', productType, filters],
-    queryFn: () => getProducts(productType, filters),
+    queryKey: ['products', productType, filters, pagination.limit, pagination.offset],
+    queryFn: () => getProducts(productType, filters, pagination),
     // La consulta está habilitada solo si se ha seleccionado un tipo de producto.
     enabled: !!productType,
+    placeholderData: keepPreviousData,
   });
 };
 

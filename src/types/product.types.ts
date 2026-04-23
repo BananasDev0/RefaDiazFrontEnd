@@ -6,6 +6,27 @@ import type { ProductCategory } from './productCategory.types';
 
 export type ProductType = 1 | 2 | 3 | 4;
 
+export interface ProductPaginationParams {
+  limit: number;
+  offset: number;
+}
+
+export interface ProductPagination {
+  limit: number;
+  offset: number;
+  total: number;
+}
+
+export interface PaginatedProductsResponse {
+  data: Product[];
+  pagination: ProductPagination;
+}
+
+export interface ProductListResult {
+  data: Product[];
+  pagination: ProductPagination;
+}
+
 export interface Price {
   id?: number;
   description: string;

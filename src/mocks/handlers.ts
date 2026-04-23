@@ -347,6 +347,8 @@ export const handlers = [
     const modelId = url.searchParams.get('modelId');
     const modelYear = url.searchParams.get('modelYear');
     const q = url.searchParams.get('q');
+    const limit = url.searchParams.get('limit');
+    const offset = url.searchParams.get('offset');
 
     if (id) {
       const product = mockProducts.find((item) => item.id === Number(id));
@@ -396,6 +398,20 @@ export const handlers = [
         product.name.toLowerCase().includes(q.toLowerCase())
         || (product.dpi && product.dpi.toLowerCase().includes(q.toLowerCase()))
       );
+    }
+
+    if (limit !== null || offset !== null) {
+      const parsedLimit = limit ? Number(limit) : filteredProducts.length;
+      const parsedOffset = offset ? Number(offset) : 0;
+
+      return HttpResponse.json({
+        data: filteredProducts.slice(parsedOffset, parsedOffset + parsedLimit),
+        pagination: {
+          limit: parsedLimit,
+          offset: parsedOffset,
+          total: filteredProducts.length,
+        },
+      });
     }
 
     return HttpResponse.json(filteredProducts);

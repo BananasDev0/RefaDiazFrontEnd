@@ -1,16 +1,30 @@
 import axiosInstance from './axiosConfig';
-import type { Product } from '../types/product.types';
+import type {
+  PaginatedProductsResponse,
+  Product,
+  ProductListResult,
+  ProductPaginationParams,
+} from '../types/product.types';
 import type { Brand } from '../types/brand.types';
 import type { CarModel } from '../types/model.types';
 import type { ProductFilters } from '../stores/useProductStore';
 import type { CreateProductCategoryPayload, ProductCategory } from '../types/productCategory.types';
 
+const isPaginatedProductsResponse = (
+  response: Product[] | PaginatedProductsResponse
+): response is PaginatedProductsResponse => {
+  return !Array.isArray(response)
+    && Array.isArray(response.data)
+    && typeof response.pagination?.total === 'number';
+};
+
 // 1. FUNCIÓN PARA OBTENER PRODUCTOS CON FILTROS
 // Recibe el tipo de producto y el objeto de filtros de nuestro store de Zustand.
 export const getProducts = async (
   productType: string | null,
-  filters: ProductFilters
-): Promise<Product[]> => {
+  filters: ProductFilters,
+  pagination?: ProductPaginationParams
+): Promise<ProductListResult> => {
   // Construimos los parámetros de búsqueda, omitiendo los valores nulos.
   const params = {
     productTypeId: productType,
@@ -19,9 +33,24 @@ export const getProducts = async (
     modelId: filters.modelId,
     modelYear: filters.year,
     q: filters.textSearch,
+    limit: pagination?.limit,
+    offset: pagination?.offset,
   };
 
-  return axiosInstance.get('/products', { params });;
+  const response = await axiosInstance.get('/products', { params }) as Product[] | PaginatedProductsResponse;
+
+  if (isPaginatedProductsResponse(response)) {
+    return response;
+  }
+
+  return {
+    data: response,
+    pagination: {
+      limit: pagination?.limit ?? response.length,
+      offset: pagination?.offset ?? 0,
+      total: response.length,
+    },
+  };
 };
 
 // 2. FUNCIÓN PARA OBTENER TODAS LAS MARCAS
