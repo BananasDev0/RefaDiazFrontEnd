@@ -1,0 +1,100 @@
+import React from 'react';
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Grid,
+  Typography,
+  Paper,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
+// Import common form components
+import ProductBasicInfo from '../ProductBasicInfo';
+import ProductImageManager from '../ProductImageManager';
+import ModelCompatibilityManager from '../ModelCompatibilityManager';
+import ProductProvidersManager from '../ProductProvidersManager';
+import ProductPricesManager from '../ProductPricesManager';
+import RadiatorComponentsManager from '../RadiatorComponentsManager';
+import { CAP_PRODUCT_TYPE_ID, FAN_PRODUCT_TYPE_ID } from '../../../../constants/productConstants';
+
+interface RadiatorFormProps {
+  isReadOnly: boolean;
+  isNameReadOnly: boolean;
+}
+
+const RadiatorForm: React.FC<RadiatorFormProps> = ({ isReadOnly, isNameReadOnly }) => {
+  return (
+    <>
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Grid container spacing={3}>
+          <Grid size={6}>
+            <ProductBasicInfo isReadOnly={isReadOnly} isNameReadOnly={isNameReadOnly} />
+          </Grid>
+          <Grid size={6}>
+            <ProductImageManager isReadOnly={isReadOnly} />
+          </Grid>
+        </Grid>
+      </Paper>
+
+      <Accordion defaultExpanded>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">Compatibilidad de Modelos</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <ModelCompatibilityManager isReadOnly={isReadOnly} />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">Proveedores</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <ProductProvidersManager isReadOnly={isReadOnly} />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">Precios de Venta</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <ProductPricesManager isReadOnly={isReadOnly} />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">Tapas</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <RadiatorComponentsManager
+            isReadOnly={isReadOnly}
+            componentTypeId={CAP_PRODUCT_TYPE_ID}
+            componentTypeLabel="Tapa"
+            componentTypePluralLabel="Tapas"
+            componentTypeArticle="la"
+          />
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">Abanicos</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <RadiatorComponentsManager
+            isReadOnly={isReadOnly}
+            componentTypeId={FAN_PRODUCT_TYPE_ID}
+            componentTypeLabel="Abanico"
+            componentTypePluralLabel="Abanicos"
+            componentTypeArticle="el"
+          />
+        </AccordionDetails>
+      </Accordion>
+    </>
+  );
+};
+
+export default RadiatorForm;
