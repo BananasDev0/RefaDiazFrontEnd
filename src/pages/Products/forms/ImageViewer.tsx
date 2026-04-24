@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Paper, IconButton, Box } from '@mui/material';
+import { Grid, Paper, IconButton, Box, Typography } from '@mui/material';
 import { Gallery, Item } from 'react-photoswipe-gallery';
 import 'photoswipe/dist/photoswipe.css';
 import type { FieldArrayWithId } from 'react-hook-form';
-import { Delete } from '@mui/icons-material';
+import { BrokenImage, Delete } from '@mui/icons-material';
 
 interface ImageViewerProps {
   images: FieldArrayWithId<any, 'files', 'id'>[];
@@ -20,6 +20,7 @@ interface ImageDimensions {
 
 export const ImageViewer: React.FC<ImageViewerProps> = ({ images, previews, onDelete, isReadOnly, dropzoneSlot }) => {
   const [dimensions, setDimensions] = useState<Record<string, ImageDimensions>>({});
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     // Medir las dimensiones de las imágenes que no han sido medidas aún
@@ -34,12 +35,39 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ images, previews, onDe
     });
   }, [previews, dimensions]);
 
+  const imagePlaceholder = (
+    <Box
+      sx={{
+        width: '100%',
+        minHeight: { xs: 180, md: 220 },
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        gap: 1,
+        color: 'text.secondary',
+        border: isReadOnly ? '1px solid' : 'none',
+        borderColor: 'divider',
+        borderRadius: 1,
+        bgcolor: 'background.default',
+      }}
+    >
+      <BrokenImage color="disabled" />
+      <Typography variant="body2">Sin imagen</Typography>
+    </Box>
+  );
+
   if (images.length === 0) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>{dropzoneSlot}</Box>;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+        {dropzoneSlot || imagePlaceholder}
+      </Box>
+    );
   }
 
   const mainImage = images[0];
   const thumbnails = images.slice(1);
+  const mainImagePreview = failedImages[mainImage.id] ? undefined : previews[mainImage.id];
 
   const mainImageDims = dimensions[mainImage.id] || { width: 1600, height: 1200 };
 
@@ -51,19 +79,22 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ images, previews, onDe
           <Paper
             elevation={0}
             variant="outlined"
-            sx={{ position: 'relative', overflow: 'hidden', height: { xs: 180, md: 220 }, bgcolor: '#fff' }}
+            sx={{ position: 'relative', overflow: 'hidden', height: { xs: 220, md: 220 }, bgcolor: '#fff' }}
           >
-            <Item original={previews[mainImage.id] || ''} width={mainImageDims.width} height={mainImageDims.height}>
-              {({ ref, open }) => (
-                <img
+            {mainImagePreview ? (
+              <Item original={mainImagePreview} width={mainImageDims.width} height={mainImageDims.height}>
+                {({ ref, open }) => (
+                  <img
                   ref={ref}
                   onClick={open}
-                  src={previews[mainImage.id] || ''}
+                  src={mainImagePreview}
                   alt="Imagen principal"
+                  onError={() => setFailedImages((prev) => ({ ...prev, [mainImage.id]: true }))}
                   style={{ width: '100%', height: '100%', objectFit: 'contain', cursor: 'pointer' }}
                 />
-              )}
-            </Item>
+                )}
+              </Item>
+            ) : imagePlaceholder}
             {!isReadOnly && (
               <IconButton
                 onClick={() => onDelete(0)}
@@ -81,6 +112,7 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ images, previews, onDe
           <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'nowrap', overflowX: 'auto', pb: 1 }}>
             {thumbnails.map((thumbnail, index) => {
               const thumbDims = dimensions[thumbnail.id] || { width: 1600, height: 1200 };
+              const thumbnailPreview = failedImages[thumbnail.id] ? undefined : previews[thumbnail.id];
               return (
                 <Box key={thumbnail.id} sx={{ flexShrink: 0, width: 80, height: 80 }}>
                   <Paper
@@ -88,17 +120,33 @@ export const ImageViewer: React.FC<ImageViewerProps> = ({ images, previews, onDe
                     variant="outlined"
                     sx={{ position: 'relative', overflow: 'hidden', width: '100%', height: '100%', '&:hover .overlay': { opacity: 1 } }}
                   >
-                    <Item original={previews[thumbnail.id] || ''} width={thumbDims.width} height={thumbDims.height}>
-                      {({ ref, open }) => (
-                        <img
-                          ref={ref}
-                          onClick={open}
-                          src={previews[thumbnail.id] || ''}
-                          alt={`Miniatura ${index + 1}`}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
-                        />
-                      )}
-                    </Item>
+                    {thumbnailPreview ? (
+                      <Item original={thumbnailPreview} width={thumbDims.width} height={thumbDims.height}>
+                        {({ ref, open }) => (
+                          <img
+                            ref={ref}
+                            onClick={open}
+                            src={thumbnailPreview}
+                            alt={`Miniatura ${index + 1}`}
+                            onError={() => setFailedImages((prev) => ({ ...prev, [thumbnail.id]: true }))}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
+                          />
+                        )}
+                      </Item>
+                    ) : (
+                      <Box
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          bgcolor: 'background.default',
+                        }}
+                      >
+                        <BrokenImage color="disabled" fontSize="small" />
+                      </Box>
+                    )}
                     {!isReadOnly && (
                       <IconButton
                         onClick={() => onDelete(index + 1)}

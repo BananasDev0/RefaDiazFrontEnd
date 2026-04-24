@@ -26,12 +26,12 @@ interface RadiatorFormProps {
 const RadiatorForm: React.FC<RadiatorFormProps> = ({ isReadOnly, isNameReadOnly }) => {
   return (
     <>
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Grid container spacing={3}>
-          <Grid size={6}>
+      <Paper sx={{ p: { xs: 1.5, md: 3 }, mb: 3 }}>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <ProductBasicInfo isReadOnly={isReadOnly} isNameReadOnly={isNameReadOnly} />
           </Grid>
-          <Grid size={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <ProductImageManager isReadOnly={isReadOnly} />
           </Grid>
         </Grid>

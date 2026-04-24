@@ -5,6 +5,10 @@ import {
   Container,
   Button,
   Typography,
+  Divider,
+  IconButton,
+  Stack,
+  Tooltip,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -25,7 +29,6 @@ import { useProductMutations } from '../../hooks/useProductMutations';
 import { ProductImageService } from '../../services/ProductImageService';
 import { createProduct as createProductRequest } from '../../services/ProductService';
 import { updateProduct as updateProductRequest } from '../../services/ProductService';
-import PageHeader from '../../components/common/PageHeader';
 
 // Import product-specific form components
 import RadiatorForm from './forms/productTypeForms/RadiatorForm';
@@ -315,20 +318,58 @@ const ProductFormPage = () => {
   const renderHeaderButton = () => {
     if (isReadOnly && isEditMode) {
       return (
-        <Button variant="contained" startIcon={<EditIcon />} onClick={() => setIsReadOnly(false)}>
-          Editar
-        </Button>
+        <>
+          <Tooltip title="Editar">
+            <IconButton
+              color="primary"
+              aria-label="Editar producto"
+              onClick={() => setIsReadOnly(false)}
+              sx={{
+                display: { xs: 'inline-flex', sm: 'none' },
+                bgcolor: 'primary.main',
+                color: 'primary.contrastText',
+                width: 44,
+                height: 44,
+                boxShadow: 2,
+                '&:hover': {
+                  bgcolor: 'primary.dark',
+                },
+              }}
+            >
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={() => setIsReadOnly(false)}
+            sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
+          >
+            Editar
+          </Button>
+        </>
       );
     }
     return (
-      <Box sx={{ display: 'flex', gap: 2 }}>
+      <Stack
+        direction="row"
+        spacing={{ xs: 1, sm: 2 }}
+        useFlexGap
+        sx={{ flexWrap: 'wrap', justifyContent: 'flex-end' }}
+      >
         <Button variant="outlined" color="secondary" onClick={handleCancel} disabled={isSubmitting}>
           Cancelar
         </Button>
-        <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} startIcon={<SaveIcon />}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={isSubmitting}
+          startIcon={<SaveIcon />}
+        >
           {isSubmitting ? 'Guardando...' : (isEditMode ? 'Guardar Cambios' : 'Guardar Producto')}
         </Button>
-      </Box>
+      </Stack>
     );
   };
 
@@ -357,10 +398,32 @@ const ProductFormPage = () => {
       {/* @ts-expect-error - React Hook Form type inference issue with Yup resolver */}
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <Container maxWidth="xl" sx={{ pb: 4 }}>
-          <PageHeader
-            title={isEditMode ? 'Detalle del Producto' : `Crear Nuevo ${productTypeParam || 'Producto'}`}
-            actionButton={renderHeaderButton()}
-          />
+          <Box sx={{ mb: { xs: 2, md: 3 } }}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              spacing={2}
+              sx={{ mb: { xs: 1.5, md: 2 } }}
+            >
+              <Typography
+                component="h1"
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: { xs: '1.45rem', sm: '1.75rem', md: '2rem' },
+                  lineHeight: 1.2,
+                  flex: 1,
+                  minWidth: 0,
+                }}
+              >
+                {isEditMode ? 'Detalle del Producto' : `Crear Nuevo ${productTypeParam || 'Producto'}`}
+              </Typography>
+              <Box sx={{ flexShrink: 0 }}>
+                {renderHeaderButton()}
+              </Box>
+            </Stack>
+            <Divider />
+          </Box>
           {renderProductSpecificForm()}
         </Container>
       </form>

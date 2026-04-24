@@ -42,7 +42,7 @@ const ProductIdentityFields: React.FC<ProductIdentityFieldsProps> = ({
         />
       </Grid>
       {showDpi && (
-        <Grid size={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <Controller
             name="dpi"
             control={control}

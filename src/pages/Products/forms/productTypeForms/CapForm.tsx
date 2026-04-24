@@ -14,8 +14,8 @@ interface CapFormProps {
 const CapForm = ({ isReadOnly }: CapFormProps) => {
   return (
     <>
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Grid container spacing={3}>
+      <Paper sx={{ p: { xs: 1.5, md: 3 }, mb: 3 }}>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
           <Grid size={{ xs: 12, md: 6 }}>
             <ProductBasicInfo
               isReadOnly={isReadOnly}
@@ -23,7 +23,7 @@ const CapForm = ({ isReadOnly }: CapFormProps) => {
             />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Paper elevation={2} sx={{ p: 3, bgcolor: 'background.default', height: '100%' }}>
+            <Paper elevation={2} sx={{ p: { xs: 2, md: 3 }, bgcolor: 'background.default', height: '100%' }}>
               <Typography variant="h6" gutterBottom>
                 Imagenes
               </Typography>

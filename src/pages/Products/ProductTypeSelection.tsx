@@ -16,11 +16,11 @@ const productTypes = [
 
 const ProductTypeSelection: React.FC = () => {
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
       <PageHeader title="Seleccione un tipo de producto" />
-      <Grid container spacing={3} justifyContent="left">
+      <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }} justifyContent="flex-start">
         {productTypes.map((productType) => (
-          <Grid key={productType.name}>
+          <Grid key={productType.name} size={{ xs: 6, sm: 6, md: 4, lg: 3 }}>
             <ProductTypeCard name={productType.name} url={productType.url} image={productType.image} />
           </Grid>
         ))}

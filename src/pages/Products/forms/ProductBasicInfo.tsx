@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-import { TextField, Grid, Paper, Typography } from '@mui/material';
+import { Box, Divider, Grid, Paper, Stack, TextField, Typography } from '@mui/material';
 import type { ProductFormData } from '../../../types/product.types';
 import ProductIdentityFields from './ProductIdentityFields';
 
@@ -19,10 +19,99 @@ const ProductBasicInfo = ({
   showStock = true,
   additionalFields,
 }: ProductBasicInfoProps) => {
-  const { control } = useFormContext<ProductFormData>();
+  const { control, watch } = useFormContext<ProductFormData>();
+  const [name, dpi, stockCount, comments] = watch(['name', 'dpi', 'stockCount', 'comments']);
+
+  const renderReadOnlyValue = (value?: string | number | null, fallback = 'Sin información') => (
+    value !== undefined && value !== null && String(value).trim() !== '' ? String(value) : fallback
+  );
+
+  if (isReadOnly) {
+    return (
+      <Paper elevation={2} sx={{ p: { xs: 2, md: 3 }, bgcolor: 'background.default', height: '100%' }}>
+        <Stack spacing={2}>
+          <Typography variant="h6" sx={{ fontSize: { xs: '1.15rem', md: '1.25rem' }, lineHeight: 1.25 }}>
+            Información Básica
+          </Typography>
+
+          <Stack spacing={1.5}>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                Nombre del Producto
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 600,
+                  lineHeight: 1.35,
+                  overflowWrap: 'anywhere',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {renderReadOnlyValue(name)}
+              </Typography>
+            </Box>
+
+            {(showDpi || showStock) && (
+              <Grid container spacing={1.5}>
+                {showDpi && (
+                  <Grid size={{ xs: 6, sm: 6 }}>
+                    <Paper variant="outlined" sx={{ p: 1.25, bgcolor: 'background.paper', height: '100%' }}>
+                      <Typography variant="caption" color="text.secondary">
+                        Clave
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600, overflowWrap: 'anywhere' }}>
+                        {renderReadOnlyValue(dpi, 'N/D')}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                )}
+                {showStock && (
+                  <Grid size={{ xs: 6, sm: 6 }}>
+                    <Paper variant="outlined" sx={{ p: 1.25, bgcolor: 'background.paper', height: '100%' }}>
+                      <Typography variant="caption" color="text.secondary">
+                        Stock
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {renderReadOnlyValue(stockCount, '0')}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                )}
+              </Grid>
+            )}
+
+            {additionalFields && (
+              <Box>
+                <Divider sx={{ mb: 1.5 }} />
+                {additionalFields}
+              </Box>
+            )}
+
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                Comentarios
+              </Typography>
+              <Typography
+                variant="body2"
+                color={comments ? 'text.primary' : 'text.secondary'}
+                sx={{
+                  lineHeight: 1.5,
+                  overflowWrap: 'anywhere',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {renderReadOnlyValue(comments)}
+              </Typography>
+            </Box>
+          </Stack>
+        </Stack>
+      </Paper>
+    );
+  }
 
   return (
-    <Paper elevation={2} sx={{ p: 3, bgcolor: 'background.default' }}>
+    <Paper elevation={2} sx={{ p: { xs: 2, md: 3 }, bgcolor: 'background.default' }}>
       <Typography variant="h6" gutterBottom>
         Información Básica
       </Typography>
@@ -33,7 +122,7 @@ const ProductBasicInfo = ({
           showDpi={showDpi}
         />
         {showStock && (
-          <Grid size={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Controller
               name="stockCount"
               control={control}

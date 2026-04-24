@@ -22,7 +22,16 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, actionButton }) => {
           // Align items to the start when stacked
         }}
       >
-        <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>
+        <Typography
+          variant="h5"
+          component="h1"
+          sx={{
+            fontWeight: 'bold',
+            fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
+            lineHeight: 1.25,
+            width: '100%',
+          }}
+        >
           {title}
         </Typography>
         {actionButton && <Box>{actionButton}</Box>}

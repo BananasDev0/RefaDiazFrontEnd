@@ -55,13 +55,22 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 interface SidebarProps {
   open: boolean;
   handleDrawerClose: () => void;
+  isMobile?: boolean;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ open, handleDrawerClose }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ open, handleDrawerClose, isMobile = false }) => {
   const navigate = useNavigate();
+  const showLabels = open || isMobile;
 
-  return (
-    <Drawer variant="permanent" open={open}>
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    if (isMobile) {
+      handleDrawerClose();
+    }
+  };
+
+  const drawerContent = (
+    <>
       <DrawerHeader>
         <IconButton onClick={handleDrawerClose}>
           <ChevronLeftIcon />
@@ -71,15 +80,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, handleDrawerClose }) => 
       <List>
         {mainNavItems.map((item) => (
           <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
-            <Tooltip title={item.text} placement="right" disableHoverListener={open}>
+            <Tooltip title={item.text} placement="right" disableHoverListener={showLabels}>
               <ListItemButton
-                onClick={() => navigate(item.path)}
-                sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }}
+                onClick={() => handleNavigate(item.path)}
+                sx={{ minHeight: 48, justifyContent: showLabels ? 'initial' : 'center', px: 2.5 }}
               >
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
+                <ListItemIcon sx={{ minWidth: 0, mr: showLabels ? 3 : 'auto', justifyContent: 'center' }}>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={item.text} sx={{ opacity: showLabels ? 1 : 0 }} />
               </ListItemButton>
             </Tooltip>
           </ListItem>
@@ -89,20 +98,45 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, handleDrawerClose }) => 
       <List>
         {adminNavItems.map((item) => (
           <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
-            <Tooltip title={item.text} placement="right" disableHoverListener={open}>
+            <Tooltip title={item.text} placement="right" disableHoverListener={showLabels}>
               <ListItemButton
-                onClick={() => navigate(item.path)}
-                sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center', px: 2.5 }}
+                onClick={() => handleNavigate(item.path)}
+                sx={{ minHeight: 48, justifyContent: showLabels ? 'initial' : 'center', px: 2.5 }}
               >
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
+                <ListItemIcon sx={{ minWidth: 0, mr: showLabels ? 3 : 'auto', justifyContent: 'center' }}>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText primary={item.text} sx={{ opacity: showLabels ? 1 : 0 }} />
               </ListItemButton>
             </Tooltip>
           </ListItem>
         ))}
       </List>
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <MuiDrawer
+        variant="temporary"
+        open={open}
+        onClose={handleDrawerClose}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+          },
+        }}
+      >
+        {drawerContent}
+      </MuiDrawer>
+    );
+  }
+
+  return (
+    <Drawer variant="permanent" open={open}>
+      {drawerContent}
     </Drawer>
   );
 };

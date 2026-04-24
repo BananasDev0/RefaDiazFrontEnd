@@ -9,12 +9,13 @@ import { useProducts } from '../../hooks/useProducts';
 import ProductGrid from './ProductGrid';
 
 import { PRODUCT_TYPE_MAP } from '../../constants/productConstants';
-import PageHeader from '../../components/common/PageHeader';
 import ProductFilterBar from './ProductFilterBar';
 import {
   Box,
   Button,
+  Divider,
   FormControl,
+  Tooltip,
   LinearProgress,
   MenuItem,
   Select,
@@ -23,6 +24,7 @@ import {
   type SelectChangeEvent,
 } from '@mui/material';
 import { Add, ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { useMobile } from '../../contexts/MobileProvider';
 
 const DEFAULT_PAGE_SIZE = 20;
 const PAGE_SIZE_OPTIONS = [20, 50, 100];
@@ -35,6 +37,7 @@ const ProductCatalog: React.FC = () => {
   const [limit, setLimit] = useState(DEFAULT_PAGE_SIZE);
   const [offset, setOffset] = useState(0);
   const previousFilterKeyRef = useRef<string | null>(null);
+  const { isMobile } = useMobile();
 
   const { setProductType, setFilters } = useProductStore();
 
@@ -119,40 +122,84 @@ const ProductCatalog: React.FC = () => {
     : 'Catálogo de Productos';
 
   return (
-    <div>
-      <PageHeader
-        title={pageTitle}
-        actionButton={!isReadOnlyCatalog ? (
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Add />}
-            onClick={handleAddProduct}
+    <Box>
+      <Box sx={{ mb: { xs: 2, md: 3 } }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          spacing={2}
+          sx={{ mb: { xs: 1.5, md: 2 } }}
+        >
+          <Typography
+            component="h1"
+            sx={{
+              fontWeight: 'bold',
+              fontSize: { xs: '1.25rem', sm: '1.6rem', md: '2rem' },
+              lineHeight: 1.2,
+              flex: 1,
+              minWidth: 0,
+            }}
           >
-            {productType ? (addButtonLabelMap[productType] || 'Agregar Producto') : 'Agregar Producto'}
-          </Button>
-        ) : undefined}
-      />
+            {pageTitle}
+          </Typography>
+          {!isReadOnlyCatalog ? (
+            <Tooltip
+              title={productType ? (addButtonLabelMap[productType] || 'Agregar Producto') : 'Agregar Producto'}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                aria-label={productType ? (addButtonLabelMap[productType] || 'Agregar Producto') : 'Agregar Producto'}
+                onClick={handleAddProduct}
+                sx={{
+                  minWidth: { xs: 44, sm: 'auto' },
+                  width: { xs: 44, sm: 'auto' },
+                  height: { xs: 44, sm: 'auto' },
+                  px: { xs: 0, sm: 2 },
+                  py: { sm: 1.1 },
+                  gap: { xs: 0, sm: 1 },
+                }}
+              >
+                <Add fontSize="small" />
+                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                  {productType ? (addButtonLabelMap[productType] || 'Agregar Producto') : 'Agregar Producto'}
+                </Box>
+              </Button>
+            </Tooltip>
+          ) : null}
+        </Stack>
+        <Divider />
+      </Box>
       {shouldShowFilterBar && <ProductFilterBar productType={productType} />}
-      <Stack spacing={2}>
+      <Stack spacing={{ xs: 1.5, md: 2 }}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
-          spacing={2}
-          alignItems={{ xs: 'flex-start', md: 'center' }}
+          spacing={{ xs: 1.25, md: 2 }}
+          alignItems={{ xs: 'stretch', md: 'center' }}
           justifyContent="space-between"
         >
-          <Typography variant="body2" color="text.secondary">
-            {`${total} resultado${total === 1 ? '' : 's'}`}
-          </Typography>
           <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            alignItems={{ xs: 'stretch', sm: 'center' }}
+            direction="row"
+            spacing={1.5}
+            alignItems="center"
+            useFlexGap
+            sx={{ flexWrap: 'wrap' }}
           >
+            <Typography variant="body2" color="text.secondary">
+              {`${total} resultado${total === 1 ? '' : 's'}`}
+            </Typography>
             <Typography variant="body2" color="text.secondary">
               {`Página ${currentPage} de ${totalPages}`}
             </Typography>
-            <FormControl size="small" sx={{ minWidth: 140 }}>
+          </Stack>
+          <FormControl
+            size="small"
+            sx={{
+              minWidth: { xs: 136, sm: 140 },
+              alignSelf: { xs: 'flex-start', md: 'center' },
+            }}
+          >
               <Select<number>
                 value={limit}
                 onChange={handleLimitChange}
@@ -165,8 +212,7 @@ const ProductCatalog: React.FC = () => {
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
-          </Stack>
+          </FormControl>
         </Stack>
         {isFetching && !isLoading && <LinearProgress />}
         <ProductGrid products={products} isLoading={isLoading} />
@@ -177,10 +223,17 @@ const ProductCatalog: React.FC = () => {
             pb: 2,
           }}
         >
-          <Stack direction="row" spacing={1.5} alignItems="center">
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            useFlexGap
+            sx={{ flexWrap: 'wrap', justifyContent: 'center' }}
+          >
             <Button
               variant="outlined"
               startIcon={<ChevronLeft />}
+              size={isMobile ? 'small' : 'medium'}
               disabled={isPreviousDisabled}
               onClick={() => setOffset((currentPage - 2) * limit)}
             >
@@ -192,6 +245,7 @@ const ProductCatalog: React.FC = () => {
             <Button
               variant="outlined"
               endIcon={<ChevronRight />}
+              size={isMobile ? 'small' : 'medium'}
               disabled={isNextDisabled}
               onClick={() => setOffset(currentPage * limit)}
             >
@@ -200,7 +254,7 @@ const ProductCatalog: React.FC = () => {
           </Stack>
         </Box>
       </Stack>
-    </div>
+    </Box>
   );
 };
 

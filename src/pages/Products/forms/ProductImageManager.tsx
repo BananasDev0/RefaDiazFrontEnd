@@ -74,7 +74,7 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({
   );
   
   return (
-    <Paper elevation={2} sx={{ p: 2, bgcolor: '#fff', height: fillHeight ? '100%' : 'auto' }}>
+    <Paper elevation={2} sx={{ p: { xs: 1.5, md: 2 }, bgcolor: '#fff', height: fillHeight ? '100%' : 'auto' }}>
       <ImageViewer
         images={fields}
         previews={imagePreviews}

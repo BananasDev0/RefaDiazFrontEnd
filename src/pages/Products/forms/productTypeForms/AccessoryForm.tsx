@@ -20,9 +20,9 @@ interface AccessorySpecificFieldsProps {
 const AccessorySpecificFields = ({ isReadOnly }: AccessorySpecificFieldsProps) => {
   return (
     <>
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Grid container spacing={3}>
-          <Grid size={6}>
+      <Paper sx={{ p: { xs: 1.5, md: 3 }, mb: 3 }}>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <ProductBasicInfo
               isReadOnly={isReadOnly}
               showDpi={false}
@@ -30,7 +30,7 @@ const AccessorySpecificFields = ({ isReadOnly }: AccessorySpecificFieldsProps) =
               additionalFields={<AccessoryCategoryManager isReadOnly={isReadOnly} />}
             />
           </Grid>
-          <Grid size={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <ProductImageManager isReadOnly={isReadOnly} />
           </Grid>
           <Grid size={12}>

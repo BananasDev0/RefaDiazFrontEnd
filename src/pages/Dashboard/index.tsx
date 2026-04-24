@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Box, CssBaseline, styled } from '@mui/material';
 import { Header } from '../../components/layout/Header';
 import { Sidebar } from '../../components/layout/Sidebar';
+import { useMobile } from '../../contexts/MobileProvider';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -14,9 +15,10 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export const Dashboard: React.FC = () => {
   const [open, setOpen] = React.useState(false);
+  const { isMobile } = useMobile();
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
+  const handleDrawerToggle = () => {
+    setOpen((currentOpen) => !currentOpen);
   };
 
   const handleDrawerClose = () => {
@@ -26,9 +28,9 @@ export const Dashboard: React.FC = () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <Header open={open} handleDrawerOpen={handleDrawerOpen} />
-      <Sidebar open={open} handleDrawerClose={handleDrawerClose} />
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Header open={open} handleDrawerToggle={handleDrawerToggle} isMobile={isMobile} />
+      <Sidebar open={open} handleDrawerClose={handleDrawerClose} isMobile={isMobile} />
+      <Box component="main" sx={{ flexGrow: 1, width: '100%', p: { xs: 1.5, sm: 2, md: 3 } }}>
         <DrawerHeader />
         <Outlet />
       </Box>

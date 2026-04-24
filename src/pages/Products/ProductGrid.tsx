@@ -25,9 +25,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading }) => {
 
   if (isLoading) {
     return (
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }}>
         {Array.from(new Array(8)).map((_, index) => (
-          <Grid key={index}>
+          <Grid size={{ xs: 6, sm: 6, md: 4, lg: 3 }} key={index}>
             <Card sx={{ height: '100%' }}>
               <CardHeader
                 title={<Skeleton variant="text" sx={{ fontSize: '1.25rem', width: '60%' }} />}
@@ -57,9 +57,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading }) => {
   }
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }}>
       {products.map((product) => (
-        <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product.id}>
+        <Grid size={{ xs: 6, sm: 6, md: 4, lg: 3 }} key={product.id}>
           {productType === '1' && <RadiatorCard product={product} />}
           {productType === '2' && <CapCard product={product} />}
           {productType === '3' && <AccessoryCard product={product} />}

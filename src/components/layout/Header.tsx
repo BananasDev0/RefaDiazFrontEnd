@@ -12,17 +12,18 @@ const drawerWidth = 240;
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
+  isMobile?: boolean;
 }
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open }) => ({
+  shouldForwardProp: (prop) => prop !== 'open' && prop !== 'isMobile',
+})<AppBarProps>(({ theme, open, isMobile }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  ...(open && {
+  ...(open && !isMobile && {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(['width', 'margin'], {
@@ -34,10 +35,11 @@ const AppBar = styled(MuiAppBar, {
 
 interface HeaderProps {
   open: boolean;
-  handleDrawerOpen: () => void;
+  handleDrawerToggle: () => void;
+  isMobile?: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ open, handleDrawerOpen }) => {
+export const Header: React.FC<HeaderProps> = ({ open, handleDrawerToggle, isMobile = false }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const user = useMemo(() => getStoredUser(), []);
@@ -63,14 +65,14 @@ export const Header: React.FC<HeaderProps> = ({ open, handleDrawerOpen }) => {
   };
 
   return (
-    <AppBar position="fixed" open={open}>
+    <AppBar position="fixed" open={open} isMobile={isMobile}>
       <Toolbar>
         <IconButton
           color="inherit"
-          aria-label="open drawer"
-          onClick={handleDrawerOpen}
+          aria-label={open && isMobile ? 'close drawer' : 'open drawer'}
+          onClick={handleDrawerToggle}
           edge="start"
-          sx={{ mr: 2, ...(open && { display: 'none' }) }}
+          sx={{ mr: 2, ...(open && !isMobile && { display: 'none' }) }}
         >
           <MenuIcon />
         </IconButton>

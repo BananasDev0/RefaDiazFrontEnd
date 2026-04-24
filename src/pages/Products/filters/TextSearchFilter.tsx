@@ -8,6 +8,10 @@ const TextSearchFilter: React.FC = () => {
   const searchParamsKey = searchParams.toString();
 
   useEffect(() => {
+    setSearchTerm(searchParams.get('q') || '');
+  }, [searchParamsKey, searchParams]);
+
+  useEffect(() => {
     const handler = setTimeout(() => {
       const params = new URLSearchParams(searchParamsKey);
       if (searchTerm) {
