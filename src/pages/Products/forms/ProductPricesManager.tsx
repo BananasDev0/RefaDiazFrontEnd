@@ -14,6 +14,7 @@ import {
   TableRow,
   IconButton,
   Paper,
+  Stack,
 } from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
 import type { ProductFormData } from '../../../types/product.types';
@@ -49,9 +50,9 @@ const ProductPricesManager: React.FC<ProductPricesManagerProps> = ({ isReadOnly 
       {!isReadOnly && (
         <>
           <Typography variant="subtitle1" gutterBottom>Agregar Precio de Venta</Typography>
-          <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.default' }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid size={3}>
+          <Paper sx={{ p: { xs: 1.5, md: 2 }, mb: 2, bgcolor: 'background.default' }}>
+            <Grid container spacing={{ xs: 1.5, md: 2 }} alignItems={{ xs: 'stretch', md: 'center' }}>
+              <Grid size={{ xs: 12, md: 5 }}>
                 <TextField
                   label="Descripción (Ej. Nuevo, Instalado)"
                   value={description}
@@ -59,7 +60,7 @@ const ProductPricesManager: React.FC<ProductPricesManagerProps> = ({ isReadOnly 
                   fullWidth
                 />
               </Grid>
-              <Grid size={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <TextField
                   label="Costo"
                   type="number"
@@ -68,15 +69,14 @@ const ProductPricesManager: React.FC<ProductPricesManagerProps> = ({ isReadOnly 
                   fullWidth
                 />
               </Grid>
-            </Grid>
-            <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
-              <Grid>
+              <Grid size={{ xs: 12, sm: 6, md: 2 }}>
                 <Button
                   variant="contained"
                   startIcon={<Add />}
                   onClick={handleAdd}
                   disabled={!description || !cost}
                   fullWidth
+                  sx={{ height: { md: 56 } }}
                 >
                   Agregar
                 </Button>
@@ -87,32 +87,68 @@ const ProductPricesManager: React.FC<ProductPricesManagerProps> = ({ isReadOnly 
       )}
 
       {fields.length > 0 ? (
-        <TableContainer component={Paper} sx={{ bgcolor: 'background.default' }}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Descripción</TableCell>
-                <TableCell>Costo</TableCell>
-                {!isReadOnly && <TableCell align="right">Acciones</TableCell>}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {fields.map((field, index) => (
-                <TableRow key={field.id}>
-                  <TableCell>{field.description}</TableCell>
-                  <TableCell>{`${field.cost}`}</TableCell>
+        <>
+          <Stack spacing={1} sx={{ display: { xs: 'flex', md: 'none' } }}>
+            {fields.map((field, index) => (
+              <Paper
+                key={field.id}
+                variant="outlined"
+                sx={{
+                  p: 1.25,
+                  bgcolor: 'background.default',
+                }}
+              >
+                <Stack direction="row" spacing={1} alignItems="flex-start" justifyContent="space-between">
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography variant="subtitle2" sx={{ overflowWrap: 'anywhere' }}>
+                      {field.description}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      {`Costo: ${field.cost}`}
+                    </Typography>
+                  </Box>
                   {!isReadOnly && (
-                    <TableCell align="right">
-                      <IconButton onClick={() => remove(index)} color="error">
-                        <Delete />
-                      </IconButton>
-                    </TableCell>
+                    <IconButton
+                      size="small"
+                      onClick={() => remove(index)}
+                      color="error"
+                      aria-label={`Eliminar precio ${field.description}`}
+                    >
+                      <Delete fontSize="small" />
+                    </IconButton>
                   )}
+                </Stack>
+              </Paper>
+            ))}
+          </Stack>
+
+          <TableContainer component={Paper} sx={{ display: { xs: 'none', md: 'block' }, bgcolor: 'background.default' }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Descripción</TableCell>
+                  <TableCell>Costo</TableCell>
+                  {!isReadOnly && <TableCell align="right">Acciones</TableCell>}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {fields.map((field, index) => (
+                  <TableRow key={field.id}>
+                    <TableCell>{field.description}</TableCell>
+                    <TableCell>{`${field.cost}`}</TableCell>
+                    {!isReadOnly && (
+                      <TableCell align="right">
+                        <IconButton onClick={() => remove(index)} color="error">
+                          <Delete />
+                        </IconButton>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
       ) : (
         <Typography sx={{ mt: 2, color: 'text.secondary' }}>No hay precios de venta asignados.</Typography>
       )}

@@ -4,9 +4,10 @@ import { Gallery, Item } from 'react-photoswipe-gallery';
 import 'photoswipe/dist/photoswipe.css';
 import type { FieldArrayWithId } from 'react-hook-form';
 import { BrokenImage, Delete } from '@mui/icons-material';
+import type { ProductFormData } from '../../../types/product.types';
 
 interface ImageViewerProps {
-  images: FieldArrayWithId<any, 'files', 'id'>[];
+  images: FieldArrayWithId<ProductFormData, 'files', 'id'>[];
   previews: Record<string, string>;
   onDelete: (index: number) => void;
   isReadOnly: boolean;

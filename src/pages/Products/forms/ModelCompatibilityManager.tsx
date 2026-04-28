@@ -16,6 +16,7 @@ import {
   IconButton,
   Paper,
   Divider,
+  Stack,
 } from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
 import { useBrands, useModels } from '../../../hooks/useVehicleData';
@@ -105,9 +106,9 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
       {!isReadOnly && (
         <>
           <Typography variant="subtitle1" gutterBottom>Agregar Compatibilidad</Typography>
-          <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.default' }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid size={3}>
+          <Paper sx={{ p: { xs: 1.5, md: 2 }, mb: 2, bgcolor: 'background.default' }}>
+            <Grid container spacing={{ xs: 1.5, md: 2 }} alignItems={{ xs: 'stretch', md: 'center' }}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <Autocomplete
                   options={sortedBrands}
                   groupBy={(option) => (option.brandTypeId === 1 ? 'Automotriz' : 'Carga Pesada')}
@@ -135,7 +136,7 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
                   renderInput={(params) => <TextField {...params} label="Marca" />}
                 />
               </Grid>
-              <Grid size={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <Autocomplete
                   options={modelsWithOptions}
                   getOptionLabel={(option) => option.name}
@@ -164,7 +165,7 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
                   renderInput={(params) => <TextField {...params} label="Modelo" />}
                 />
               </Grid>
-              <Grid size={3}>
+              <Grid size={{ xs: 6, sm: 3, md: 2 }}>
                 <TextField
                   label="Año Inicial"
                   type="number"
@@ -173,7 +174,7 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
                   fullWidth
                 />
               </Grid>
-              <Grid size={3}>
+              <Grid size={{ xs: 6, sm: 3, md: 2 }}>
                 <TextField
                   label="Año Final"
                   type="number"
@@ -182,18 +183,17 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
                   fullWidth
                 />
               </Grid>
-              <Grid container spacing={2} alignItems="center">
-                <Grid >
-                  <Button
-                    variant="contained"
-                    startIcon={<Add />}
-                    onClick={handleAdd}
-                    disabled={!selectedBrand || !selectedModel || !initialYear || !lastYear}
-                    fullWidth
-                  >
-                    Agregar
-                  </Button>
-                </Grid>
+              <Grid size={{ xs: 12, md: 2 }}>
+                <Button
+                  variant="contained"
+                  startIcon={<Add />}
+                  onClick={handleAdd}
+                  disabled={!selectedBrand || !selectedModel || !initialYear || !lastYear}
+                  fullWidth
+                  sx={{ height: { md: 56 } }}
+                >
+                  Agregar
+                </Button>
               </Grid>
             </Grid>
           </Paper>
@@ -202,34 +202,75 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
 
       {fields.length > 0 && <Divider sx={{ my: 2 }} />}
 
-      <TableContainer component={Paper} sx={{ bgcolor: 'background.default' }}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Marca</TableCell>
-              <TableCell>Modelo</TableCell>
-              <TableCell>Años</TableCell>
-              {!isReadOnly && <TableCell align="right">Acciones</TableCell>}
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      {fields.length > 0 ? (
+        <>
+          <Stack spacing={1} sx={{ display: { xs: 'flex', md: 'none' } }}>
             {fields.map((field, index) => (
-              <TableRow key={field.id}>
-                <TableCell>{field.brandName}</TableCell>
-                <TableCell>{field.modelName}</TableCell>
-                <TableCell>{`${field.initialYear} - ${field.lastYear}`}</TableCell>
-                {!isReadOnly && (
-                  <TableCell align="right">
-                    <IconButton onClick={() => remove(index)} color="error">
-                      <Delete />
+              <Paper
+                key={field.id}
+                variant="outlined"
+                sx={{
+                  p: 1.25,
+                  bgcolor: 'background.default',
+                }}
+              >
+                <Stack direction="row" spacing={1} alignItems="flex-start" justifyContent="space-between">
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography variant="subtitle2" noWrap>{field.brandName}</Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', overflowWrap: 'anywhere' }}>
+                      {field.modelName}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      {`${field.initialYear} - ${field.lastYear}`}
+                    </Typography>
+                  </Box>
+                  {!isReadOnly && (
+                    <IconButton
+                      size="small"
+                      onClick={() => remove(index)}
+                      color="error"
+                      aria-label={`Eliminar compatibilidad ${field.brandName} ${field.modelName}`}
+                    >
+                      <Delete fontSize="small" />
                     </IconButton>
-                  </TableCell>
-                )}
-              </TableRow>
+                  )}
+                </Stack>
+              </Paper>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </Stack>
+
+          <TableContainer component={Paper} sx={{ display: { xs: 'none', md: 'block' }, bgcolor: 'background.default' }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Marca</TableCell>
+                  <TableCell>Modelo</TableCell>
+                  <TableCell>Años</TableCell>
+                  {!isReadOnly && <TableCell align="right">Acciones</TableCell>}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {fields.map((field, index) => (
+                  <TableRow key={field.id}>
+                    <TableCell>{field.brandName}</TableCell>
+                    <TableCell>{field.modelName}</TableCell>
+                    <TableCell>{`${field.initialYear} - ${field.lastYear}`}</TableCell>
+                    {!isReadOnly && (
+                      <TableCell align="right">
+                        <IconButton onClick={() => remove(index)} color="error">
+                          <Delete />
+                        </IconButton>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      ) : (
+        <Typography sx={{ mt: 2, color: 'text.secondary' }}>No hay modelos compatibles asignados.</Typography>
+      )}
 
       {selectedBrand && (
         <>

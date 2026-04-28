@@ -31,7 +31,7 @@ interface VehicleNoteCardProps {
 
 const getExcerpt = (contentMarkdown: string) =>
   contentMarkdown
-    .replace(/[#>*_`\-\[\]]/g, ' ')
+    .replace(/[#>*_`-]|\[|\]/g, ' ')
     .replace(/\((.*?)\)/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()

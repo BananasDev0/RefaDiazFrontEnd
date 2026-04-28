@@ -6,6 +6,7 @@ import {  Paper } from '@mui/material';
 import { supabase } from '../../../services/supabaseClient';
 import { ImageViewer } from './ImageViewer';
 import type { File as AppFile } from '../../../types/common.types';
+import type { ProductFormData } from '../../../types/product.types';
 import { ImageDropzone } from './ImageDropZone';
 
 interface ProductImageManagerProps {
@@ -19,8 +20,8 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({
   isReadOnly,
   fillHeight = true,
 }) => {
-  const { control } = useFormContext();
-  const { fields, append, remove } = useFieldArray<any>({
+  const { control } = useFormContext<ProductFormData>();
+  const { fields, append, remove } = useFieldArray<ProductFormData, 'files'>({
     control,
     name: 'files',
   });
