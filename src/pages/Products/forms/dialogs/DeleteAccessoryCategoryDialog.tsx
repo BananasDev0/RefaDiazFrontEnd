@@ -1,11 +1,4 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from '@mui/material';
+import { ConfirmDialog } from '../../../../components/common/ConfirmDialog';
 import { useDeleteProductCategory } from '../../../../hooks/useProductCategories';
 import type { ProductCategory } from '../../../../types/productCategory.types';
 
@@ -43,26 +36,13 @@ export const DeleteAccessoryCategoryDialog = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Confirmar eliminación</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          ¿Estás seguro de que deseas eliminar la categoría "{category?.name}"? Esta acción no se puede deshacer.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={deleteCategoryMutation.isPending}>
-          Cancelar
-        </Button>
-        <Button
-          onClick={handleConfirmDelete}
-          color="error"
-          variant="contained"
-          disabled={deleteCategoryMutation.isPending}
-        >
-          {deleteCategoryMutation.isPending ? 'Eliminando...' : 'Eliminar'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      onConfirm={handleConfirmDelete}
+      title="Confirmar Eliminación"
+      description={`¿Estás seguro de que deseas eliminar la categoría "${category?.name}"? Esta acción no se puede deshacer.`}
+      isSubmitting={deleteCategoryMutation.isPending}
+    />
   );
 };

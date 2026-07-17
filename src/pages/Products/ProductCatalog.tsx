@@ -29,6 +29,13 @@ import { useMobile } from '../../contexts/MobileProvider';
 const DEFAULT_PAGE_SIZE = 20;
 const PAGE_SIZE_OPTIONS = [20, 50, 100];
 
+const PRODUCT_TITLE_MAP: Record<string, string> = {
+  radiadores: 'Catálogo de Radiadores',
+  tapas: 'Catálogo de Tapas',
+  abanicos: 'Catálogo de Abanicos',
+  accesorios: 'Catálogo de Accesorios',
+};
+
 const ProductCatalog: React.FC = () => {
   const { productType } = useParams<{ productType: string }>();
   const [searchParams] = useSearchParams();
@@ -103,23 +110,10 @@ const ProductCatalog: React.FC = () => {
     }
   }, [limit, offset, total]);
 
-  const productTitleMap: Record<string, string> = {
-    radiadores: 'Catálogo de Radiadores',
-    tapas: 'Catálogo de Tapas',
-    abanicos: 'Catálogo de Abanicos',
-    accesorios: 'Catálogo de Accesorios',
-  };
-
-  const addButtonLabelMap: Record<string, string> = {
-    radiadores: 'Agregar Producto',
-    tapas: 'Agregar Producto',
-    abanicos: 'Agregar Producto',
-    accesorios: 'Agregar Accesorio',
-  };
-
   const pageTitle = productType
-    ? productTitleMap[productType] || `Catálogo de ${productType.charAt(0).toUpperCase() + productType.slice(1)}`
+    ? PRODUCT_TITLE_MAP[productType] || `Catálogo de ${productType.charAt(0).toUpperCase() + productType.slice(1)}`
     : 'Catálogo de Productos';
+  const addLabel = productType === 'accesorios' ? 'Agregar Accesorio' : 'Agregar Producto';
 
   return (
     <Box>
@@ -144,13 +138,11 @@ const ProductCatalog: React.FC = () => {
             {pageTitle}
           </Typography>
           {!isReadOnlyCatalog ? (
-            <Tooltip
-              title={productType ? (addButtonLabelMap[productType] || 'Agregar Producto') : 'Agregar Producto'}
-            >
+            <Tooltip title={addLabel}>
               <Button
                 variant="contained"
                 color="primary"
-                aria-label={productType ? (addButtonLabelMap[productType] || 'Agregar Producto') : 'Agregar Producto'}
+                aria-label={addLabel}
                 onClick={handleAddProduct}
                 sx={{
                   minWidth: { xs: 44, sm: 'auto' },
@@ -163,7 +155,7 @@ const ProductCatalog: React.FC = () => {
               >
                 <Add fontSize="small" />
                 <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
-                  {productType ? (addButtonLabelMap[productType] || 'Agregar Producto') : 'Agregar Producto'}
+                  {addLabel}
                 </Box>
               </Button>
             </Tooltip>

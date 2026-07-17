@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import {  Paper } from '@mui/material';
-import { supabase } from '../../../services/supabaseClient';
+import { getPublicStorageUrl } from '../../../utils/storage';
 import { ImageViewer } from './ImageViewer';
 import type { File as AppFile } from '../../../types/common.types';
 import type { ProductFormData } from '../../../types/product.types';
@@ -39,11 +39,9 @@ const ProductImageManager: React.FC<ProductImageManagerProps> = ({
         newPreviews[field.id] = blobUrl;
         urlsToRevoke.push(blobUrl);
       } else if (file.storagePath) {
-        const bucketAndPath = file.storagePath.split('/');
-        const bucket = bucketAndPath.shift();
-        if (bucket) {
-          const { data } = supabase.storage.from(bucket).getPublicUrl(bucketAndPath.join('/'));
-          newPreviews[field.id] = data.publicUrl;
+        const publicUrl = getPublicStorageUrl(file.storagePath);
+        if (publicUrl) {
+          newPreviews[field.id] = publicUrl;
         }
       }
     });

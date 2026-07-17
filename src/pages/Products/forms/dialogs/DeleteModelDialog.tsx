@@ -1,12 +1,4 @@
-import React from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-} from '@mui/material';
+import { ConfirmDialog } from '../../../../components/common/ConfirmDialog';
 import { useDeleteCarModel } from '../../../../hooks/useVehicleData';
 import type { CarModel } from '../../../../types/model.types';
 
@@ -18,50 +10,33 @@ interface DeleteModelDialogProps {
   brandId: number;
 }
 
-export const DeleteModelDialog: React.FC<DeleteModelDialogProps> = ({
-  open,
-  onClose,
-  onSuccess,
-  model,
-  brandId,
-}) => {
+export const DeleteModelDialog = ({ open, onClose, onSuccess, model, brandId }: DeleteModelDialogProps) => {
   const deleteModelMutation = useDeleteCarModel();
 
   const handleConfirmDelete = () => {
-    if (model) {
-      deleteModelMutation.mutate(
-        { modelId: model.id, brandId },
-        {
-          onSuccess: () => {
-            onSuccess();
-            onClose();
-          },
-        }
-      );
+    if (!model) {
+      return;
     }
+
+    deleteModelMutation.mutate(
+      { modelId: model.id, brandId },
+      {
+        onSuccess: () => {
+          onSuccess();
+          onClose();
+        },
+      }
+    );
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Confirmar eliminacion</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Estas seguro de que deseas eliminar el modelo "{model?.name}"? Esta accion no se puede deshacer.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={deleteModelMutation.isPending}>
-          Cancelar
-        </Button>
-        <Button
-          onClick={handleConfirmDelete}
-          color="error"
-          variant="contained"
-          disabled={deleteModelMutation.isPending}
-        >
-          {deleteModelMutation.isPending ? 'Eliminando...' : 'Eliminar'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <ConfirmDialog
+      open={open}
+      onClose={onClose}
+      onConfirm={handleConfirmDelete}
+      title="Confirmar Eliminación"
+      description={`¿Estás seguro de que deseas eliminar el modelo "${model?.name}"? Esta acción no se puede deshacer.`}
+      isSubmitting={deleteModelMutation.isPending}
+    />
   );
 };
