@@ -9,11 +9,16 @@ import {
   CardContent,
 } from '@mui/material';
 import AccessoryCard from './AccessoryCard';
-import CapCard from './CapCard';
-import FanCard from './FanCard';
+import ComponentProductCard from './ComponentProductCard';
 import RadiatorCard from './RadiatorCard';
 import type { Product } from '../../types/product.types';
 import { useProductStore } from '../../stores/useProductStore';
+import {
+  ACCESSORY_PRODUCT_TYPE_ID,
+  CAP_PRODUCT_TYPE_ID,
+  FAN_PRODUCT_TYPE_ID,
+  RADIATOR_PRODUCT_TYPE_ID,
+} from '../../constants/productConstants';
 
 interface ProductGridProps {
   products: Product[];
@@ -22,6 +27,35 @@ interface ProductGridProps {
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading }) => {
   const { productType } = useProductStore();
+
+  const renderCard = (product: Product) => {
+    switch (productType) {
+      case String(RADIATOR_PRODUCT_TYPE_ID):
+        return <RadiatorCard product={product} />;
+      case String(CAP_PRODUCT_TYPE_ID):
+        return (
+          <ComponentProductCard
+            product={product}
+            productTypeSlug="tapas"
+            actionsAriaLabel="acciones de la tapa"
+            deleteEntityLabel="la tapa"
+          />
+        );
+      case String(ACCESSORY_PRODUCT_TYPE_ID):
+        return <AccessoryCard product={product} />;
+      case String(FAN_PRODUCT_TYPE_ID):
+        return (
+          <ComponentProductCard
+            product={product}
+            productTypeSlug="abanicos"
+            actionsAriaLabel="acciones del abanico"
+            deleteEntityLabel="el abanico"
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -60,10 +94,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, isLoading }) => {
     <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }}>
       {products.map((product) => (
         <Grid size={{ xs: 6, sm: 6, md: 4, lg: 3 }} key={product.id}>
-          {productType === '1' && <RadiatorCard product={product} />}
-          {productType === '2' && <CapCard product={product} />}
-          {productType === '3' && <AccessoryCard product={product} />}
-          {productType === '4' && <FanCard product={product} />}
+          {renderCard(product)}
         </Grid>
       ))}
     </Grid>

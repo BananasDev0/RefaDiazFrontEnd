@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -7,102 +6,36 @@ import {
   IconButton,
   Box,
   Chip,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import type { Product } from '../../types/product.types';
-import { useProductMutations } from '../../hooks/useProductMutations';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
+import { getCarModelLabel } from '../../utils/carModels';
+import ProductCardMenu from './ProductCardMenu';
+import { productCardSx } from './productCardStyles';
+import { useProductCardActions } from './useProductCardActions';
 
 interface RadiatorCardProps {
   product: Product;
 }
 
-export const RadiatorCard: React.FC<RadiatorCardProps> = ({ product }) => {
-  const navigate = useNavigate();
+const RadiatorCard = ({ product }: RadiatorCardProps) => {
   const { productType } = useParams<{ productType: string }>();
-  const { deleteProduct, isDeleting } = useProductMutations();
+  const actions = useProductCardActions(product, `/products/${productType}/edit/${product.id}`);
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const menuOpen = Boolean(anchorEl);
   const visibleCompatibilityCount = isXs ? 2 : 3;
   const visibleCompatibilities = product.productCarModels?.slice(0, visibleCompatibilityCount) ?? [];
   const hiddenCompatibilityCount = Math.max((product.productCarModels?.length ?? 0) - visibleCompatibilityCount, 0);
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation(); // Prevent card click
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleMenuCloseFromMouse = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setAnchorEl(null);
-  };
-
-  const handleEdit = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    if (product.id) {
-      navigate(`/products/${productType}/edit/${product.id}`);
-    }
-    handleMenuClose();
-  };
-
-  const handleDeleteClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setDialogOpen(true);
-    handleMenuClose();
-  };
-
-  const handleConfirmDelete = () => {
-    if (product.id) {
-      deleteProduct(product.id, {
-        onSuccess: () => {
-          setDialogOpen(false);
-        },
-      });
-    }
-  };
-
-  const handleCardClick = () => {
-    if (product.id) {
-      navigate(`/products/${productType}/edit/${product.id}`);
-    }
-  };
-
   return (
     <>
-      <Card
-        sx={{
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          cursor: 'pointer',
-          '@media (hover: hover)': {
-            '&:hover': {
-              boxShadow: 6,
-              transform: 'translateY(-4px)',
-            },
-          },
-          transition: 'box-shadow 0.3s, transform 0.3s',
-        }}
-        onClick={handleCardClick}
-      >
+      <Card sx={productCardSx} onClick={actions.handleCardClick}>
         <CardHeader
           title={
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
@@ -121,7 +54,7 @@ export const RadiatorCard: React.FC<RadiatorCardProps> = ({ product }) => {
             </Box>
           }
           action={
-            <IconButton aria-label="acciones del radiador" size={isXs ? 'small' : 'medium'} onClick={handleMenuClick}>
+            <IconButton aria-label="acciones del radiador" size={isXs ? 'small' : 'medium'} onClick={actions.handleMenuClick}>
               <MoreVertIcon />
             </IconButton>
           }
@@ -163,11 +96,11 @@ export const RadiatorCard: React.FC<RadiatorCardProps> = ({ product }) => {
             <DirectionsCarIcon sx={{ mr: 0.75, fontSize: { xs: '0.95rem', sm: '1.1rem' } }} />
             Modelos compatibles:
           </Typography>
-          
+
           <Box>
             {visibleCompatibilities.length > 0 ? (
               visibleCompatibilities.map((pcm) => (
-                <Typography 
+                <Typography
                   key={`${pcm.carModel.id}-${pcm.initialYear}`}
                   variant="caption"
                   sx={{
@@ -180,7 +113,7 @@ export const RadiatorCard: React.FC<RadiatorCardProps> = ({ product }) => {
                     minHeight: { xs: '2.4em', sm: 'auto' },
                   }}
                 >
-                  {`${pcm.carModel.brand?.name} ${pcm.carModel.name} (${pcm.initialYear}-${pcm.lastYear})`}
+                  {getCarModelLabel(pcm)}
                 </Typography>
               ))
             ) : (
@@ -196,32 +129,21 @@ export const RadiatorCard: React.FC<RadiatorCardProps> = ({ product }) => {
           </Box>
         </CardContent>
       </Card>
-      <Menu
-        anchorEl={anchorEl}
-        open={menuOpen}
-        onClose={handleMenuClose}
-        onClick={handleMenuCloseFromMouse}
-      >
-        <MenuItem onClick={handleEdit}>
-          <ListItemIcon>
-            <EditIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Editar</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleDeleteClick}>
-          <ListItemIcon>
-            <DeleteIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Eliminar</ListItemText>
-        </MenuItem>
-      </Menu>
+      <ProductCardMenu
+        anchorEl={actions.anchorEl}
+        open={actions.menuOpen}
+        onClose={actions.handleMenuClose}
+        onClick={actions.handleMenuCloseFromMouse}
+        onEdit={actions.handleEdit}
+        onDelete={actions.handleDeleteClick}
+      />
       <ConfirmDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        onConfirm={handleConfirmDelete}
+        open={actions.dialogOpen}
+        onClose={actions.closeDialog}
+        onConfirm={actions.handleConfirmDelete}
         title="Confirmar Eliminación"
         description={`¿Estás seguro de que quieres eliminar el producto "${product.name || product.dpi}"? Esta acción no se puede deshacer.`}
-        isSubmitting={isDeleting}
+        isSubmitting={actions.isDeleting}
       />
     </>
   );

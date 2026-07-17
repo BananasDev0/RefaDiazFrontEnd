@@ -1,98 +1,24 @@
-import { useState, type MouseEvent } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Chip,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Typography,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import { Box, Card, CardContent, CardHeader, Chip, IconButton, Typography } from '@mui/material';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import CategoryIcon from '@mui/icons-material/Category';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useNavigate } from 'react-router-dom';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
-import { useProductMutations } from '../../hooks/useProductMutations';
 import type { Product } from '../../types/product.types';
+import ProductCardMenu from './ProductCardMenu';
+import { productCardSx } from './productCardStyles';
+import { useProductCardActions } from './useProductCardActions';
 
 interface AccessoryCardProps {
   product: Product;
 }
 
 const AccessoryCard = ({ product }: AccessoryCardProps) => {
-  const navigate = useNavigate();
-  const { deleteProduct, isDeleting } = useProductMutations();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const menuOpen = Boolean(anchorEl);
+  const actions = useProductCardActions(product, `/products/accesorios/edit/${product.id}`);
   const accessoryModels = product.productCarModels ?? [];
-
-  const handleMenuClick = (event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleMenuCloseFromMouse = (event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    handleMenuClose();
-  };
-
-  const handleEdit = (event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-
-    if (product.id) {
-      navigate(`/products/accesorios/edit/${product.id}`);
-    }
-
-    handleMenuClose();
-  };
-
-  const handleDeleteClick = (event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    setDialogOpen(true);
-    handleMenuClose();
-  };
-
-  const handleConfirmDelete = () => {
-    if (!product.id) {
-      return;
-    }
-
-    deleteProduct(product.id, {
-      onSuccess: () => {
-        setDialogOpen(false);
-      },
-    });
-  };
 
   return (
     <>
-      <Card
-        sx={{
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          cursor: 'pointer',
-          '&:hover': {
-            boxShadow: 6,
-            transform: 'translateY(-4px)',
-          },
-          transition: 'box-shadow 0.3s, transform 0.3s',
-        }}
-        onClick={() => product.id && navigate(`/products/accesorios/edit/${product.id}`)}
-      >
+      <Card sx={productCardSx} onClick={actions.handleCardClick}>
         <CardHeader
           title={
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
@@ -106,7 +32,7 @@ const AccessoryCard = ({ product }: AccessoryCardProps) => {
             </Box>
           }
           action={
-            <IconButton aria-label="acciones del accesorio" onClick={handleMenuClick}>
+            <IconButton aria-label="acciones del accesorio" onClick={actions.handleMenuClick}>
               <MoreVertIcon />
             </IconButton>
           }
@@ -161,32 +87,21 @@ const AccessoryCard = ({ product }: AccessoryCardProps) => {
           )}
         </CardContent>
       </Card>
-      <Menu
-        anchorEl={anchorEl}
-        open={menuOpen}
-        onClose={handleMenuClose}
-        onClick={handleMenuCloseFromMouse}
-      >
-        <MenuItem onClick={handleEdit}>
-          <ListItemIcon>
-            <EditIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Editar</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={handleDeleteClick}>
-          <ListItemIcon>
-            <DeleteIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Eliminar</ListItemText>
-        </MenuItem>
-      </Menu>
+      <ProductCardMenu
+        anchorEl={actions.anchorEl}
+        open={actions.menuOpen}
+        onClose={actions.handleMenuClose}
+        onClick={actions.handleMenuCloseFromMouse}
+        onEdit={actions.handleEdit}
+        onDelete={actions.handleDeleteClick}
+      />
       <ConfirmDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        onConfirm={handleConfirmDelete}
+        open={actions.dialogOpen}
+        onClose={actions.closeDialog}
+        onConfirm={actions.handleConfirmDelete}
         title="Confirmar Eliminación"
         description={`¿Estás seguro de que quieres eliminar el accesorio "${product.name}"? Esta acción no se puede deshacer.`}
-        isSubmitting={isDeleting}
+        isSubmitting={actions.isDeleting}
       />
     </>
   );
