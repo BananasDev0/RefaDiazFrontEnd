@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { useProviders } from '../../hooks/useProviders';
 import { Box, Typography } from '@mui/material';
+import { ConfirmDialog } from '../../components/common/ConfirmDialog';
+import CrudPageHeader from '../../components/common/CrudPageHeader';
+import { useCrudDialogs } from '../../hooks/useCrudDialogs';
+import { useProviders } from '../../hooks/useProviders';
 import type { Provider } from '../../types/provider.types';
-import ProvidersHeader from './ProvidersHeader';
 import { ProvidersToolbar } from './ProvidersToolbar';
 import { ProvidersTable } from './ProvidersTable';
 import { ProviderDialog } from './ProviderDialog';
@@ -19,55 +21,28 @@ const Providers: React.FC = () => {
     deleteProvider,
     isCreating,
     isUpdating,
+    isDeleting,
   } = useProviders();
 
-  const [isDialogOpen, setDialogOpen] = useState(false);
-  const [providerToEdit, setProviderToEdit] = useState<Provider | null>(null);
+  const dialogs = useCrudDialogs<Provider>();
   const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState(false);
-
-  const handleAddProvider = () => {
-    setViewMode(false);
-    setProviderToEdit(null);
-    setDialogOpen(true);
-  };
-
-  const handleEditProvider = (provider: Provider) => {
-    setViewMode(false);
-    setProviderToEdit(provider);
-    setDialogOpen(true);
-  };
-
-  const handleViewProvider = (provider: Provider) => {
-    setViewMode(true);
-    setProviderToEdit(provider);
-    setDialogOpen(true);
-  };
-
-  const handleDeleteProvider = (provider: Provider) => {
-    if (window.confirm(`¿Estás seguro de que quieres eliminar a ${provider.name}?`)) {
-      deleteProvider(provider.id);
-    }
-  };
 
   const handleCloseDialog = () => {
     if (isCreating || isUpdating) return; // Prevent closing while submitting
-    setDialogOpen(false);
-    setProviderToEdit(null);
-    setViewMode(false);
+    dialogs.closeAll();
   };
 
   const handleFormSubmit = (data: ProviderFormData, providerId?: number) => {
     if (providerId) {
-      // Update existing provider
-      updateProvider({ id: providerId, data }, {
-        onSuccess: () => handleCloseDialog(),
-      });
+      updateProvider({ id: providerId, data }, { onSuccess: dialogs.closeAll });
     } else {
-      // Create new provider
-      createProvider(data, {
-        onSuccess: () => handleCloseDialog(),
-      });
+      createProvider(data, { onSuccess: dialogs.closeAll });
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (dialogs.selected) {
+      deleteProvider(dialogs.selected.id, { onSuccess: dialogs.closeAll });
     }
   };
 
@@ -88,23 +63,35 @@ const Providers: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <ProvidersHeader onAddProvider={handleAddProvider} />
+      <CrudPageHeader title="Proveedores" addLabel="Agregar Proveedor" onAdd={dialogs.openAdd} />
       <ProvidersToolbar onSearchChange={setSearchTerm} />
       <ProvidersTable
         providers={filteredProviders}
         isLoading={isLoading}
-        onView={handleViewProvider}
-        onEdit={handleEditProvider}
-        onDelete={handleDeleteProvider}
+        onView={dialogs.openView}
+        onEdit={dialogs.openEdit}
+        onDelete={dialogs.openDelete}
       />
-      <ProviderDialog
-        open={isDialogOpen}
-        onClose={handleCloseDialog}
-        onSubmit={handleFormSubmit}
-        providerToEdit={providerToEdit}
-        isSubmitting={isCreating || isUpdating}
-        viewMode={viewMode}
-      />
+      {dialogs.isFormOpen && (
+        <ProviderDialog
+          open={dialogs.isFormOpen}
+          onClose={handleCloseDialog}
+          onSubmit={handleFormSubmit}
+          providerToEdit={dialogs.selected}
+          isSubmitting={isCreating || isUpdating}
+          viewMode={dialogs.viewMode}
+        />
+      )}
+      {dialogs.isDeleteOpen && (
+        <ConfirmDialog
+          open={dialogs.isDeleteOpen}
+          onClose={dialogs.closeAll}
+          onConfirm={handleConfirmDelete}
+          title="Confirmar Eliminación"
+          description={`¿Estás seguro de que quieres eliminar a "${dialogs.selected?.name}"? Esta acción no se puede deshacer.`}
+          isSubmitting={isDeleting}
+        />
+      )}
     </Box>
   );
 };

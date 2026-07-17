@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { TextField } from '@mui/material';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 
 const BrandTextSearchFilter = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('name') || '');
+  const debouncedSearchTerm = useDebouncedValue(searchTerm);
   const searchParamsKey = searchParams.toString();
 
   useEffect(() => {
@@ -12,20 +14,16 @@ const BrandTextSearchFilter = () => {
   }, [searchParams, searchParamsKey]);
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      const params = new URLSearchParams(searchParamsKey);
+    const params = new URLSearchParams(searchParamsKey);
 
-      if (searchTerm) {
-        params.set('name', searchTerm);
-      } else {
-        params.delete('name');
-      }
+    if (debouncedSearchTerm) {
+      params.set('name', debouncedSearchTerm);
+    } else {
+      params.delete('name');
+    }
 
-      setSearchParams(params);
-    }, 500);
-
-    return () => clearTimeout(handler);
-  }, [searchTerm, searchParamsKey, setSearchParams]);
+    setSearchParams(params);
+  }, [debouncedSearchTerm, searchParamsKey, setSearchParams]);
 
   return (
     <TextField

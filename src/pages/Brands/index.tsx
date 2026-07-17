@@ -1,13 +1,13 @@
-import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { ConfirmDialog } from '../../components/common/ConfirmDialog';
+import CrudPageHeader from '../../components/common/CrudPageHeader';
 import { useBrandList, useBrandManagement } from '../../hooks/useBrandManagement';
+import { useCrudDialogs } from '../../hooks/useCrudDialogs';
 import type { Brand, BrandFormData } from '../../types/brand.types';
 import BrandDialog from './BrandDialog';
-import BrandsHeader from './BrandsHeader';
-import BrandsTable from './BrandsTable';
 import BrandTextSearchFilter from './BrandTextSearchFilter';
+import BrandsTable from './BrandsTable';
 
 const BrandsPage = () => {
   const [searchParams] = useSearchParams();
@@ -26,55 +26,23 @@ const BrandsPage = () => {
     isError,
     error,
   } = useBrandList(searchName);
-  const [isBrandDialogOpen, setBrandDialogOpen] = useState(false);
-  const [isConfirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
-  const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
-  const [viewMode, setViewMode] = useState(false);
-
-  const handleOpenViewDialog = (brand: Brand) => {
-    setSelectedBrand(brand);
-    setViewMode(true);
-    setBrandDialogOpen(true);
-  };
-
-  const handleOpenEditDialog = (brand: Brand) => {
-    setSelectedBrand(brand);
-    setViewMode(false);
-    setBrandDialogOpen(true);
-  };
-
-  const handleOpenAddDialog = () => {
-    setSelectedBrand(null);
-    setViewMode(false);
-    setBrandDialogOpen(true);
-  };
-
-  const handleOpenDeleteDialog = (brand: Brand) => {
-    setSelectedBrand(brand);
-    setConfirmDeleteDialogOpen(true);
-  };
-
-  const handleCloseDialogs = () => {
-    setBrandDialogOpen(false);
-    setConfirmDeleteDialogOpen(false);
-    setSelectedBrand(null);
-  };
+  const dialogs = useCrudDialogs<Brand>();
 
   const handleFormSubmit = (data: BrandFormData, brandId?: number) => {
     if (brandId) {
-      updateBrand({ id: brandId, data }, { onSuccess: handleCloseDialogs });
+      updateBrand({ id: brandId, data }, { onSuccess: dialogs.closeAll });
       return;
     }
 
-    createBrand(data, { onSuccess: handleCloseDialogs });
+    createBrand(data, { onSuccess: dialogs.closeAll });
   };
 
   const handleConfirmDelete = () => {
-    if (!selectedBrand) {
+    if (!dialogs.selected) {
       return;
     }
 
-    deleteBrand(selectedBrand.id, { onSuccess: handleCloseDialogs });
+    deleteBrand(dialogs.selected.id, { onSuccess: dialogs.closeAll });
   };
 
   if (isError) {
@@ -83,7 +51,7 @@ const BrandsPage = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <BrandsHeader onAddBrand={handleOpenAddDialog} />
+      <CrudPageHeader title="Administracion de Marcas" addLabel="Agregar Marca" onAdd={dialogs.openAdd} />
       <Box sx={{ mb: 3 }}>
         <BrandTextSearchFilter />
       </Box>
@@ -91,29 +59,29 @@ const BrandsPage = () => {
       <BrandsTable
         brands={brands}
         isLoading={isLoading}
-        onView={handleOpenViewDialog}
-        onEdit={handleOpenEditDialog}
-        onDelete={handleOpenDeleteDialog}
+        onView={dialogs.openView}
+        onEdit={dialogs.openEdit}
+        onDelete={dialogs.openDelete}
       />
 
-      {isBrandDialogOpen && (
+      {dialogs.isFormOpen && (
         <BrandDialog
-          open={isBrandDialogOpen}
-          onClose={handleCloseDialogs}
+          open={dialogs.isFormOpen}
+          onClose={dialogs.closeAll}
           onSubmit={handleFormSubmit}
           isSubmitting={isCreating || isUpdating}
-          brandToEdit={selectedBrand}
-          viewMode={viewMode}
+          brandToEdit={dialogs.selected}
+          viewMode={dialogs.viewMode}
         />
       )}
 
-      {isConfirmDeleteDialogOpen && (
+      {dialogs.isDeleteOpen && (
         <ConfirmDialog
-          open={isConfirmDeleteDialogOpen}
-          onClose={handleCloseDialogs}
+          open={dialogs.isDeleteOpen}
+          onClose={dialogs.closeAll}
           onConfirm={handleConfirmDelete}
           title="Confirmar Eliminación"
-          description={`¿Estás seguro de que quieres eliminar la marca "${selectedBrand?.name}"? Esta acción no se puede deshacer.`}
+          description={`¿Estás seguro de que quieres eliminar la marca "${dialogs.selected?.name}"? Esta acción no se puede deshacer.`}
           isSubmitting={isDeleting}
         />
       )}
