@@ -1,6 +1,6 @@
-import { NameFormDialog } from '../../../../components/common/NameFormDialog';
-import { useCreateCarModel } from '../../../../hooks/useVehicleData';
-import type { CarModel } from '../../../../types/model.types';
+import { NameFormDialog } from './NameFormDialog';
+import { useCreateCarModel } from '../../hooks/useVehicleData';
+import type { CarModel } from '../../types/model.types';
 
 interface AddModelDialogProps {
   open: boolean;

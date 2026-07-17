@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState, type SyntheticEvent } from 'react';
+import { useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import {
-  Autocomplete,
   Box,
   Button,
   Divider,
@@ -18,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
-import { useBrands, useModels } from '../../../hooks/useVehicleData';
+import { BrandModelSelector } from '../../../components/common/BrandModelSelector';
 import type { Brand } from '../../../types/brand.types';
 import type { CarModel } from '../../../types/model.types';
 import type { ProductFormData } from '../../../types/product.types';
@@ -37,16 +36,6 @@ const AccessoryModelManager = ({ isReadOnly }: AccessoryModelManagerProps) => {
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [selectedModel, setSelectedModel] = useState<CarModel | null>(null);
   const [modelYear, setModelYear] = useState('');
-  const { data: brands = [], isLoading: isLoadingBrands } = useBrands();
-  const { data: models = [], isLoading: isLoadingModels } = useModels(selectedBrand?.id ?? null);
-
-  const sortedBrands = useMemo(() => (
-    [...brands].sort((a, b) => a.brandTypeId - b.brandTypeId || a.name.localeCompare(b.name, 'es'))
-  ), [brands]);
-
-  useEffect(() => {
-    setSelectedModel(null);
-  }, [selectedBrand]);
 
   const handleAdd = () => {
     if (!selectedBrand || !selectedModel || !modelYear) {
@@ -73,10 +62,6 @@ const AccessoryModelManager = ({ isReadOnly }: AccessoryModelManagerProps) => {
     setModelYear('');
   };
 
-  const handleModelChange = (_: SyntheticEvent, newValue: CarModel | null) => {
-    setSelectedModel(newValue);
-  };
-
   return (
     <Box>
       {!isReadOnly && (
@@ -86,46 +71,14 @@ const AccessoryModelManager = ({ isReadOnly }: AccessoryModelManagerProps) => {
           </Typography>
           <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.default' }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid size={{ xs: 12, md: 5 }}>
-                <Autocomplete
-                  options={sortedBrands}
-                  groupBy={(option) => (option.brandTypeId === 1 ? 'Automotriz' : 'Carga Pesada')}
-                  getOptionLabel={(option) => option.name}
-                  value={selectedBrand}
-                  onChange={(_, newValue) => setSelectedBrand(newValue)}
-                  loading={isLoadingBrands}
-                  renderGroup={(params) => (
-                    <li key={params.key}>
-                      <Box
-                        sx={{
-                          position: 'sticky',
-                          top: '-8px',
-                          padding: '8px 16px',
-                          fontWeight: 'bold',
-                          backgroundColor: params.group === 'Automotriz' ? 'primary.light' : 'secondary.light',
-                          color: params.group === 'Automotriz' ? 'primary.contrastText' : 'secondary.contrastText',
-                        }}
-                      >
-                        {params.group}
-                      </Box>
-                      <ul style={{ padding: 0 }}>{params.children}</ul>
-                    </li>
-                  )}
-                  renderInput={(params) => <TextField {...params} label="Marca" />}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 5 }}>
-                <Autocomplete
-                  options={models}
-                  getOptionLabel={(option) => option.name}
-                  value={selectedModel}
-                  onChange={handleModelChange}
-                  loading={isLoadingModels}
-                  disabled={!selectedBrand}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  renderInput={(params) => <TextField {...params} label="Modelo" />}
-                />
-              </Grid>
+              <BrandModelSelector
+                selectedBrand={selectedBrand}
+                selectedModel={selectedModel}
+                onBrandChange={setSelectedBrand}
+                onModelChange={setSelectedModel}
+                brandGridSize={{ xs: 12, md: 5 }}
+                modelGridSize={{ xs: 12, md: 5 }}
+              />
               <Grid size={{ xs: 12, md: 2 }}>
                 <TextField
                   label="Año"

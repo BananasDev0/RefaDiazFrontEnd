@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import {
   Box,
   Grid,
-  Autocomplete,
   TextField,
   Button,
   Typography,
@@ -19,18 +18,14 @@ import {
   Stack,
 } from '@mui/material';
 import { Add, Delete } from '@mui/icons-material';
-import { useBrands, useModels } from '../../../hooks/useVehicleData';
+import { BrandModelSelector } from '../../../components/common/BrandModelSelector';
 import type { Brand } from '../../../types/brand.types';
 import type { CarModel } from '../../../types/model.types';
 import type { ProductFormData } from '../../../types/product.types';
-import { AddModelDialog } from './dialogs/AddModelDialog';
-import { DeleteModelDialog } from './dialogs/DeleteModelDialog';
 
 interface ModelCompatibilityManagerProps {
   isReadOnly: boolean;
 }
-
-const ADD_NEW_MODEL_ID = -1; // ID especial para la opción de añadir
 
 const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ isReadOnly }) => {
   const { control } = useFormContext<ProductFormData>();
@@ -43,26 +38,6 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
   const [selectedModel, setSelectedModel] = useState<CarModel | null>(null);
   const [initialYear, setInitialYear] = useState('');
   const [lastYear, setLastYear] = useState('');
-  const [isAddModelDialogOpen, setAddModelDialogOpen] = useState(false);
-  const [modelToDelete, setModelToDelete] = useState<CarModel | null>(null);
-
-  const { data: brands, isLoading: isLoadingBrands } = useBrands();
-  const { data: models, isLoading: isLoadingModels } = useModels(selectedBrand?.id ?? null);
-
-  const sortedBrands = useMemo(() => {
-    if (!brands) return [];
-    return [...brands].sort((a, b) => a.brandTypeId - b.brandTypeId);
-  }, [brands]);
-
-  const modelsWithOptions = useMemo(() => {
-    if (!models) return [];
-    const addNewOption: CarModel = { id: ADD_NEW_MODEL_ID, name: '+ Añadir nuevo modelo', brandId: selectedBrand?.id || 0 };
-    return [...models, addNewOption];
-  }, [models, selectedBrand]);
-
-  useEffect(() => {
-    setSelectedModel(null);
-  }, [selectedBrand]);
 
   const handleAdd = () => {
     if (!selectedBrand || !selectedModel || !initialYear || !lastYear) return;
@@ -78,29 +53,6 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
     setLastYear('');
   };
 
-  const handleModelChange = (_: React.SyntheticEvent, newValue: CarModel | null) => {
-    if (newValue?.id === ADD_NEW_MODEL_ID) {
-      setAddModelDialogOpen(true);
-    } else {
-      setSelectedModel(newValue);
-    }
-  };
-
-  const handleNewModelSuccess = (newModel: CarModel) => {
-    setSelectedModel(newModel);
-  };
-
-  const handleDeleteModelClick = (event: React.MouseEvent, model: CarModel) => {
-    event.stopPropagation();
-    setModelToDelete(model);
-  };
-
-  const handleDeleteSuccess = () => {
-    if (selectedModel?.id === modelToDelete?.id) {
-      setSelectedModel(null);
-    }
-  };
-
   return (
     <Box>
       {!isReadOnly && (
@@ -108,63 +60,15 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
           <Typography variant="subtitle1" gutterBottom>Agregar Compatibilidad</Typography>
           <Paper sx={{ p: { xs: 1.5, md: 2 }, mb: 2, bgcolor: 'background.default' }}>
             <Grid container spacing={{ xs: 1.5, md: 2 }} alignItems={{ xs: 'stretch', md: 'center' }}>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Autocomplete
-                  options={sortedBrands}
-                  groupBy={(option) => (option.brandTypeId === 1 ? 'Automotriz' : 'Carga Pesada')}
-                  getOptionLabel={(option) => option.name}
-                  value={selectedBrand}
-                  onChange={(_, newValue) => setSelectedBrand(newValue)}
-                  loading={isLoadingBrands}
-                  renderGroup={(params) => (
-                    <li key={params.key}>
-                      <Box
-                        sx={{
-                          position: 'sticky',
-                          top: '-8px',
-                          padding: '8px 16px',
-                          fontWeight: 'bold',
-                          backgroundColor: params.group === 'Automotriz' ? 'primary.light' : 'secondary.light',
-                          color: params.group === 'Automotriz' ? 'primary.contrastText' : 'secondary.contrastText',
-                        }}
-                      >
-                        {params.group}
-                      </Box>
-                      <ul style={{ padding: 0 }}>{params.children}</ul>
-                    </li>
-                  )}
-                  renderInput={(params) => <TextField {...params} label="Marca" />}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Autocomplete
-                  options={modelsWithOptions}
-                  getOptionLabel={(option) => option.name}
-                  value={selectedModel}
-                  onChange={handleModelChange}
-                  loading={isLoadingModels}
-                  disabled={!selectedBrand}
-                  renderOption={(props, option) => (
-                    <li {...props} key={option.id}>
-                      {option.id === ADD_NEW_MODEL_ID ? (
-                        <Box sx={{ fontStyle: 'italic', color: 'primary.main' }}>{option.name}</Box>
-                      ) : (
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                          <span>{option.name}</span>
-                          <IconButton
-                            size="small"
-                            onClick={(e) => handleDeleteModelClick(e, option)}
-                            sx={{ ml: 1, color: 'error.main', '&:hover': { backgroundColor: 'error.light', color: 'error.contrastText' } }}
-                          >
-                            <Delete fontSize="small" />
-                          </IconButton>
-                        </Box>
-                      )}
-                    </li>
-                  )}
-                  renderInput={(params) => <TextField {...params} label="Modelo" />}
-                />
-              </Grid>
+              <BrandModelSelector
+                selectedBrand={selectedBrand}
+                selectedModel={selectedModel}
+                onBrandChange={setSelectedBrand}
+                onModelChange={setSelectedModel}
+                manageModels
+                brandGridSize={{ xs: 12, sm: 6, md: 3 }}
+                modelGridSize={{ xs: 12, sm: 6, md: 3 }}
+              />
               <Grid size={{ xs: 6, sm: 3, md: 2 }}>
                 <TextField
                   label="Año Inicial"
@@ -270,24 +174,6 @@ const ModelCompatibilityManager: React.FC<ModelCompatibilityManagerProps> = ({ i
         </>
       ) : (
         <Typography sx={{ mt: 2, color: 'text.secondary' }}>No hay modelos compatibles asignados.</Typography>
-      )}
-
-      {selectedBrand && (
-        <>
-          <AddModelDialog
-            open={isAddModelDialogOpen}
-            onClose={() => setAddModelDialogOpen(false)}
-            onSuccess={handleNewModelSuccess}
-            brandId={selectedBrand.id}
-          />
-          <DeleteModelDialog
-            open={!!modelToDelete}
-            onClose={() => setModelToDelete(null)}
-            onSuccess={handleDeleteSuccess}
-            model={modelToDelete}
-            brandId={selectedBrand.id}
-          />
-        </>
       )}
     </Box>
   );

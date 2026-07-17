@@ -1,6 +1,6 @@
-import { ConfirmDialog } from '../../../../components/common/ConfirmDialog';
-import { useDeleteCarModel } from '../../../../hooks/useVehicleData';
-import type { CarModel } from '../../../../types/model.types';
+import { ConfirmDialog } from './ConfirmDialog';
+import { useDeleteCarModel } from '../../hooks/useVehicleData';
+import type { CarModel } from '../../types/model.types';
 
 interface DeleteModelDialogProps {
   open: boolean;
