@@ -60,7 +60,7 @@ describe('VehicleNoteFormPage', () => {
     let capturedBody: Record<string, unknown> | undefined;
 
     server.use(
-      http.post(`${apiBaseUrl}/functions/v1/vehicle-notes`, async ({ request }) => {
+      http.post(`${apiBaseUrl}/vehicle-notes`, async ({ request }) => {
         capturedBody = await request.json() as Record<string, unknown>;
 
         return HttpResponse.json(

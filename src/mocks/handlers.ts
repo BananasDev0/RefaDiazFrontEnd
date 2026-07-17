@@ -464,7 +464,7 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 });
   }),
 
-  http.get(`${apiBaseUrl}/functions/v1/vehicle-notes`, ({ request }) => {
+  http.get(`${apiBaseUrl}/vehicle-notes`, ({ request }) => {
     const url = new URL(request.url);
     const id = url.searchParams.get('id');
     const q = url.searchParams.get('q');
@@ -510,7 +510,7 @@ export const handlers = [
     return HttpResponse.json(filteredNotes);
   }),
 
-  http.post(`${apiBaseUrl}/functions/v1/vehicle-notes`, async ({ request }) => {
+  http.post(`${apiBaseUrl}/vehicle-notes`, async ({ request }) => {
     const payload = await request.json() as VehicleNoteUpsertPayload;
     const nextId = Math.max(...mockVehicleNotes.map((note) => note.id ?? 0)) + 1;
     const nextNote = {
@@ -526,7 +526,7 @@ export const handlers = [
     return HttpResponse.json(nextNote, { status: 201 });
   }),
 
-  http.put(`${apiBaseUrl}/functions/v1/vehicle-notes`, async ({ request }) => {
+  http.put(`${apiBaseUrl}/vehicle-notes`, async ({ request }) => {
     const idParam = request.url.split('?')[1]?.split('=')[1];
     if (!idParam) {
       return new HttpResponse(null, { status: 400 });
@@ -552,7 +552,7 @@ export const handlers = [
     return HttpResponse.json(updatedNote);
   }),
 
-  http.delete(`${apiBaseUrl}/functions/v1/vehicle-notes`, ({ request }) => {
+  http.delete(`${apiBaseUrl}/vehicle-notes`, ({ request }) => {
     const idParam = request.url.split('?')[1]?.split('=')[1];
     if (!idParam) {
       return new HttpResponse(null, { status: 400 });
