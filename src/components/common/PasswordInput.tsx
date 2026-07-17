@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { forwardRef, useState } from 'react';
 import {
   TextField,
   InputAdornment,
@@ -11,11 +11,11 @@ type PasswordInputProps = Omit<TextFieldProps, 'type' | 'InputProps'> & {
   InputProps?: Omit<TextFieldProps['InputProps'], 'endAdornment'>;
 };
 
-export const PasswordInput: React.FC<PasswordInputProps> = ({
+export const PasswordInput = forwardRef<HTMLDivElement, PasswordInputProps>(({
   InputProps,
   disabled,
   ...props
-}) => {
+}, ref) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleTogglePasswordVisibility = () => {
@@ -25,6 +25,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
   return (
     <TextField
       {...props}
+      ref={ref}
       type={showPassword ? 'text' : 'password'}
       disabled={disabled}
       InputProps={{
@@ -44,4 +45,6 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
       }}
     />
   );
-}; 
+});
+
+PasswordInput.displayName = 'PasswordInput';
