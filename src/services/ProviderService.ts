@@ -13,17 +13,7 @@ interface PaginatedProvidersResponse {
  * Obtiene una lista de todos los proveedores.
  */
 export const getProviders = async (): Promise<PaginatedProvidersResponse> => {
-  console.log('getProviders');
-  const response = await axiosInstance.get('/providers');
-  console.log(response);
   return axiosInstance.get('/providers');
-};
-
-/**
- * Obtiene un único proveedor por su ID.
- */
-export const getProviderById = async (id: number): Promise<Provider> => {
-  return axiosInstance.get(`/providers/${id}`);
 };
 
 /**

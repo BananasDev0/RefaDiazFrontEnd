@@ -1,7 +1,6 @@
 import { supabase } from './supabaseClient';
 import type { User, LoginFormInputs } from '../types/user.types';
 import { getUserById } from './UserService';
-import type { Session } from '@supabase/supabase-js';
 
 export const signIn = async (credentials: LoginFormInputs): Promise<User> => {
   const { data: authData, error: supabaseError } = await supabase.auth.signInWithPassword({
@@ -41,15 +40,6 @@ export const signOut = async (): Promise<void> => {
   if (error) {
     throw new Error('Error al cerrar la sesión.');
   }
-};
-
-export const getCurrentSession = async (): Promise<Session | null> => {
-  const { data, error } = await supabase.auth.getSession();
-  if (error) {
-    console.error('Error al obtener la sesión actual:', error);
-    return null;
-  }
-  return data.session;
 };
 
 export const getStoredUser = (): User | null => {

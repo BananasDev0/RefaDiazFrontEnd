@@ -44,5 +44,3 @@ export const getProductSchema = (productType?: string) => {
 
   return radiatorProductSchema;
 };
-
-export const productSchema = radiatorProductSchema;

@@ -5,7 +5,6 @@ import type {
   ProductListResult,
   ProductPaginationParams,
 } from '../types/product.types';
-import type { Brand } from '../types/brand.types';
 import type { CarModel } from '../types/model.types';
 import type { ProductFilters } from '../stores/useProductStore';
 import type { CreateProductCategoryPayload, ProductCategory } from '../types/productCategory.types';
@@ -53,12 +52,7 @@ export const getProducts = async (
   };
 };
 
-// 2. FUNCIÓN PARA OBTENER TODAS LAS MARCAS
-export const getBrands = async (): Promise<Brand[]> => {
-  return axiosInstance.get('/brands');
-};
-
-// 3. FUNCIÓN PARA OBTENER MODELOS POR MARCA
+// 2. FUNCIÓN PARA OBTENER MODELOS POR MARCA
 export const getModelsByBrand = async (brandId: number): Promise<CarModel[]> => {
   return axiosInstance.get('/models', {
     params: { brandId },

@@ -126,7 +126,7 @@ const transformFormDataToPayload = async (
       productCarModels: formData.productCarModels.map((pcm) => ({
         carModelId: pcm.carModelId,
         initialYear: pcm.initialYear,
-        lastYear: pcm.initialYear,
+        lastYear: pcm.lastYear,
       })) as ProductCarModel[],
       productProviders: mapFormProvidersToPayload(formData.productProviders),
       active: options?.active ?? true,

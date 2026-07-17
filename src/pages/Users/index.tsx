@@ -54,7 +54,6 @@ const UsersPage: React.FC = () => {
     };
 
     // 1. Construimos un único objeto que se alinea con la estructura de `User`
-    console.log('data', data);
     const userObject: Partial<User> & { password?: string } = {
       person: {
         name: data.name!,

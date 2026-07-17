@@ -64,15 +64,3 @@ export const useUsers = () => {
     isDeleting,
   };
 };
-
-/**
- * Hook to get a single user by ID.
- * @param userId The ID of the user to fetch.
- */
-export const useUser = (userId: string | null) => {
-  return useQuery<User>({
-    queryKey: ['user', userId],
-    queryFn: () => UserService.getUserById(userId!),
-    enabled: !!userId, // The query will not run until a userId is provided
-  });
-};

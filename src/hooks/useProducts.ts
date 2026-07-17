@@ -22,7 +22,6 @@ export const useProduct = (productId: number | null) => {
   return useQuery({
     queryKey: ['product', productId],
     queryFn: () => {
-      console.log('productId', productId);
       if (!productId) {
         return Promise.reject(new Error('Product ID is required'));
       }
